@@ -2,19 +2,23 @@ package beit.skn.pingmeserver;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 import beit.skn.classes.Message;
 
 public class AgentHelper extends Thread 
 {
 	private Socket socket = null;
-	private ServerMain serverMain;
 	private String agentID = null;
 	
-	public AgentHelper(Socket s, ServerMain sm)
+	public String getAgentID()
 	{
-		socket = s;
-		serverMain = sm;		
+		return agentID;
+	}
+
+	public AgentHelper(Socket s)
+	{
+		socket = s;		
 	}
 	
 	@Override
@@ -30,15 +34,25 @@ public class AgentHelper extends Thread
 			ctrl = m.getControl();
 			if(ctrl.contentEquals("hello"))				
 				agentID = m.getSender();			
-			System.out.println("Agent " + agentID + " connected to server and is waiting for orders.");
+			System.out.println("Agent " + agentID + " registered to server and is waiting for requests.");
+			streamIn.read();
+			
 		} 
+		catch(SocketException se)
+		{
+			System.out.println("Agent " + agentID + " disconnected from server. Deleting entry.");
+			ServerMain.deleteEntry(agentID, "agent");
+			
+		}
 		catch (IOException e) 
 		{			
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) 
+		}
+		catch (ClassNotFoundException e) 
 		{			
 			e.printStackTrace();
 		}
+		
 	}
 	
 	public void pushMessage(Message m)

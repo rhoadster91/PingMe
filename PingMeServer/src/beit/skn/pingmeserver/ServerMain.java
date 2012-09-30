@@ -3,6 +3,9 @@ package beit.skn.pingmeserver;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import beit.skn.classes.Message;
 
 public class ServerMain extends Thread
 {
@@ -39,7 +42,8 @@ public class ServerMain extends Thread
 			while(true)
 			{
 				s = userServer.accept();
-				tempUser = new UserHelper(s, this);
+				tempUser = new UserHelper(s);
+				tempUser.start();				
 				userHelpers.add(tempUser);
 			}
 		} 
@@ -60,7 +64,7 @@ public class ServerMain extends Thread
 			while(true)
 			{
 				s = agentServer.accept();
-				tempAgent = new AgentHelper(s, this);
+				tempAgent = new AgentHelper(s);
 				tempAgent.start();
 				agentHelpers.add(tempAgent);				
 			}
@@ -73,10 +77,81 @@ public class ServerMain extends Thread
 	
 	public static void main(String[] args)
 	{
-		System.out.println("Server initializing...");
+		System.out.print("Server initializing...");
 		new ServerMain("agent").start();
 		new ServerMain("user").start();		
 		userHelpers = new ArrayList<UserHelper>();
-		agentHelpers = new ArrayList<AgentHelper>();		
+		agentHelpers = new ArrayList<AgentHelper>();	
+		System.out.println("done.");
+	}
+	
+	public static void deleteEntry(String id, String clientClass)
+	{
+		if(clientClass.contentEquals("agent"))
+		{
+			Iterator<AgentHelper> agentIterator = null;
+			AgentHelper temp;
+			agentIterator = agentHelpers.iterator();
+			while(agentIterator.hasNext())
+			{
+				temp = agentIterator.next();
+				if(temp.getAgentID().contentEquals(id))
+				{
+					agentIterator.remove();
+					System.out.println("Agent " + id + " unregistered.");
+					break;
+				}
+			}
+		}
+		else
+		{
+			Iterator<UserHelper> userIterator = null;
+			UserHelper temp;
+			userIterator = userHelpers.iterator();
+			while(userIterator.hasNext())
+			{
+				temp = userIterator.next();
+				if(temp.getUserID().contentEquals(id))
+				{
+					userIterator.remove();
+					System.out.println("Agent " + id + " unregistered.");
+					break;
+				}
+			}
+		}
+	}
+	
+	public static void pushMessageToClient(Message m, String id, String clientClass)
+	{
+		if(clientClass.contentEquals("agent"))
+		{
+			Iterator<AgentHelper> agentIterator = null;
+			AgentHelper temp;
+			agentIterator = agentHelpers.iterator();
+			while(agentIterator.hasNext())
+			{
+				temp = agentIterator.next();
+				if(temp.getAgentID().contentEquals(id))
+				{
+					temp.pushMessage(m);
+					break;
+				}
+			}
+		}
+		else
+		{
+			Iterator<UserHelper> userIterator = null;
+			UserHelper temp;
+			userIterator = userHelpers.iterator();
+			while(userIterator.hasNext())
+			{
+				temp = userIterator.next();
+				if(temp.getUserID().contentEquals(id))
+				{
+					temp.pushMessage(m);
+					break;	
+				}
+			}
+		}
 	}
 }
