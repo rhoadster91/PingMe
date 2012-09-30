@@ -61,7 +61,8 @@ public class ServerMain extends Thread
 			{
 				s = agentServer.accept();
 				tempAgent = new AgentHelper(s, this);
-				agentHelpers.add(tempAgent);
+				tempAgent.start();
+				agentHelpers.add(tempAgent);				
 			}
 		} 
 		catch (IOException e)		
