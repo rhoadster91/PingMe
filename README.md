@@ -1,4 +1,8 @@
 # PingMe #
+
+![Pingwin the Penguin - our cute mascot](http://www.fileden.com/files/2011/3/1/3089909//pingvin.png)
+
+
 *Now all your transit services are just one big button away!*
 
 **PingMe** is a light-weight Android application that allows users to call transit agents like taxis, rickshaws, etc by pressing just a single button. In short, this application can be called a *location relaying service* based on the principles of Instant Messaging. 
