@@ -1,5 +1,6 @@
 package beit.skn.pingmeserver;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,6 +12,9 @@ public class UserHelper extends Thread
 {
 	private Socket socket = null;
 	private String userID = null;
+	private ObjectOutputStream objOut = null;
+	private ObjectInputStream objIn = null;
+	
 	
 	public String getUserID() 
 	{
@@ -29,16 +33,20 @@ public class UserHelper extends Thread
 		String ctrl = null;
 		try 
 		{
-			ObjectInputStream streamIn = new ObjectInputStream(socket.getInputStream());
-			m = (Message)streamIn.readObject();
+			if(objOut==null)
+				objIn = new ObjectInputStream(socket.getInputStream());			
+			m = (Message)objIn.readObject();
 			System.out.println("New user connected. Waiting for ID.");
 			ctrl = m.getControl();
 			if(ctrl.contentEquals("hello"))				
 				userID = m.getSender();			
 			System.out.println("User " + userID + " registered to server. Standby for user request.");
+			m = new Message("server", "authentic");
+			pushMessage(m);			
 			while(true)
 			{				
-				m = (Message)streamIn.readObject();
+				m = (Message)objIn.readObject();
+				System.out.println("Received packet");
 				if(m.getControl().contentEquals("push"))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
 			}
@@ -46,7 +54,10 @@ public class UserHelper extends Thread
 		} 
 		catch(SocketException se)
 		{
-			System.out.println("User " + userID + " disconnected from server. Deleting entry.");
+			System.out.println("User " + userID + " disconnected from server. Deleting entry.");			
+		}
+		catch(EOFException e)
+		{
 			
 		}
 		catch (IOException e) 
@@ -64,7 +75,8 @@ public class UserHelper extends Thread
 	{
 		try 
 		{
-			ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
+			if(objOut==null)
+				objOut = new ObjectOutputStream(socket.getOutputStream());
 			objOut.writeObject(m);
 		} 
 		catch (IOException e) 

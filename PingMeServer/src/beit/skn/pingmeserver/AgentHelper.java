@@ -10,6 +10,8 @@ public class AgentHelper extends Thread
 {
 	private Socket socket = null;
 	private String agentID = null;
+	private ObjectOutputStream objOut = null;
+	private ObjectInputStream objIn = null;
 	
 	public String getAgentID()
 	{
@@ -28,16 +30,18 @@ public class AgentHelper extends Thread
 		String ctrl = null;
 		try 
 		{
-			ObjectInputStream streamIn = new ObjectInputStream(socket.getInputStream());
-			m = (Message)streamIn.readObject();
+			objIn = new ObjectInputStream(socket.getInputStream());
+			m = (Message)objIn.readObject();
 			System.out.println("New agent connected. Waiting for ID.");
 			ctrl = m.getControl();
 			if(ctrl.contentEquals("hello"))				
 				agentID = m.getSender();			
 			System.out.println("Agent " + agentID + " registered to server and is waiting for requests.");
+			m = new Message("server", "authentic");
+			pushMessage(m);
 			while(true)
 			{				
-				m = (Message)streamIn.readObject();
+				m = (Message)objIn.readObject();
 				if(m.getControl().contentEquals("push"))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
 			}
@@ -64,7 +68,8 @@ public class AgentHelper extends Thread
 	{
 		try 
 		{
-			ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
+			if(objOut==null)
+				objOut = new ObjectOutputStream(socket.getOutputStream());
 			objOut.writeObject(m);
 		} 
 		catch (IOException e) 
