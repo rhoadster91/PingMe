@@ -4,9 +4,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
+    <TextView android:layout_height="wrap_content" android:id="@+id/textView1" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/enter_username"></TextView>
+    <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/txtUser">
+        <requestFocus></requestFocus>
+    </EditText>
+    <TextView android:layout_height="wrap_content" android:id="@+id/textView2" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/enter_password"></TextView>
+    <EditText android:id="@+id/txtPass" android:layout_height="wrap_content" android:layout_width="match_parent" android:inputType="textPassword"></EditText>
+    <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout1" android:orientation="vertical" android:layout_height="match_parent" android:gravity="bottom">
+        <Button android:layout_height="wrap_content" android:id="@+id/button1" android:layout_width="match_parent" android:text="@string/login_button"></Button>
+    </LinearLayout>
 </LinearLayout>

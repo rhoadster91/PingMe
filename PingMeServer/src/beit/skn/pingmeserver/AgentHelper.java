@@ -44,8 +44,7 @@ public class AgentHelper extends Thread
 				m = (Message)objIn.readObject();
 				if(m.getControl().contentEquals("push"))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
-			}
-			
+			}			
 		} 
 		catch(SocketException se)
 		{
@@ -75,7 +74,6 @@ public class AgentHelper extends Thread
 		catch (IOException e) 
 		{
 			e.printStackTrace();
-		}
-		
+		}		
 	}
 }
