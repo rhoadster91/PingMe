@@ -37,9 +37,9 @@ The secondary objectives of this app are:
 ## Privacy and security ##
 
 
-Unlike other location-based services like Foursquare and Latitude, this service *does not* reveal the true identity of the user. This means that the transit agent has no clue of who is summoning him. As such, there is no danger of stalking or harassment as a side-effct of using this app.
+Unlike other location-based services like Foursquare and Latitude, this service *does not* reveal the true identity of the user. This means that the transit agent has no clue of who is summoning him. As such, there is no danger of stalking or harassment as a side-effect of using this app.
 
-Apart from this, the messages sent to server from your phones are encrypted using RSA and further serialized so that no intruderr can capture these packets and decode the information.
+Apart from this, the messages sent to server from your phones are encrypted using RSA and further serialized so that no intruder can capture these packets and decode the information.
 
 ## Approach ##
 
@@ -57,7 +57,7 @@ This is the user-side front end. It will provide a simple and intuitive GUI to t
 This is the agent-side front end. It will provide a simple, easy to understand GUI along with localization. Like the User end, this will also communicate directly only with the server and not with the User. Messages will be pushed to server which will in turn push messages to user.
 
 #### Generic Classes Project ####
-This project is purely dedicated to building a powerful infrastructure for the project to ensure safe and secure information exchange. Features such as Message serialization and data encryption is done using classes designed in this project.
+This project is purely dedicated to building a powerful infrastructure for the project to ensure safe and secure information exchange. Features such as Message serialization and data encryption are implemented using classes designed in this project.
 
 
 ## Contributors ##
@@ -73,5 +73,6 @@ The main contributors and initiators of this project are:
 
 Special thanks to 
 
+* Prof. S. N. Gujar for project guidance.
 * Android team for making this brilliant SDK available to us for free.
 * GitHub for this awesome social coding site.
