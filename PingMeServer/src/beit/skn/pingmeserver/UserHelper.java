@@ -37,9 +37,10 @@ public class UserHelper extends Thread
 				userID = m.getSender();			
 			System.out.println("User " + userID + " registered to server. Standby for user request.");
 			while(true)
-			{
+			{				
 				m = (Message)streamIn.readObject();
-				ServerMain.pushMessageToClient(m, m.getControl(), "agent");
+				if(m.getControl().contentEquals("push"))
+					ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
 			}
 			
 		} 

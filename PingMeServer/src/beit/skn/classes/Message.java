@@ -6,6 +6,7 @@ public class Message implements Serializable
 {
 	private static final long serialVersionUID = 4345780394134979995L;
 	private String senderID = null;
+	private String destID = null;
 	private Object content = null;
 	private String control = null;
 	
@@ -40,6 +41,17 @@ public class Message implements Serializable
 	{
 		return senderID;
 	}
+	
+	public void setDestination(String s)
+	{
+		this.destID = s;
+	}
+	
+	public String getDestination()
+	{
+		return destID;
+	}
+	
 	
 	public void setMessageContent(Object c)
 	{

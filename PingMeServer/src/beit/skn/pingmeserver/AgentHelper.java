@@ -35,7 +35,12 @@ public class AgentHelper extends Thread
 			if(ctrl.contentEquals("hello"))				
 				agentID = m.getSender();			
 			System.out.println("Agent " + agentID + " registered to server and is waiting for requests.");
-			streamIn.read();
+			while(true)
+			{				
+				m = (Message)streamIn.readObject();
+				if(m.getControl().contentEquals("push"))
+					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
+			}
 			
 		} 
 		catch(SocketException se)
