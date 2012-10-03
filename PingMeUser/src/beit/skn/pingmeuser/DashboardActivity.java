@@ -1,6 +1,6 @@
 package beit.skn.pingmeuser;
 
-import beit.skn.classes.Message;
+import beit.skn.classes.PushableMessage;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -31,7 +31,7 @@ public class DashboardActivity extends Activity
 		{
 			public void onClick(View v) 
 			{
-				Message m = new Message(UserTalker.getUname(), "push");
+				PushableMessage m = new PushableMessage(UserTalker.getUname(), "push");
 				m.setDestination(txt1.getText().toString());
 				m.setMessageContent((String)txt2.getText().toString());
 				UserTalker.pushMessage(m);

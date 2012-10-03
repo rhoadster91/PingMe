@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import beit.skn.classes.Message;
+import beit.skn.classes.PushableMessage;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,7 +31,7 @@ public class UserAuthenticationActivity extends Activity
 		{
 			public void onClick(View v) 
 			{				
-				Message m = new Message(txt1.getText().toString(), "hello");
+				PushableMessage m = new PushableMessage(txt1.getText().toString(), "hello");
 				Socket socket = null;
 				try 
 				{

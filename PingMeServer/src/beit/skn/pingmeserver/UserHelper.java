@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
 
-import beit.skn.classes.Message;
+import beit.skn.classes.PushableMessage;
 
 public class UserHelper extends Thread 
 {
@@ -29,23 +29,23 @@ public class UserHelper extends Thread
 	@Override
 	public void run()
 	{
-		Message m = null;
+		PushableMessage m = null;
 		String ctrl = null;
 		try 
 		{
 			if(objOut==null)
 				objIn = new ObjectInputStream(socket.getInputStream());			
-			m = (Message)objIn.readObject();
+			m = (PushableMessage)objIn.readObject();
 			System.out.println("New user connected. Waiting for ID.");
 			ctrl = m.getControl();
 			if(ctrl.contentEquals("hello"))				
 				userID = m.getSender();			
 			System.out.println("User " + userID + " registered to server. Standby for user request.");
-			m = new Message("server", "authentic");
+			m = new PushableMessage("server", "authentic");
 			pushMessage(m);			
 			while(true)
 			{				
-				m = (Message)objIn.readObject();
+				m = (PushableMessage)objIn.readObject();
 				System.out.println("Received packet");
 				if(m.getControl().contentEquals("push"))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
@@ -71,7 +71,7 @@ public class UserHelper extends Thread
 		
 	}
 
-	public void pushMessage(Message m)
+	public void pushMessage(PushableMessage m)
 	{
 		try 
 		{

@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
 
-import beit.skn.classes.Message;
+import beit.skn.classes.PushableMessage;
 
 public class UserTalker 
 {
@@ -39,7 +39,7 @@ public class UserTalker
 	}
 	
 	
-	public static void pushMessage(Message m)
+	public static void pushMessage(PushableMessage m)
 	{
 			
 		try 
@@ -54,14 +54,14 @@ public class UserTalker
 		}				
 	}	
 	
-	public static Message readMessage()
+	public static PushableMessage readMessage()
 	{
-		Message m;
+		PushableMessage m;
 		try 
 		{
 			if(objIn==null)
 				objIn = new ObjectInputStream(socket.getInputStream());
-			m = (Message)objIn.readObject();
+			m = (PushableMessage)objIn.readObject();
 			return m;
 		} 
 		catch (StreamCorruptedException e) 

@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import beit.skn.classes.Message;
+import beit.skn.classes.PushableMessage;
 
 public class ServerMain extends Thread
 {
@@ -121,7 +121,7 @@ public class ServerMain extends Thread
 		}
 	}
 	
-	public static void pushMessageToClient(Message m, String id, String clientClass)
+	public static void pushMessageToClient(PushableMessage m, String id, String clientClass)
 	{
 		if(clientClass.contentEquals("agent"))
 		{

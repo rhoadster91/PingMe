@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 
-import beit.skn.classes.Message;
+import beit.skn.classes.PushableMessage;
 
 public class AgentHelper extends Thread 
 {
@@ -26,22 +26,22 @@ public class AgentHelper extends Thread
 	@Override
 	public void run()
 	{
-		Message m = null;
+		PushableMessage m = null;
 		String ctrl = null;
 		try 
 		{
 			objIn = new ObjectInputStream(socket.getInputStream());
-			m = (Message)objIn.readObject();
+			m = (PushableMessage)objIn.readObject();
 			System.out.println("New agent connected. Waiting for ID.");
 			ctrl = m.getControl();
 			if(ctrl.contentEquals("hello"))				
 				agentID = m.getSender();			
 			System.out.println("Agent " + agentID + " registered to server and is waiting for requests.");
-			m = new Message("server", "authentic");
+			m = new PushableMessage("server", "authentic");
 			pushMessage(m);
 			while(true)
 			{				
-				m = (Message)objIn.readObject();
+				m = (PushableMessage)objIn.readObject();
 				if(m.getControl().contentEquals("push"))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
 			}			
@@ -63,7 +63,7 @@ public class AgentHelper extends Thread
 		
 	}
 	
-	public void pushMessage(Message m)
+	public void pushMessage(PushableMessage m)
 	{
 		try 
 		{

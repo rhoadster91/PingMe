@@ -1,6 +1,6 @@
 package beit.skn.pingmeagent;
 
-import beit.skn.classes.Message;
+import beit.skn.classes.PushableMessage;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -20,8 +20,8 @@ public class DashboardActivity extends Activity
 		new AgentListener(this).start();
 	}
 	
-	Message listenerMsg;
-	public void listenToStream(Message m) 
+	PushableMessage listenerMsg;
+	public void listenToStream(PushableMessage m) 
     {        
 		listenerMsg = m;		
         mHandler.post(new Runnable()

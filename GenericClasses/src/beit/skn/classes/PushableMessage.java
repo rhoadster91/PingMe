@@ -2,7 +2,7 @@ package beit.skn.classes;
 
 import java.io.Serializable;
 
-public class Message implements Serializable
+public class PushableMessage implements Serializable
 {
 	private static final long serialVersionUID = 4345780394134979995L;
 	private String senderID = null;
@@ -10,13 +10,13 @@ public class Message implements Serializable
 	private Object content = null;
 	private String control = null;
 	
-	public Message()
+	public PushableMessage()
 	{
 		senderID = "";
 		control = "";		
 	}
 	
-	public Message(String sID, String ctrl)
+	public PushableMessage(String sID, String ctrl)
 	{
 		senderID = sID;
 		control = ctrl;

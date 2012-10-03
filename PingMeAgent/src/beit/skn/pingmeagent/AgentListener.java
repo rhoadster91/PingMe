@@ -1,6 +1,6 @@
 package beit.skn.pingmeagent;
 
-import beit.skn.classes.Message;
+import beit.skn.classes.PushableMessage;
 
 public class AgentListener extends Thread
 {
@@ -16,7 +16,7 @@ public class AgentListener extends Thread
 	{
 		while(true)
 		{
-			Message m = AgentTalker.readMessage();
+			PushableMessage m = AgentTalker.readMessage();
 			dAct.listenToStream(m);
 		}
 	}
