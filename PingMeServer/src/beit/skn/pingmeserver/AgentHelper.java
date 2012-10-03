@@ -49,8 +49,12 @@ public class AgentHelper extends Thread
 		catch(SocketException se)
 		{
 			System.out.println("Agent " + agentID + " disconnected from server. Deleting entry.");
+			ServerMain.deleteEntry(agentID, "agent");			
+		}
+		catch(EOFException eofe)
+		{
+			System.out.println("Couldn't connect to Agent " + agentID + ". Deleting entry.");
 			ServerMain.deleteEntry(agentID, "agent");
-			
 		}
 		catch (IOException e) 
 		{			

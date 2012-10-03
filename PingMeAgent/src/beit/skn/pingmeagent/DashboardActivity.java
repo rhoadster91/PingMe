@@ -5,19 +5,23 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.Toast;
 
 public class DashboardActivity extends Activity 
 {
 	private Handler mHandler = new Handler();
+	private static AgentListener agentListener = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{		
-		Toast.makeText(getBaseContext(), "Authenticated and registered on server", Toast.LENGTH_LONG).show();
 		setContentView(R.layout.dash);
 		super.onCreate(savedInstanceState);		
-		new AgentListener(this).start();
+		if(agentListener==null)
+		{
+			agentListener = new AgentListener(this);
+			agentListener.setPriority(Thread.MAX_PRIORITY);
+			agentListener.start();
+		}
 	}
 	
 	PushableMessage listenerMsg;

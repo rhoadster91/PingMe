@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class UserAuthenticationActivity extends Activity
 {
@@ -41,6 +42,7 @@ public class UserAuthenticationActivity extends Activity
 					m = UserTalker.readMessage();
 					if(m.getControl().contentEquals("authentic"))
 					{
+						Toast.makeText(getBaseContext(), "Authenticated and registered on server", Toast.LENGTH_LONG).show();						
 						Intent showDashboard = new Intent(UserAuthenticationActivity.this, DashboardActivity.class);						
 						UserAuthenticationActivity.this.startActivity(showDashboard);
 						UserTalker.setUname(txt1.getText().toString());

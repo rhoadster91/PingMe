@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class AgentAuthenticationActivity extends Activity 
 {
@@ -45,6 +46,7 @@ public class AgentAuthenticationActivity extends Activity
 					m = AgentTalker.readMessage();
 					if(m.getControl().contentEquals("authentic"))
 					{
+						Toast.makeText(getBaseContext(), "Authenticated and registered on server", Toast.LENGTH_LONG).show();						
 						Intent showDashboard = new Intent(AgentAuthenticationActivity.this, DashboardActivity.class);						
 						AgentAuthenticationActivity.this.startActivity(showDashboard);
 						AgentTalker.setUname(txt1.getText().toString());
