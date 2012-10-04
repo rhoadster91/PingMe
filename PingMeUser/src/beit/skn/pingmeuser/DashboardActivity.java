@@ -2,7 +2,6 @@ package beit.skn.pingmeuser;
 
 import beit.skn.classes.PushableMessage;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -54,16 +53,8 @@ public class DashboardActivity extends Activity
         {
             public void run() 
             {
-            	if(listenerMsg.getControl().contentEquals("fail"))
-            	{
-	            	AlertDialog.Builder alertTest = new AlertDialog.Builder(DashboardActivity.this);
-	                alertTest.setTitle("Sorry");
-	                alertTest.setMessage((String)listenerMsg.getMessageContent()).create();
-	                alertTest.setPositiveButton("Okay", null);
-	                alertTest.show();
-            	}
+            	// TODO Add listener code here
             }
         });
     }
-
 }

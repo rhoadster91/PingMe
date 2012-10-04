@@ -136,11 +136,7 @@ public class ServerMain extends Thread
 					temp.pushMessage(m);
 					break;
 				}
-			}
-			System.out.println("Agent no longer registered.");
-			m.setMessageContent("Failed to reach agent.");
-			m.setControl("fail");
-			pushMessageToClient(m, m.getSender(), "user");
+			}			
 		}
 		else
 		{
