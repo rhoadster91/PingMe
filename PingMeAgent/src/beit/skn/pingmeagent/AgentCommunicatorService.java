@@ -23,12 +23,47 @@ public class AgentCommunicatorService extends Service
 	private static final String IP_ADDRESS = "192.168.0.101";
 	private static final int AGENT_PORT_NUMBER = 9976;	
 	public static final String INTENT_TO_SERVICE = "PingMeIntentToService";
-	public static final String INTENT_TO_ACTIVITY = "PingMeIntentToActivity";
+	public static final String INTENT_TO_ACTIVITY = "PingMeIntentToActivity";	
 	
 	private static Socket socket = null;
 	private static String uname = null;	
 	private static BroadcastReceiver brSendRequested = null;
 	private static IntentFilter ifSendRequested = null;
+	
+	private Thread incomingMessageReader = new Thread()
+	{
+		
+		@Override
+		public void run() 
+		{
+			PushableMessage m;
+			while(true)
+			{
+				m = AgentTalker.readMessage();
+				Intent iReadRequested = new Intent();
+				iReadRequested.setAction(INTENT_TO_ACTIVITY);
+				iReadRequested.putExtra("pushablemessage", m);
+				sendOrderedBroadcast(iReadRequested, null, new BroadcastReceiver()
+				{
+					@Override
+					public void onReceive(Context context, Intent intent)
+					{
+						int result = getResultCode();
+						switch(result)
+						{
+						case Activity.RESULT_OK:						
+							break;
+							
+						default:
+							showTempNotification();
+							break;
+						}
+					}				
+				}, null, Activity.RESULT_CANCELED, null, null);
+			}
+		}
+		
+	};
 	
 	public static String getUname() 
 	{
@@ -49,76 +84,56 @@ public class AgentCommunicatorService extends Service
 	@Override
 	public void onCreate() 
 	{
-		PushableMessage m = new PushableMessage();
 		try 
 		{
-			socket = new Socket(IP_ADDRESS, AGENT_PORT_NUMBER);
-			AgentTalker.setSocket(socket);
-			AgentTalker.pushMessage(m);
-			m = AgentTalker.readMessage();
-			if(m.getControl().contentEquals("authentic"))
-			{
-				Toast.makeText(getBaseContext(), "Authenticated and registered on server", Toast.LENGTH_LONG).show();				
-			}
-			else
-			{
-				Toast.makeText(getBaseContext(), "Could not authenticate.", Toast.LENGTH_LONG).show();
-				stopSelf();
-			}
-		}
-		catch (UnknownHostException e)
+			socket = new Socket(IP_ADDRESS, AGENT_PORT_NUMBER);			
+		} 
+		catch (UnknownHostException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		AgentTalker.setSocket(socket);
 		brSendRequested = new BroadcastReceiver()
 		{
 			@Override
 			public void onReceive(Context arg0, Intent arg1) 
 			{
 				PushableMessage m = (PushableMessage)arg1.getSerializableExtra("pushablemessage");
-				AgentTalker.pushMessage(m);
+				if(m.getControl().contentEquals("hello"))
+				{				
+					AgentTalker.pushMessage(m);
+					m = AgentTalker.readMessage();
+					if(m.getControl().contentEquals("authentic"))
+					{
+						Toast.makeText(getApplicationContext(), "Authenticated and registered on server", Toast.LENGTH_LONG).show();
+						Intent isAuthentic = new Intent();
+						isAuthentic.setAction(INTENT_TO_ACTIVITY);
+						sendBroadcast(isAuthentic);
+						showPersistentNotification();	
+						incomingMessageReader.start();						
+					}
+					else
+					{
+						Toast.makeText(getApplicationContext(), "Could not authenticate.", Toast.LENGTH_LONG).show();
+						stopSelf();
+					}
+										
+				}
+				else
+					AgentTalker.pushMessage(m);
 			}			
 		};
 		ifSendRequested = new IntentFilter();
 		ifSendRequested.addAction(INTENT_TO_SERVICE);
-		registerReceiver(brSendRequested, ifSendRequested);		
-		showPersistentNotification();
-		readIncomingMessages();
+		registerReceiver(brSendRequested, ifSendRequested);	
 		super.onCreate();
 	}
 	
-	public void readIncomingMessages()
-	{
-		PushableMessage m;
-		while(true)
-		{
-			m = AgentTalker.readMessage();
-			Intent iReadRequested = new Intent();
-			iReadRequested.setAction(INTENT_TO_ACTIVITY);
-			iReadRequested.putExtra("pushablemessage", m);
-			sendOrderedBroadcast(iReadRequested, null, new BroadcastReceiver()
-			{
-				@Override
-				public void onReceive(Context context, Intent intent)
-				{
-					int result = getResultCode();
-					switch(result)
-					{
-					case Activity.RESULT_OK:						
-						break;
-						
-					default:
-						showTempNotification();
-						break;
-					}
-				}				
-			}, null, Activity.RESULT_CANCELED, null, null);
-		}
-	}
+	
 	
 	@Override
 	public void onDestroy() 
@@ -136,28 +151,31 @@ public class AgentCommunicatorService extends Service
 	private void showPersistentNotification()
 	{
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        CharSequence text = getText(R.string.servicename);
+        CharSequence text = getText(R.string.servicetext);
         Notification notification = new Notification(R.drawable.icon, text, 0);
         Intent showActivity = new Intent(this, DashboardActivity.class);
         showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);    
         showActivity.setAction(INTENT_TO_ACTIVITY);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);
-        notification.setLatestEventInfo(this, getText(R.string.servicetext), text, contentIntent);
+        notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_NO_CLEAR ^ Notification.FLAG_ONGOING_EVENT;        
-        nm.notify(R.string.servicename, notification);
+        nm.notify(R.string.servicetext, notification);
 	}
 	
 	private void showTempNotification()
 	{
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        CharSequence text = getText(R.string.servicename);
+        CharSequence text = getText(R.string.notificationtext);
         Notification notification = new Notification(R.drawable.icon, text, 0);
         Intent showActivity = new Intent(this, DashboardActivity.class);
         showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);    
         showActivity.setAction(INTENT_TO_ACTIVITY);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);
-        notification.setLatestEventInfo(this, getText(R.string.notificationtext), text, contentIntent);
+        notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_AUTO_CANCEL;
-        nm.notify(R.string.servicename, notification);
+        nm.notify(R.string.notificationtext, notification);
 	}
+	
+
+	
 }
