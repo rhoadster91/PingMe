@@ -31,6 +31,9 @@ public final class R {
         public static final int enter_username=0x7f040002;
         public static final int hello=0x7f040000;
         public static final int login_button=0x7f040004;
+        public static final int notificationtext=0x7f040008;
+        public static final int servicename=0x7f040007;
+        public static final int servicetext=0x7f040006;
         public static final int wait_now=0x7f040005;
     }
 }

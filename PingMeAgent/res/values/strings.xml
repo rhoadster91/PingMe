@@ -6,4 +6,7 @@
     <string name="enter_password">Enter the password:</string>
     <string name="login_button">Log in</string>
     <string name="wait_now">Please wait for new requests...</string>
+    <string name="servicetext">PingWin is listening for new incoming messages.</string>
+    <string name="servicename">PingMe is running...</string>
+    <string name="notificationtext">You have a new request</string>
 </resources>

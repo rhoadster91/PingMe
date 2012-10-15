@@ -6,9 +6,9 @@
     <uses-sdk android:minSdkVersion="8" />
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <application android:icon="@drawable/icon" android:label="@string/app_name"  android:theme="@android:style/Theme.NoTitleBar">
         <activity android:name=".AgentAuthenticationActivity"
-                  android:label="@string/app_name">
+                  android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -17,5 +17,8 @@
 		<activity android:name=".DashboardActivity"
                   android:label="@string/app_name">
         </activity>
+        <service android:name=".AgentCommunicatorService"
+        		 android:process=":AgentListenerProcess">
+        </service>	
     </application>
 </manifest>
