@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -25,12 +26,13 @@ public class AgentAuthenticationActivity extends Activity
 	private static BroadcastReceiver brVerifyAuthenticity = null;
 	private static IntentFilter ifIncomingMessage = null;
 	
+	
 	@Override
 	protected void onDestroy() 
 	{
 		try
 		{
-			unregisterReceiver(brVerifyAuthenticity);
+			unregisterReceiver(brVerifyAuthenticity);			
 		}
 		catch(IllegalArgumentException iae)
 		{
@@ -68,10 +70,13 @@ public class AgentAuthenticationActivity extends Activity
 					finish();							
 				}						
 			};
-			registerReceiver(brVerifyAuthenticity, ifIncomingMessage);				
+			registerReceiver(brVerifyAuthenticity, ifIncomingMessage);			
 		}
 		super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);		        
+        setContentView(R.layout.main);
+        Typeface cfont = Typeface.createFromAsset(getAssets(),"fonts/customfont.otf");
+        Button buttonTitle = (Button)findViewById(R.id.tBarLogin);
+        buttonTitle.setTypeface(cfont);
     	login = (Button)findViewById(R.id.button1);
 		txt1 = (EditText)findViewById(R.id.txtUser);
 		txt2 = (EditText)findViewById(R.id.txtPass);	

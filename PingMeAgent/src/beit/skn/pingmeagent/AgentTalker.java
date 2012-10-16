@@ -54,28 +54,13 @@ public class AgentTalker
 		}				
 	}	
 	
-	public static PushableMessage readMessage()
+	public static PushableMessage readMessage() throws StreamCorruptedException, IOException, ClassNotFoundException
 	{
 		PushableMessage m;
-		try 
-		{
-			if(objIn==null)
-				objIn = new ObjectInputStream(socket.getInputStream());
-			m = (PushableMessage)objIn.readObject();
-			return m;
-		} 
-		catch (StreamCorruptedException e) 
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (ClassNotFoundException e) 
-		{
-			e.printStackTrace();
-		}		
-		return null;
+		if(objIn==null)
+			objIn = new ObjectInputStream(socket.getInputStream());
+		m = (PushableMessage)objIn.readObject();
+		return m;		
+		
 	}
 }
