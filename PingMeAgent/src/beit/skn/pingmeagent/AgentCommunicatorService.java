@@ -25,6 +25,7 @@ public class AgentCommunicatorService extends Service
 	public static final String INTENT_TO_SERVICE = "PingMeIntentToService";
 	public static final String INTENT_TO_ACTIVITY = "PingMeIntentToActivity";	
 	
+	private static boolean isAuthentic = false;
 	private static Socket socket = null;
 	private static String uname = null;	
 	private static BroadcastReceiver brSendRequested = null;
@@ -55,7 +56,7 @@ public class AgentCommunicatorService extends Service
 							break;
 							
 						default:
-							showTempNotification();
+							showTempNotification((PushableMessage)intent.getSerializableExtra("pushablemessage"));
 							break;
 						}
 					}				
@@ -103,17 +104,18 @@ public class AgentCommunicatorService extends Service
 			public void onReceive(Context arg0, Intent arg1) 
 			{
 				PushableMessage m = (PushableMessage)arg1.getSerializableExtra("pushablemessage");
-				if(m.getControl().contentEquals("hello"))
+				if(m.getControl().contentEquals("hello") && !isAuthentic)
 				{				
 					AgentTalker.pushMessage(m);
 					m = AgentTalker.readMessage();
 					if(m.getControl().contentEquals("authentic"))
 					{
 						Toast.makeText(getApplicationContext(), "Authenticated and registered on server", Toast.LENGTH_LONG).show();
-						Intent isAuthentic = new Intent();
-						isAuthentic.setAction(INTENT_TO_ACTIVITY);
-						sendBroadcast(isAuthentic);
+						Intent iIsAuthentic = new Intent();
+						iIsAuthentic.setAction(INTENT_TO_ACTIVITY);
+						sendBroadcast(iIsAuthentic);
 						showPersistentNotification();	
+						isAuthentic = true;
 						incomingMessageReader.start();						
 					}
 					else
@@ -122,6 +124,12 @@ public class AgentCommunicatorService extends Service
 						stopSelf();
 					}
 										
+				}
+				else if(m.getControl().contentEquals("hello") && isAuthentic)
+				{
+					Intent iIsAuthentic = new Intent();
+					iIsAuthentic.setAction(INTENT_TO_ACTIVITY);
+					sendBroadcast(iIsAuthentic);
 				}
 				else
 					AgentTalker.pushMessage(m);
@@ -138,7 +146,14 @@ public class AgentCommunicatorService extends Service
 	@Override
 	public void onDestroy() 
 	{
-		unregisterReceiver(brSendRequested);
+		try
+		{
+			unregisterReceiver(brSendRequested);
+		}
+		catch(IllegalArgumentException iae)
+		{
+			// Do nothing
+		}		
 		super.onDestroy();
 	}
 
@@ -154,7 +169,7 @@ public class AgentCommunicatorService extends Service
         CharSequence text = getText(R.string.servicetext);
         Notification notification = new Notification(R.drawable.icon, text, 0);
         Intent showActivity = new Intent(this, DashboardActivity.class);
-        showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);    
+        showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);   
         showActivity.setAction(INTENT_TO_ACTIVITY);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);
         notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
@@ -162,13 +177,14 @@ public class AgentCommunicatorService extends Service
         nm.notify(R.string.servicetext, notification);
 	}
 	
-	private void showTempNotification()
+	private void showTempNotification(PushableMessage m)
 	{
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         CharSequence text = getText(R.string.notificationtext);
         Notification notification = new Notification(R.drawable.icon, text, 0);
         Intent showActivity = new Intent(this, DashboardActivity.class);
-        showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);    
+        showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        showActivity.putExtra("pushablemessage", m);
         showActivity.setAction(INTENT_TO_ACTIVITY);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);
         notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);

@@ -28,22 +28,47 @@ public class AgentAuthenticationActivity extends Activity
 	@Override
 	protected void onDestroy() 
 	{
-		if(brVerifyAuthenticity!=null)
+		try
+		{
 			unregisterReceiver(brVerifyAuthenticity);
+		}
+		catch(IllegalArgumentException iae)
+		{
+			// Do nothing
+		}
 		super.onDestroy();
 	}
-
+	
 	@Override
     public void onCreate(Bundle savedInstanceState)
     {
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		uname = sharedPref.getString("uname", null);
-		upass = sharedPref.getString("upass", null);
-		if(uname!=null && upass!=null)
+		uname = sharedPref.getString("uname", "");
+		upass = sharedPref.getString("upass", "");
+		if(!uname.contentEquals("") && !upass.contentEquals(""))
 		{
-			Intent skipAuthentication = new Intent(this, DashboardActivity.class);
-			startActivity(skipAuthentication);
-			finish();
+			Intent startCommunicator = new Intent(getApplicationContext(), AgentCommunicatorService.class);
+			startService(startCommunicator);
+			Intent sendPushMessageToActivity = new Intent();
+			sendPushMessageToActivity.setAction(AgentCommunicatorService.INTENT_TO_SERVICE);
+			PushableMessage m = new PushableMessage(uname, "hello");
+			m.setMessageContent(upass);
+			sendPushMessageToActivity.putExtra("pushablemessage", m);
+			sendStickyBroadcast(sendPushMessageToActivity);
+			ifIncomingMessage = new IntentFilter();
+			ifIncomingMessage.addAction(AgentCommunicatorService.INTENT_TO_ACTIVITY);
+			brVerifyAuthenticity = new BroadcastReceiver()
+			{
+				@Override
+				public void onReceive(Context context, Intent intent) 
+				{
+					Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
+					startActivity(doneAuthentication);
+					unregisterReceiver(this);
+					finish();							
+				}						
+			};
+			registerReceiver(brVerifyAuthenticity, ifIncomingMessage);				
 		}
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);		        
@@ -63,6 +88,7 @@ public class AgentAuthenticationActivity extends Activity
 					prefEditor = sharedPref.edit();
 					prefEditor.putString("uname", uname);
 					prefEditor.putString("upass", upass);
+					prefEditor.commit();
 					Intent sendPushMessageToActivity = new Intent();
 					sendPushMessageToActivity.setAction(AgentCommunicatorService.INTENT_TO_SERVICE);
 					PushableMessage m = new PushableMessage(uname, "hello");
@@ -78,6 +104,7 @@ public class AgentAuthenticationActivity extends Activity
 						{
 							Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
 							startActivity(doneAuthentication);
+							unregisterReceiver(this);
 							finish();							
 						}						
 					};
