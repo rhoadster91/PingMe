@@ -4,13 +4,17 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
+    <LinearLayout android:id="@+id/linearLayout2" android:layout_height="64dp" android:layout_width="match_parent">
+        <Button android:layout_height="fill_parent" android:background="@drawable/titlebutton" android:id="@+id/tButtonLogin" android:layout_width="64dp"></Button>
+        <Button android:background="@drawable/titlebar" android:layout_height="fill_parent" android:layout_width="match_parent" android:id="@+id/tBarLogin" android:textSize="12pt" android:gravity="left|center_vertical" android:textColor="@color/white" android:text=" PingMe Login"></Button>
+    </LinearLayout>
     <TextView android:layout_height="wrap_content" android:id="@+id/textView1" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/enter_username"></TextView>
     <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/txtUser">
         <requestFocus></requestFocus>
     </EditText>
     <TextView android:layout_height="wrap_content" android:id="@+id/textView2" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/enter_password"></TextView>
     <EditText android:id="@+id/txtPass" android:layout_height="wrap_content" android:layout_width="match_parent" android:inputType="textPassword"></EditText>
-    <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout1" android:orientation="vertical" android:layout_height="match_parent" android:gravity="bottom">
+    <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout1" android:orientation="vertical" android:layout_height="fill_parent" android:gravity="bottom">
         <Button android:layout_height="wrap_content" android:id="@+id/button1" android:layout_width="match_parent" android:text="@string/login_button"></Button>
     </LinearLayout>
 </LinearLayout>

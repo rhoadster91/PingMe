@@ -8,5 +8,5 @@
     <string name="wait_now">Please wait for new requests...</string>
     <string name="servicetext">PingWin is listening for new incoming messages.</string>
     <string name="servicename">PingMe</string>
-    <string name="notificationtext">You have a new request</string>
+    <string name="notificationtext">You have %1$d new request(s)</string>
 </resources>
