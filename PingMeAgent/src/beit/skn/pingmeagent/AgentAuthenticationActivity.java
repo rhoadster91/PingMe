@@ -52,13 +52,13 @@ public class AgentAuthenticationActivity extends Activity
 			Intent startCommunicator = new Intent(getApplicationContext(), AgentCommunicatorService.class);
 			startService(startCommunicator);
 			Intent sendPushMessageToActivity = new Intent();
-			sendPushMessageToActivity.setAction(AgentCommunicatorService.INTENT_TO_SERVICE);
+			sendPushMessageToActivity.setAction(AgentApplication.INTENT_TO_SERVICE);
 			PushableMessage m = new PushableMessage(uname, "hello");
 			m.setMessageContent(upass);
 			sendPushMessageToActivity.putExtra("pushablemessage", m);
 			sendStickyBroadcast(sendPushMessageToActivity);
 			ifIncomingMessage = new IntentFilter();
-			ifIncomingMessage.addAction(AgentCommunicatorService.INTENT_TO_ACTIVITY);
+			ifIncomingMessage.addAction(AgentApplication.INTENT_TO_ACTIVITY);
 			brVerifyAuthenticity = new BroadcastReceiver()
 			{
 				@Override
@@ -95,13 +95,13 @@ public class AgentAuthenticationActivity extends Activity
 					prefEditor.putString("upass", upass);
 					prefEditor.commit();
 					Intent sendPushMessageToActivity = new Intent();
-					sendPushMessageToActivity.setAction(AgentCommunicatorService.INTENT_TO_SERVICE);
+					sendPushMessageToActivity.setAction(AgentApplication.INTENT_TO_SERVICE);
 					PushableMessage m = new PushableMessage(uname, "hello");
 					m.setMessageContent(upass);
 					sendPushMessageToActivity.putExtra("pushablemessage", m);
 					sendStickyBroadcast(sendPushMessageToActivity);
 					ifIncomingMessage = new IntentFilter();
-					ifIncomingMessage.addAction(AgentCommunicatorService.INTENT_TO_ACTIVITY);
+					ifIncomingMessage.addAction(AgentApplication.INTENT_TO_ACTIVITY);
 					brVerifyAuthenticity = new BroadcastReceiver()
 					{
 						@Override

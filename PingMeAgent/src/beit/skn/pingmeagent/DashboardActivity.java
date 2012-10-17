@@ -19,8 +19,9 @@ public class DashboardActivity extends Activity
 	{		
 		setContentView(R.layout.dash);
 		super.onCreate(savedInstanceState);			
+		AgentApplication.notifCount = 0;		
 		ifIncomingMessage = new IntentFilter();
-		ifIncomingMessage.addAction(AgentCommunicatorService.INTENT_TO_ACTIVITY);
+		ifIncomingMessage.addAction(AgentApplication.INTENT_TO_ACTIVITY);
 		brVerifyAuthenticity = new BroadcastReceiver()
 		{
 			@Override
@@ -32,6 +33,7 @@ public class DashboardActivity extends Activity
 			}						
 		};
 		registerReceiver(brVerifyAuthenticity, ifIncomingMessage);
+		checkForNotificationCall();
 	}
 
 	@Override
@@ -69,4 +71,16 @@ public class DashboardActivity extends Activity
 		super.onResume();
 	}	
 	
+	
+	protected static void onErrorOccured(Context con)
+	{
+		Toast.makeText(con, AgentApplication.errorMessage, Toast.LENGTH_LONG).show();
+	}
+	
+	private void checkForNotificationCall()
+	{
+		Intent callerIntent = getIntent();
+		
+	}
 }
+

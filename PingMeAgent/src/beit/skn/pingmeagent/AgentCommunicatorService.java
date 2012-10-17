@@ -21,17 +21,10 @@ import android.widget.Toast;
 
 public class AgentCommunicatorService extends Service
 {
-	private static final String IP_ADDRESS = "192.168.0.101";
-	private static final int AGENT_PORT_NUMBER = 9976;	
-	public static final String INTENT_TO_SERVICE = "PingMeIntentToService";
-	public static final String INTENT_TO_ACTIVITY = "PingMeIntentToActivity";	
-	public static final String SERVICE_ERROR = "PingMeServiceError";
-	
 	private static boolean isAuthentic = false;
 	private Socket socket = null;
 	private static BroadcastReceiver brSendRequested = null;
 	private static IntentFilter ifSendRequested = null;
-	private int notifCount = 0;
 	private static String errorMessage = null;
 	
 	private Thread incomingMessageReader = new Thread()
@@ -47,7 +40,7 @@ public class AgentCommunicatorService extends Service
 				{
 					m = AgentTalker.readMessage();
 					Intent iReadRequested = new Intent();
-					iReadRequested.setAction(INTENT_TO_ACTIVITY);
+					iReadRequested.setAction(AgentApplication.INTENT_TO_ACTIVITY);
 					iReadRequested.putExtra("pushablemessage", m);
 					sendOrderedBroadcast(iReadRequested, null, new BroadcastReceiver()
 					{
@@ -58,7 +51,7 @@ public class AgentCommunicatorService extends Service
 							switch(result)
 							{
 							case Activity.RESULT_OK:	
-								notifCount = 0;
+								AgentApplication.notifCount = 0;
 								break;
 								
 							default:
@@ -101,7 +94,7 @@ public class AgentCommunicatorService extends Service
 	{
 		try 
 		{
-			socket = new Socket(IP_ADDRESS, AGENT_PORT_NUMBER);			
+			socket = new Socket(AgentApplication.IP_ADDRESS, AgentApplication.AGENT_PORT_NUMBER);			
 		} 
 		catch (UnknownHostException e) 
 		{
@@ -128,7 +121,7 @@ public class AgentCommunicatorService extends Service
 						{
 							Toast.makeText(getApplicationContext(), "Authenticated and registered on server", Toast.LENGTH_LONG).show();
 							Intent iIsAuthentic = new Intent();
-							iIsAuthentic.setAction(INTENT_TO_ACTIVITY);
+							iIsAuthentic.setAction(AgentApplication.INTENT_TO_ACTIVITY);
 							sendBroadcast(iIsAuthentic);
 							showPersistentNotification();	
 							isAuthentic = true;
@@ -162,7 +155,7 @@ public class AgentCommunicatorService extends Service
 				else if(m.getControl().contentEquals("hello") && isAuthentic)
 				{
 					Intent iIsAuthentic = new Intent();
-					iIsAuthentic.setAction(INTENT_TO_ACTIVITY);
+					iIsAuthentic.setAction(AgentApplication.INTENT_TO_ACTIVITY);
 					sendBroadcast(iIsAuthentic);
 				}
 				else
@@ -170,7 +163,7 @@ public class AgentCommunicatorService extends Service
 			}			
 		};
 		ifSendRequested = new IntentFilter();
-		ifSendRequested.addAction(INTENT_TO_SERVICE);
+		ifSendRequested.addAction(AgentApplication.INTENT_TO_SERVICE);
 		registerReceiver(brSendRequested, ifSendRequested);	
 		super.onCreate();
 	}
@@ -193,8 +186,8 @@ public class AgentCommunicatorService extends Service
 	    nm.cancel(R.string.servicetext);
 	    nm.cancel(R.string.notificationtext);
 	    isAuthentic = false;
-	    Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
-	    new Thread()
+	    
+	    /*new Thread()
 	    {
 	    	@Override
 	    	public void run()
@@ -209,8 +202,10 @@ public class AgentCommunicatorService extends Service
 				}
 	    		android.os.Process.killProcess(android.os.Process.myPid());
 	    	}	    	
-	    }.start();
-	    
+	    }.start();*/
+	    AgentApplication.errorMessage = errorMessage;
+	    DashboardActivity.onErrorOccured(getApplicationContext());
+		android.os.Process.killProcess(android.os.Process.myPid());	    
 		super.onDestroy();
 	}
 
@@ -227,7 +222,7 @@ public class AgentCommunicatorService extends Service
         Notification notification = new Notification(R.drawable.icon, text, 0);
         Intent showActivity = new Intent(this, DashboardActivity.class);
         showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);   
-        showActivity.setAction(INTENT_TO_ACTIVITY);
+        showActivity.setAction(AgentApplication.INTENT_TO_ACTIVITY);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);
         notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_NO_CLEAR ^ Notification.FLAG_ONGOING_EVENT;        
@@ -236,14 +231,14 @@ public class AgentCommunicatorService extends Service
 	
 	private void showTempNotification(PushableMessage m)
 	{
-		notifCount++;
+		AgentApplication.notifCount++;		
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        String text = String.format(getString(R.string.notificationtext), notifCount);
+        String text = String.format(getString(R.string.notificationtext), AgentApplication.notifCount);
         Notification notification = new Notification(R.drawable.icon, text, 0);
         Intent showActivity = new Intent(this, DashboardActivity.class);
         showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         showActivity.putExtra("pushablemessage", m);
-        showActivity.setAction(INTENT_TO_ACTIVITY);
+        showActivity.setAction(AgentApplication.INTENT_TO_ACTIVITY);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);        
         notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_AUTO_CANCEL;
