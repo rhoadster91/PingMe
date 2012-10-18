@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 public class DashboardActivity extends Activity 
 {
-	private static BroadcastReceiver brVerifyAuthenticity = null;
+	private static BroadcastReceiver brGetIncomingMessages = null;
 	private static IntentFilter ifIncomingMessage = null;
 		
 	@Override
@@ -22,7 +22,7 @@ public class DashboardActivity extends Activity
 		AgentApplication.notifCount = 0;		
 		ifIncomingMessage = new IntentFilter();
 		ifIncomingMessage.addAction(AgentApplication.INTENT_TO_ACTIVITY);
-		brVerifyAuthenticity = new BroadcastReceiver()
+		brGetIncomingMessages = new BroadcastReceiver()
 		{
 			@Override
 			public void onReceive(Context context, Intent intent) 
@@ -32,8 +32,7 @@ public class DashboardActivity extends Activity
 				setResultCode(Activity.RESULT_OK);
 			}						
 		};
-		registerReceiver(brVerifyAuthenticity, ifIncomingMessage);
-		checkForNotificationCall();
+		registerReceiver(brGetIncomingMessages, ifIncomingMessage);		
 	}
 
 	@Override
@@ -41,7 +40,7 @@ public class DashboardActivity extends Activity
 	{
 		try
 		{
-			unregisterReceiver(brVerifyAuthenticity);
+			unregisterReceiver(brGetIncomingMessages);
 		}
 		catch(IllegalArgumentException iae)
 		{
@@ -55,7 +54,7 @@ public class DashboardActivity extends Activity
 	{
 		try
 		{
-			unregisterReceiver(brVerifyAuthenticity);
+			unregisterReceiver(brGetIncomingMessages);
 		}
 		catch(IllegalArgumentException iae)
 		{
@@ -67,7 +66,7 @@ public class DashboardActivity extends Activity
 	@Override
 	protected void onResume() 
 	{
-		registerReceiver(brVerifyAuthenticity, ifIncomingMessage);	
+		registerReceiver(brGetIncomingMessages, ifIncomingMessage);	
 		super.onResume();
 	}	
 	
@@ -75,12 +74,6 @@ public class DashboardActivity extends Activity
 	protected static void onErrorOccured(Context con)
 	{
 		Toast.makeText(con, AgentApplication.errorMessage, Toast.LENGTH_LONG).show();
-	}
-	
-	private void checkForNotificationCall()
-	{
-		Intent callerIntent = getIntent();
-		
-	}
+	}	
 }
 

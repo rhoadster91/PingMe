@@ -21,11 +21,11 @@ import android.widget.Toast;
 
 public class AgentCommunicatorService extends Service
 {
-	private static boolean isAuthentic = false;
 	private Socket socket = null;
 	private static BroadcastReceiver brSendRequested = null;
 	private static IntentFilter ifSendRequested = null;
 	private static String errorMessage = null;
+	private static final int MAX_ATTEMPTS = 10;
 	
 	private Thread incomingMessageReader = new Thread()
 	{
@@ -63,21 +63,24 @@ public class AgentCommunicatorService extends Service
 				} 
 				catch (StreamCorruptedException e)
 				{
-					errorMessage = "Stream corrupted. Sorry for the inconvenience.";					
+					errorMessage = "Stream corrupted. Sorry for the inconvenience.";						
 					stopSelf();
 					e.printStackTrace();
+					break;
 				} 
 				catch (IOException e) 
 				{
 					errorMessage = "Server shut down. Sorry for the inconvenience. Please try again later.";					
 					stopSelf();
 					e.printStackTrace();
+					break;
 				} 
 				catch (ClassNotFoundException e) 
 				{
 					errorMessage = "Version mismatch. Please update your app.";
 					stopSelf();
 					e.printStackTrace();
+					break;
 				}				
 			}
 		}		
@@ -92,17 +95,35 @@ public class AgentCommunicatorService extends Service
 	@Override
 	public void onCreate() 
 	{
-		try 
+		socket = null;
+		int attempts = 0;
+		while(socket==null)
 		{
-			socket = new Socket(AgentApplication.IP_ADDRESS, AgentApplication.AGENT_PORT_NUMBER);			
-		} 
-		catch (UnknownHostException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
+			try 
+			{			
+				socket = new Socket(AgentApplication.IP_ADDRESS, AgentApplication.AGENT_PORT_NUMBER);				
+			} 
+			catch (UnknownHostException uhe) 
+			{
+				attempts++;
+				if(attempts==MAX_ATTEMPTS)
+					stopSelf();
+				try 
+				{
+					Thread.sleep(5000);
+				}
+				catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				}
+				uhe.printStackTrace();
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+				break;
+			}
+			
 		}
 		AgentTalker.setSocket(socket);
 		brSendRequested = new BroadcastReceiver()
@@ -111,7 +132,7 @@ public class AgentCommunicatorService extends Service
 			public void onReceive(Context arg0, Intent arg1) 
 			{
 				PushableMessage m = (PushableMessage)arg1.getSerializableExtra("pushablemessage");
-				if(m.getControl().contentEquals("hello") && !isAuthentic)
+				if(m.getControl().contentEquals("hello") && !AgentApplication.isAuthentic)
 				{				
 					AgentTalker.pushMessage(m);
 					try
@@ -124,7 +145,8 @@ public class AgentCommunicatorService extends Service
 							iIsAuthentic.setAction(AgentApplication.INTENT_TO_ACTIVITY);
 							sendBroadcast(iIsAuthentic);
 							showPersistentNotification();	
-							isAuthentic = true;
+							AgentApplication.isAuthentic = true;
+							AgentApplication.uname = m.getDestination();
 							incomingMessageReader.start();						
 						}
 						else
@@ -152,7 +174,7 @@ public class AgentCommunicatorService extends Service
 						e.printStackTrace();
 					}										
 				}
-				else if(m.getControl().contentEquals("hello") && isAuthentic)
+				else if(m.getControl().contentEquals("hello") && AgentApplication.isAuthentic)
 				{
 					Intent iIsAuthentic = new Intent();
 					iIsAuthentic.setAction(AgentApplication.INTENT_TO_ACTIVITY);
@@ -173,10 +195,10 @@ public class AgentCommunicatorService extends Service
 	@Override
 	public void onDestroy() 
 	{		
+		
 		try
 		{
-			unregisterReceiver(brSendRequested);
-			
+			unregisterReceiver(brSendRequested);			
 		}
 		catch(IllegalArgumentException iae)
 		{
@@ -185,27 +207,24 @@ public class AgentCommunicatorService extends Service
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 	    nm.cancel(R.string.servicetext);
 	    nm.cancel(R.string.notificationtext);
-	    isAuthentic = false;
-	    
-	    /*new Thread()
-	    {
-	    	@Override
-	    	public void run()
-	    	{
-	    		try 
-	    		{
-					Thread.sleep(5000);
-				} 
-	    		catch (InterruptedException e) 
-				{
-					e.printStackTrace();
-				}
-	    		android.os.Process.killProcess(android.os.Process.myPid());
-	    	}	    	
-	    }.start();*/
+	    AgentApplication.isAuthentic = false;	    
 	    AgentApplication.errorMessage = errorMessage;
 	    DashboardActivity.onErrorOccured(getApplicationContext());
-		android.os.Process.killProcess(android.os.Process.myPid());	    
+	    if(socket!=null)
+	    {
+		    PushableMessage m = new PushableMessage(AgentApplication.uname, "logout");
+		    AgentTalker.pushMessage(m);
+		    try 
+		    {
+				socket.close();
+			} 
+		    catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
+		//android.os.Process.killProcess(android.os.Process.myPid());	    
 		super.onDestroy();
 	}
 

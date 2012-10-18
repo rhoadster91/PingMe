@@ -47,7 +47,7 @@ public class AgentAuthenticationActivity extends Activity
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		uname = sharedPref.getString("uname", "");
 		upass = sharedPref.getString("upass", "");
-		if(!uname.contentEquals("") && !upass.contentEquals(""))
+		if((!uname.contentEquals("") && !upass.contentEquals("")) || AgentApplication.isAuthentic)
 		{
 			Intent startCommunicator = new Intent(getApplicationContext(), AgentCommunicatorService.class);
 			startService(startCommunicator);
@@ -102,6 +102,7 @@ public class AgentAuthenticationActivity extends Activity
 					sendStickyBroadcast(sendPushMessageToActivity);
 					ifIncomingMessage = new IntentFilter();
 					ifIncomingMessage.addAction(AgentApplication.INTENT_TO_ACTIVITY);
+					unregisterReceiver(brVerifyAuthenticity);
 					brVerifyAuthenticity = new BroadcastReceiver()
 					{
 						@Override
