@@ -44,6 +44,12 @@ public class AgentHelper extends Thread
 				m = (PushableMessage)objIn.readObject();
 				if(m.getControl().contentEquals("push"))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
+				else if(m.getControl().contentEquals("logout"))
+				{
+					System.out.println("Agent " + agentID + " requested log out. Deleting entry.");
+					ServerMain.deleteEntry(agentID, "agent");
+					return;
+				}
 			}			
 		} 
 		catch(SocketException se)

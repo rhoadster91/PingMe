@@ -39,7 +39,13 @@ public class UserHelper extends Thread
 			System.out.println("New user connected. Waiting for ID.");
 			ctrl = m.getControl();
 			if(ctrl.contentEquals("hello"))				
-				userID = m.getSender();			
+				userID = m.getSender();		
+			else if(m.getControl().contentEquals("logout"))
+			{
+				System.out.println("User " + userID + " requested log out. Deleting entry.");
+				ServerMain.deleteEntry(userID, "user");	
+				return;
+			}
 			System.out.println("User " + userID + " registered to server. Standby for user request.");
 			m = new PushableMessage("server", "authentic");
 			pushMessage(m);			
