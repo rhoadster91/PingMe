@@ -263,6 +263,4 @@ public class UserCommunicatorService extends Service
         nm.notify(R.string.notificationtext, notification);
 	}
 	
-
-	
 }

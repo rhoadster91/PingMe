@@ -25,8 +25,7 @@ public class UserAuthenticationActivity extends Activity
 	private static SharedPreferences.Editor prefEditor = null;
 	private static BroadcastReceiver brVerifyAuthenticity = null;
 	private static IntentFilter ifIncomingMessage = null;
-	
-	
+		
 	@Override
 	protected void onDestroy() 
 	{
@@ -102,7 +101,14 @@ public class UserAuthenticationActivity extends Activity
 					sendStickyBroadcast(sendPushMessageToActivity);
 					ifIncomingMessage = new IntentFilter();
 					ifIncomingMessage.addAction(UserApplication.INTENT_TO_ACTIVITY);
-					unregisterReceiver(brVerifyAuthenticity);
+					try
+					{
+						unregisterReceiver(brVerifyAuthenticity);			
+					}
+					catch(IllegalArgumentException iae)
+					{
+						// Do nothing
+					}
 					brVerifyAuthenticity = new BroadcastReceiver()
 					{
 						@Override

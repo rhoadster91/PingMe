@@ -102,7 +102,14 @@ public class AgentAuthenticationActivity extends Activity
 					sendStickyBroadcast(sendPushMessageToActivity);
 					ifIncomingMessage = new IntentFilter();
 					ifIncomingMessage.addAction(AgentApplication.INTENT_TO_ACTIVITY);
-					unregisterReceiver(brVerifyAuthenticity);
+					try
+					{
+						unregisterReceiver(brVerifyAuthenticity);			
+					}
+					catch(IllegalArgumentException iae)
+					{
+						// Do nothing
+					}
 					brVerifyAuthenticity = new BroadcastReceiver()
 					{
 						@Override
