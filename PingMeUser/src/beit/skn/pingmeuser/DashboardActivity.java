@@ -2,59 +2,78 @@ package beit.skn.pingmeuser;
 
 import beit.skn.classes.PushableMessage;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.Toast;
 
 public class DashboardActivity extends Activity 
 {
-	private EditText txt1 = null;
-	private EditText txt2 = null;
-	private static UserListener userListener = null;
-	
-	private Handler mHandler = new Handler();
-	private Button sendMessage = null; 
+	private static BroadcastReceiver brGetIncomingMessages = null;
+	private static IntentFilter ifIncomingMessage = null;
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
-	{
-		
+	{		
 		setContentView(R.layout.dash);
-		super.onCreate(savedInstanceState);
-		if(userListener==null)
+		super.onCreate(savedInstanceState);			
+		UserApplication.notifCount = 0;		
+		ifIncomingMessage = new IntentFilter();
+		ifIncomingMessage.addAction(UserApplication.INTENT_TO_ACTIVITY);
+		brGetIncomingMessages = new BroadcastReceiver()
 		{
-			userListener = new UserListener(this);
-			userListener.setPriority(Thread.MAX_PRIORITY);
-			userListener.start();
-		}
-		txt1 = (EditText)findViewById(R.id.txtDest);
-		txt2 = (EditText)findViewById(R.id.txtContent);
-		
-		sendMessage = (Button)findViewById(R.id.pushToClient);
-		sendMessage.setOnClickListener(new OnClickListener()
-		{
-			public void onClick(View v) 
+			@Override
+			public void onReceive(Context context, Intent intent) 
 			{
-				PushableMessage m = new PushableMessage(UserTalker.getUname(), "push");
-				m.setDestination(txt1.getText().toString());
-				m.setMessageContent((String)txt2.getText().toString());
-				UserTalker.pushMessage(m);
-			}			
-		});		
+				PushableMessage m = (PushableMessage)intent.getSerializableExtra("pushablemessage");
+				Toast.makeText(getApplicationContext(), (String)m.getMessageContent(), Toast.LENGTH_LONG).show();
+				setResultCode(Activity.RESULT_OK);
+			}						
+		};
+		registerReceiver(brGetIncomingMessages, ifIncomingMessage);		
 	}
+
+	@Override
+	protected void onDestroy() 
+	{
+		try
+		{
+			unregisterReceiver(brGetIncomingMessages);
+		}
+		catch(IllegalArgumentException iae)
+		{
+			// Do nothing
+		}
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onPause() 
+	{
+		try
+		{
+			unregisterReceiver(brGetIncomingMessages);
+		}
+		catch(IllegalArgumentException iae)
+		{
+			// Do nothing
+		}
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() 
+	{
+		registerReceiver(brGetIncomingMessages, ifIncomingMessage);	
+		super.onResume();
+	}	
 	
-	PushableMessage listenerMsg;
-	public void listenToStream(PushableMessage m) 
-    {        
-		listenerMsg = m;		
-        mHandler.post(new Runnable()
-        {
-            public void run() 
-            {
-            	// TODO Add listener code here
-            }
-        });
-    }
+	
+	protected static void onErrorOccured(Context con)
+	{
+		Toast.makeText(con, UserApplication.errorMessage, Toast.LENGTH_LONG).show();
+	}	
+	
 }

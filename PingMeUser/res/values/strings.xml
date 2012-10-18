@@ -5,4 +5,7 @@
     <string name="enter_username">Enter your username:</string>
     <string name="enter_password">Enter your password:</string>
     <string name="login_button">Log in</string>
+    <string name="servicetext">PingWin is listening for new incoming messages.</string>
+    <string name="servicename">PingMe</string>
+    <string name="notificationtext">You have %1$d new request(s)</string>
 </resources>
