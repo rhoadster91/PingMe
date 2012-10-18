@@ -10,7 +10,7 @@ import beit.skn.classes.PushableMessage;
 
 public class UserHelper extends Thread 
 {
-	private Socket socket = null;
+	protected Socket socket = null;
 	private String userID = null;
 	private ObjectOutputStream objOut = null;
 	private ObjectInputStream objIn = null;
@@ -33,7 +33,7 @@ public class UserHelper extends Thread
 		String ctrl = null;
 		try 
 		{
-			if(objOut==null)
+			if(objIn==null)
 				objIn = new ObjectInputStream(socket.getInputStream());			
 			m = (PushableMessage)objIn.readObject();
 			System.out.println("New user connected. Waiting for ID.");
@@ -73,7 +73,7 @@ public class UserHelper extends Thread
 		catch (ClassNotFoundException e) 
 		{			
 			e.printStackTrace();
-		}
+		}		
 		
 	}
 
@@ -84,6 +84,7 @@ public class UserHelper extends Thread
 			if(objOut==null)
 				objOut = new ObjectOutputStream(socket.getOutputStream());
 			objOut.writeObject(m);
+			objOut.flush();
 		} 
 		catch (IOException e) 
 		{

@@ -46,7 +46,9 @@ public class UserTalker
 		{
 			if(objOut==null)
 				objOut = new ObjectOutputStream(socket.getOutputStream());
+			objOut.reset();
 			objOut.writeObject(m);
+			objOut.flush();
 		}
 		catch (IOException e) 
 		{
@@ -59,7 +61,7 @@ public class UserTalker
 		PushableMessage m;
 		if(objIn==null)
 			objIn = new ObjectInputStream(socket.getInputStream());
-		m = (PushableMessage)objIn.readObject();
+		m = (PushableMessage)objIn.readObject();		
 		return m;		
 	}
 }

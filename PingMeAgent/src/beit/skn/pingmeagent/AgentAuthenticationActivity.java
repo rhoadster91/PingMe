@@ -26,8 +26,7 @@ public class AgentAuthenticationActivity extends Activity
 	private static BroadcastReceiver brVerifyAuthenticity = null;
 	private static IntentFilter ifIncomingMessage = null;
 	
-	
-	@Override
+		@Override
 	protected void onDestroy() 
 	{
 		try

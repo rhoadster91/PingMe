@@ -101,7 +101,8 @@ public class AgentCommunicatorService extends Service
 		{
 			try 
 			{			
-				socket = new Socket(AgentApplication.IP_ADDRESS, AgentApplication.AGENT_PORT_NUMBER);				
+				socket = new Socket(AgentApplication.IP_ADDRESS, AgentApplication.AGENT_PORT_NUMBER);		
+				Toast.makeText(getApplicationContext(), "Connected to socket, socket open.", Toast.LENGTH_LONG).show();
 			} 
 			catch (UnknownHostException uhe) 
 			{
@@ -157,21 +158,22 @@ public class AgentCommunicatorService extends Service
 					} 
 					catch (StreamCorruptedException e)
 					{
-						errorMessage = "Stream corrupted. Sorry for the inconvenience.";					
-						stopSelf();
+						errorMessage = "Stream corrupted. Sorry for the inconvenience.";		
 						e.printStackTrace();
+						stopSelf();
+						
 					} 
 					catch (IOException e) 
 					{
 						errorMessage = "Server shut down. Sorry for the inconvenience. Please try again later.";					
-						stopSelf();
 						e.printStackTrace();
+						stopSelf();
 					} 
 					catch (ClassNotFoundException e) 
 					{
-						errorMessage = "Version mismatch. Please update your app.";
-						stopSelf();
+						errorMessage = "Version mismatch. Please update your app.";						
 						e.printStackTrace();
+						stopSelf();
 					}										
 				}
 				else if(m.getControl().contentEquals("hello") && AgentApplication.isAuthentic)
@@ -214,7 +216,7 @@ public class AgentCommunicatorService extends Service
 	    {
 		    PushableMessage m = new PushableMessage(AgentApplication.uname, "logout");
 		    AgentTalker.pushMessage(m);
-		    try 
+		   /* try 
 		    {
 				socket.close();
 			} 
@@ -222,12 +224,11 @@ public class AgentCommunicatorService extends Service
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 	    }
-		//android.os.Process.killProcess(android.os.Process.myPid());	    
+		android.os.Process.killProcess(android.os.Process.myPid());	    
 		super.onDestroy();
 	}
-
 	@Override
 	public IBinder onBind(Intent arg0) 
 	{
@@ -261,6 +262,7 @@ public class AgentCommunicatorService extends Service
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);        
         notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_AUTO_CANCEL;
+        notification.defaults = Notification.DEFAULT_ALL;
         nm.notify(R.string.notificationtext, notification);
 	}
 	

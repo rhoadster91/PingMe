@@ -95,9 +95,16 @@ public class ServerMain extends Thread
 			while(agentIterator.hasNext())
 			{
 				temp = agentIterator.next();
-				if(temp.getAgentID().contentEquals(id))
+				if(temp.getAgentID().contentEquals(id) && id!=null)
 				{
-					agentIterator.remove();
+					try 
+					{
+						temp.socket.close();
+					} catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+					agentIterator.remove();					
 					System.out.println("Agent " + id + " unregistered.");
 					break;
 				}
@@ -120,6 +127,7 @@ public class ServerMain extends Thread
 			}
 		}
 	}
+	
 	
 	public static void pushMessageToClient(PushableMessage m, String id, String clientClass)
 	{

@@ -8,7 +8,7 @@ import beit.skn.classes.PushableMessage;
 
 public class AgentHelper extends Thread 
 {
-	private Socket socket = null;
+	protected Socket socket = null;
 	private String agentID = null;
 	private ObjectOutputStream objOut = null;
 	private ObjectInputStream objIn = null;
@@ -30,7 +30,8 @@ public class AgentHelper extends Thread
 		String ctrl = null;
 		try 
 		{
-			objIn = new ObjectInputStream(socket.getInputStream());
+			if(objIn==null)
+				objIn = new ObjectInputStream(socket.getInputStream());
 			m = (PushableMessage)objIn.readObject();
 			System.out.println("New agent connected. Waiting for ID.");
 			ctrl = m.getControl();
@@ -59,8 +60,9 @@ public class AgentHelper extends Thread
 		}
 		catch(EOFException eofe)
 		{
-			System.out.println("Couldn't connect to Agent " + agentID + ". Deleting entry.");
-			ServerMain.deleteEntry(agentID, "agent");
+			//System.out.println("Couldn't connect to Agent " + agentID + ". Deleting entry.");
+			//ServerMain.deleteEntry(agentID, "agent");
+			eofe.printStackTrace();
 		}
 		catch (IOException e) 
 		{			
@@ -69,8 +71,19 @@ public class AgentHelper extends Thread
 		catch (ClassNotFoundException e) 
 		{			
 			e.printStackTrace();
+		}	
+		finally
+		{
+			try 
+			{
+				objIn.close();
+			} 
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
 	}
 	
 	public void pushMessage(PushableMessage m)
@@ -80,6 +93,7 @@ public class AgentHelper extends Thread
 			if(objOut==null)
 				objOut = new ObjectOutputStream(socket.getOutputStream());
 			objOut.writeObject(m);
+			objOut.flush();
 		} 
 		catch (IOException e) 
 		{

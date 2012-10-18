@@ -122,8 +122,7 @@ public class UserCommunicatorService extends Service
 			{
 				e.printStackTrace();
 				break;
-			}
-			
+			}			
 		}
 		UserTalker.setSocket(socket);
 		brSendRequested = new BroadcastReceiver()
@@ -194,8 +193,7 @@ public class UserCommunicatorService extends Service
 	
 	@Override
 	public void onDestroy() 
-	{		
-		
+	{				
 		try
 		{
 			unregisterReceiver(brSendRequested);			
@@ -204,6 +202,7 @@ public class UserCommunicatorService extends Service
 		{
 			// Do nothing
 		} 
+		Toast.makeText(getApplicationContext(), "onDestroy Called", Toast.LENGTH_LONG).show();
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 	    nm.cancel(R.string.servicetext);
 	    nm.cancel(R.string.notificationtext);
@@ -223,7 +222,7 @@ public class UserCommunicatorService extends Service
 				e.printStackTrace();
 			}
 	    }
-		//android.os.Process.killProcess(android.os.Process.myPid());	    
+		android.os.Process.killProcess(android.os.Process.myPid());	    
 		super.onDestroy();
 	}
 
@@ -260,6 +259,7 @@ public class UserCommunicatorService extends Service
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);        
         notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_AUTO_CANCEL;
+        notification.defaults = Notification.DEFAULT_ALL;        
         nm.notify(R.string.notificationtext, notification);
 	}
 	

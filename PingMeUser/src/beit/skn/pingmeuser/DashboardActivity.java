@@ -7,13 +7,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class DashboardActivity extends Activity 
 {
 	private static BroadcastReceiver brGetIncomingMessages = null;
 	private static IntentFilter ifIncomingMessage = null;
-		
+	private Button sendMessage = null;
+	private EditText aname = null;
+	private EditText atext = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{		
@@ -33,6 +40,22 @@ public class DashboardActivity extends Activity
 			}						
 		};
 		registerReceiver(brGetIncomingMessages, ifIncomingMessage);		
+		sendMessage = (Button)findViewById(R.id.pushToClient);
+		sendMessage.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View arg0)
+			{
+				Intent sendMessageToService = new Intent();
+				sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+				PushableMessage m = new PushableMessage(UserApplication.uname, "push");
+				aname = (EditText)findViewById(R.id.txtDest);				
+				atext = (EditText)findViewById(R.id.txtContent);				
+				m.setDestination(aname.getText().toString());			
+				m.setMessageContent(atext.getText().toString());
+				sendMessageToService.putExtra("pushablemessage", m);
+				sendBroadcast(sendMessageToService);
+			}			
+		});
 	}
 
 	@Override

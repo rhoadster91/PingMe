@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
 
+import android.util.Log;
 import beit.skn.classes.PushableMessage;
 
 public class AgentTalker 
@@ -15,8 +16,7 @@ public class AgentTalker
 	private static ObjectOutputStream objOut = null;
 	private static ObjectInputStream objIn = null;
 	
-	
-	
+		
 	public static String getUname() 
 	{
 		return uname;
@@ -35,7 +35,7 @@ public class AgentTalker
 	public static void setSocket(Socket socket) 
 	{
 		AgentTalker.socket = socket;
-		
+		Log.w("Socket", socket.toString());
 	}
 	
 	
@@ -47,6 +47,7 @@ public class AgentTalker
 			if(objOut==null)
 				objOut = new ObjectOutputStream(socket.getOutputStream());
 			objOut.writeObject(m);
+			objOut.flush();
 		}
 		catch (IOException e) 
 		{
