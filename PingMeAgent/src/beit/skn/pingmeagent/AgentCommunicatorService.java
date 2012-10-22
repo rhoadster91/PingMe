@@ -42,6 +42,8 @@ public class AgentCommunicatorService extends Service
 					Intent iReadRequested = new Intent();
 					iReadRequested.setAction(AgentApplication.INTENT_TO_ACTIVITY);
 					iReadRequested.putExtra("pushablemessage", m);
+					AgentApplication.splashBox.add(m);
+					AgentApplication.writeSplashBoxToFile(getApplicationContext());
 					sendOrderedBroadcast(iReadRequested, null, new BroadcastReceiver()
 					{
 						@Override
@@ -97,12 +99,13 @@ public class AgentCommunicatorService extends Service
 	{
 		socket = null;
 		int attempts = 0;
-		while(socket==null)
+		AgentApplication.errorMessage = null;
+		errorMessage = null;
+		if(AgentApplication.isAuthentic==false)
 		{
 			try 
 			{			
-				socket = new Socket(AgentApplication.IP_ADDRESS, AgentApplication.AGENT_PORT_NUMBER);		
-				Toast.makeText(getApplicationContext(), "Connected to socket, socket open.", Toast.LENGTH_LONG).show();
+				socket = new Socket(AgentApplication.IP_ADDRESS, AgentApplication.AGENT_PORT_NUMBER);
 			} 
 			catch (UnknownHostException uhe) 
 			{
@@ -122,10 +125,14 @@ public class AgentCommunicatorService extends Service
 			catch (IOException e) 
 			{
 				e.printStackTrace();
-				break;
 			}
-			
 		}
+		else
+		{
+			socket = AgentTalker.getSocket();
+		}
+				
+		
 		AgentTalker.setSocket(socket);
 		brSendRequested = new BroadcastReceiver()
 		{
@@ -209,24 +216,18 @@ public class AgentCommunicatorService extends Service
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 	    nm.cancel(R.string.servicetext);
 	    nm.cancel(R.string.notificationtext);
-	    AgentApplication.isAuthentic = false;	    
-	    AgentApplication.errorMessage = errorMessage;
-	    DashboardActivity.onErrorOccured(getApplicationContext());
-	    if(socket!=null)
-	    {
-		    PushableMessage m = new PushableMessage(AgentApplication.uname, "logout");
-		    AgentTalker.pushMessage(m);
-		   /* try 
+	    if(errorMessage!=null)
+	    {	
+		    AgentApplication.isAuthentic = false;	    
+		    AgentApplication.errorMessage = errorMessage;
+		    DashboardActivity.onErrorOccured(getApplicationContext());
+		    if(socket!=null)
 		    {
-				socket.close();
-			} 
-		    catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+			    PushableMessage m = new PushableMessage(AgentApplication.uname, "logout");
+			    AgentTalker.pushMessage(m);			   
+		    }
 	    }
-		android.os.Process.killProcess(android.os.Process.myPid());	    
+		//android.os.Process.killProcess(android.os.Process.myPid());	    
 		super.onDestroy();
 	}
 	@Override

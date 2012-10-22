@@ -18,7 +18,8 @@ public class DashboardActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{		
 		setContentView(R.layout.dash);
-		super.onCreate(savedInstanceState);			
+		super.onCreate(savedInstanceState);		
+		AgentApplication.readSplashBoxFromFile(getApplicationContext());
 		AgentApplication.notifCount = 0;		
 		ifIncomingMessage = new IntentFilter();
 		ifIncomingMessage.addAction(AgentApplication.INTENT_TO_ACTIVITY);

@@ -24,7 +24,7 @@ public class AgentApplication extends Application
 	protected static final String INTENT_TO_ACTIVITY = "PingMeIntentToActivity";
 	protected static final String NOTIFICATION_CALL = "PingMeNotificationCall";
 	protected static final int AGENT_PORT_NUMBER = 9976;
-	protected static final String IP_ADDRESS = "192.168.0.101";
+	protected static final String IP_ADDRESS = "117.195.37.84";//"192.168.0.101";//"117.195.37.84";
 	private static final String LOCAL_FILE_FOR_SPLASH_BOX = "splashbox_";
 	
 	protected static String uname = "";
@@ -34,13 +34,12 @@ public class AgentApplication extends Application
 	protected static void writeSplashBoxToFile(Context context) 
 	{
         ObjectOutputStream objectOut = null;
-        try {
-
+        try 
+        {
             FileOutputStream fileOut = context.openFileOutput(LOCAL_FILE_FOR_SPLASH_BOX + uname, Activity.MODE_PRIVATE);
             objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(splashBox);
             fileOut.getFD().sync();
-
         }
         catch (IOException e) 
         {
@@ -63,13 +62,14 @@ public class AgentApplication extends Application
     }
 
    
-    public static Object readObjectFromFile(Context context, String filename) 
+    @SuppressWarnings("unchecked")
+	public static void readSplashBoxFromFile(Context context) 
     {
         ObjectInputStream objectIn = null;
         Object object = null;
         try 
         {
-            FileInputStream fileIn = context.getApplicationContext().openFileInput(filename);
+            FileInputStream fileIn = context.getApplicationContext().openFileInput(LOCAL_FILE_FOR_SPLASH_BOX + uname);
             objectIn = new ObjectInputStream(fileIn);
             object = objectIn.readObject();
 
@@ -100,7 +100,8 @@ public class AgentApplication extends Application
                 }
             }
         }
-        return object;
+        if(object!=null)
+        	splashBox = (ArrayList<PushableMessage>) object;
     }
 
 

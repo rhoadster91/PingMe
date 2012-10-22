@@ -9,7 +9,7 @@ import beit.skn.classes.PushableMessage;
 public class AgentHelper extends Thread 
 {
 	protected Socket socket = null;
-	private String agentID = null;
+	private String agentID = "";
 	private ObjectOutputStream objOut = null;
 	private ObjectInputStream objIn = null;
 	
@@ -55,6 +55,7 @@ public class AgentHelper extends Thread
 		} 
 		catch(SocketException se)
 		{
+			se.printStackTrace();
 			System.out.println("Agent " + agentID + " disconnected from server. Deleting entry.");
 			ServerMain.deleteEntry(agentID, "agent");			
 		}
@@ -71,19 +72,7 @@ public class AgentHelper extends Thread
 		catch (ClassNotFoundException e) 
 		{			
 			e.printStackTrace();
-		}	
-		finally
-		{
-			try 
-			{
-				objIn.close();
-			} 
-			catch (IOException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		}			
 	}
 	
 	public void pushMessage(PushableMessage m)
