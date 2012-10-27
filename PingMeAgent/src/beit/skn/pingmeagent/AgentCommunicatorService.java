@@ -140,13 +140,13 @@ public class AgentCommunicatorService extends Service
 			public void onReceive(Context arg0, Intent arg1) 
 			{
 				PushableMessage m = (PushableMessage)arg1.getSerializableExtra("pushablemessage");
-				if(m.getControl().contentEquals("hello") && !AgentApplication.isAuthentic)
+				if(m.getControl().contentEquals(PushableMessage.CONTROL_HELLO) && !AgentApplication.isAuthentic)
 				{				
 					AgentTalker.pushMessage(m);
 					try
 					{
 						m = AgentTalker.readMessage();
-						if(m.getControl().contentEquals("authentic"))
+						if(m.getControl().contentEquals(PushableMessage.CONTROL_AUTHENTIC))
 						{
 							Toast.makeText(getApplicationContext(), "Authenticated and registered on server", Toast.LENGTH_LONG).show();
 							Intent iIsAuthentic = new Intent();
@@ -183,7 +183,7 @@ public class AgentCommunicatorService extends Service
 						stopSelf();
 					}										
 				}
-				else if(m.getControl().contentEquals("hello") && AgentApplication.isAuthentic)
+				else if(m.getControl().contentEquals(PushableMessage.CONTROL_HELLO) && AgentApplication.isAuthentic)
 				{
 					Intent iIsAuthentic = new Intent();
 					iIsAuthentic.setAction(AgentApplication.INTENT_TO_ACTIVITY);
@@ -223,7 +223,7 @@ public class AgentCommunicatorService extends Service
 		    DashboardActivity.onErrorOccured(getApplicationContext());
 		    if(socket!=null)
 		    {
-			    PushableMessage m = new PushableMessage(AgentApplication.uname, "logout");
+			    PushableMessage m = new PushableMessage(AgentApplication.uname, PushableMessage.CONTROL_LOGOUT);
 			    AgentTalker.pushMessage(m);			   
 		    }
 	    }

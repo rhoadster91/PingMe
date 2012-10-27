@@ -52,7 +52,7 @@ public class AgentAuthenticationActivity extends Activity
 			startService(startCommunicator);
 			Intent sendPushMessageToActivity = new Intent();
 			sendPushMessageToActivity.setAction(AgentApplication.INTENT_TO_SERVICE);
-			PushableMessage m = new PushableMessage(uname, "hello");
+			PushableMessage m = new PushableMessage(uname, PushableMessage.CONTROL_HELLO);
 			m.setMessageContent(upass);
 			sendPushMessageToActivity.putExtra("pushablemessage", m);
 			sendStickyBroadcast(sendPushMessageToActivity);
@@ -95,7 +95,7 @@ public class AgentAuthenticationActivity extends Activity
 					prefEditor.commit();
 					Intent sendPushMessageToActivity = new Intent();
 					sendPushMessageToActivity.setAction(AgentApplication.INTENT_TO_SERVICE);
-					PushableMessage m = new PushableMessage(uname, "hello");
+					PushableMessage m = new PushableMessage(uname, PushableMessage.CONTROL_HELLO);
 					m.setMessageContent(upass);
 					sendPushMessageToActivity.putExtra("pushablemessage", m);
 					sendStickyBroadcast(sendPushMessageToActivity);
