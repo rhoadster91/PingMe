@@ -3,23 +3,37 @@
       package="beit.skn.pingmeuser"
       android:versionCode="1"
       android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="11" />
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <uses-permission android:name="android.permission.BROADCAST_STICKY"></uses-permission>
     <uses-permission android:name="android.permission.VIBRATE"></uses-permission>
 
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".UserApplication">
-        <activity android:name=".UserAuthenticationActivity"
-                  android:label="@string/app_name">
+        <activity android:name=".IntroActivity"
+                  android:label="@string/app_name"
+                  android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".UserAuthenticationActivity"
+                  android:label="@string/app_name">
+            
+        </activity>        
         <activity android:name=".DashboardActivity"
                   android:label="@string/app_name">
             
         </activity>
+        <activity android:name=".PingTextActivity"
+                  android:label="@string/app_name">
+            
+        </activity>
+		<activity android:name=".SplashBoxActivity"
+                  android:label="@string/app_name">
+            
+        </activity>
+		
 		<service android:name=".UserCommunicatorService">
 		</service>
     </application>
