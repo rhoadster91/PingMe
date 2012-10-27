@@ -6,14 +6,41 @@
   android:layout_height="match_parent" android:weightSum="1">
     <LinearLayout android:id="@+id/linearLayout2" android:layout_height="64dp" android:layout_width="match_parent">
         <Button android:layout_height="fill_parent" android:background="@drawable/titlebutton" android:id="@+id/tButtonLogin" android:layout_width="64dp"></Button>
-        <Button android:background="@drawable/titlebar" android:layout_height="fill_parent" android:layout_width="match_parent" android:id="@+id/tBarLogin" android:textSize="12pt" android:gravity="left|center_vertical" android:textColor="@color/white" android:text=" PingMe Login"></Button>
+        <Button android:background="@drawable/titlebar" android:layout_height="fill_parent" android:layout_width="match_parent" android:id="@+id/tBarDash" android:textSize="12pt" android:gravity="left|center_vertical" android:textColor="@color/white" android:text=" Dashboard"></Button>
+
     </LinearLayout>
-     <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:orientation="vertical" android:gravity="center_vertical" android:layout_height="fill_parent">     
-    <EditText android:layout_width="match_parent" android:id="@+id/txtDest" android:layout_height="wrap_content" android:hint="Sender ID">
-        <requestFocus></requestFocus>
-    </EditText>
-    <EditText android:layout_width="match_parent" android:id="@+id/txtContent" android:layout_height="wrap_content" android:hint="Content"></EditText>
-        <Button android:id="@+id/pushToClient" android:layout_weight="0.34" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Send"></Button>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal" >
+
+        <Button
+            android:id="@+id/buttonPingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/text" />
+
+        <Button
+            android:id="@+id/buttonLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/stop" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:gravity="bottom"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/dashtosplash"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Check Splashbox" />
+
     </LinearLayout>
     
 </LinearLayout>
