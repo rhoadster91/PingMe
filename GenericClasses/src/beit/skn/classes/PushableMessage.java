@@ -9,6 +9,13 @@ public class PushableMessage implements Serializable
 	private String destID = null;
 	private Object content = null;
 	private String control = null;
+	private boolean isEncrypted = false;
+	
+	public static final String CONTROL_HELLO = "Hello";
+	public static final String CONTROL_LOGOUT = "Logout";
+	public static final String CONTROL_PUSH = "Push";
+	public static final String CONTROL_PING_TEXT = "Text Ping Message";
+	public static final String CONTROL_AUTHENTIC = "Authentic";
 	
 	public PushableMessage()
 	{
@@ -61,6 +68,16 @@ public class PushableMessage implements Serializable
 	public Object getMessageContent()
 	{
 		return content;
+	}
+
+	public boolean isEncrypted() 
+	{
+		return isEncrypted;
+	}
+
+	public void setEncrypted(boolean isEncrypted) 
+	{
+		this.isEncrypted = isEncrypted;
 	}
 	
 }
