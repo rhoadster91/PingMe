@@ -35,17 +35,17 @@ public class AgentHelper extends Thread
 			m = (PushableMessage)objIn.readObject();
 			System.out.println("New agent connected. Waiting for ID.");
 			ctrl = m.getControl();
-			if(ctrl.contentEquals("hello"))				
+			if(ctrl.contentEquals(PushableMessage.CONTROL_HELLO))				
 				agentID = m.getSender();			
 			System.out.println("Agent " + agentID + " registered to server and is waiting for requests.");
-			m = new PushableMessage("server", "authentic");
+			m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
 			pushMessage(m);
 			while(true)
 			{				
 				m = (PushableMessage)objIn.readObject();
-				if(m.getControl().contentEquals("push"))
+				if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
-				else if(m.getControl().contentEquals("logout"))
+				else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
 				{
 					System.out.println("Agent " + agentID + " requested log out. Deleting entry.");
 					ServerMain.deleteEntry(agentID, "agent");

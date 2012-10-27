@@ -24,6 +24,15 @@ public class UserHelper extends Thread
 	public UserHelper(Socket s)
 	{
 		socket = s;		
+		try 
+		{
+			objOut = new ObjectOutputStream(socket.getOutputStream());
+			objIn = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Override
@@ -33,28 +42,28 @@ public class UserHelper extends Thread
 		String ctrl = null;
 		try 
 		{
-			if(objIn==null)
-				objIn = new ObjectInputStream(socket.getInputStream());			
 			m = (PushableMessage)objIn.readObject();
 			System.out.println("New user connected. Waiting for ID.");
 			ctrl = m.getControl();
-			if(ctrl.contentEquals("hello"))				
-				userID = m.getSender();		
-			else if(m.getControl().contentEquals("logout"))
-			{
-				System.out.println("User " + userID + " requested log out. Deleting entry.");
-				ServerMain.deleteEntry(userID, "user");	
-				return;
-			}
+			if(ctrl.contentEquals(PushableMessage.CONTROL_HELLO))				
+				userID = m.getSender();					
 			System.out.println("User " + userID + " registered to server. Standby for user request.");
-			m = new PushableMessage("server", "authentic");
+			m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
 			pushMessage(m);			
 			while(true)
 			{				
 				m = (PushableMessage)objIn.readObject();
 				System.out.println("Received packet");
-				if(m.getControl().contentEquals("push"))
+				if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
+				else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
+					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
+				else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
+				{
+					System.out.println("User " + userID + " requested log out. Deleting entry.");
+					ServerMain.deleteEntry(userID, "user");	
+					return;
+				}
 			}
 			
 		} 
