@@ -121,7 +121,7 @@ public class ServerMain extends Thread
 				if(temp.getUserID().contentEquals(id))
 				{
 					userIterator.remove();
-					System.out.println("Agent " + id + " unregistered.");
+					System.out.println("User " + id + " unregistered.");
 					break;
 				}
 			}
