@@ -46,16 +46,11 @@ public class UserAuthenticationActivity extends Activity
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		uname = sharedPref.getString("uname", "");
 		upass = sharedPref.getString("upass", "");
+		UserApplication.uname = uname;
 		if((!uname.contentEquals("") && !upass.contentEquals("")) || UserApplication.isAuthentic)
 		{
 			Intent startCommunicator = new Intent(getApplicationContext(), UserCommunicatorService.class);
 			startService(startCommunicator);
-			Intent sendPushMessageToActivity = new Intent();
-			sendPushMessageToActivity.setAction(UserApplication.INTENT_TO_SERVICE);
-			PushableMessage m = new PushableMessage(uname, "hello");
-			m.setMessageContent(upass);
-			sendPushMessageToActivity.putExtra("pushablemessage", m);
-			sendStickyBroadcast(sendPushMessageToActivity);
 			ifIncomingMessage = new IntentFilter();
 			ifIncomingMessage.addAction(UserApplication.INTENT_TO_ACTIVITY);
 			brVerifyAuthenticity = new BroadcastReceiver()
@@ -65,6 +60,7 @@ public class UserAuthenticationActivity extends Activity
 				{
 					Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
 					startActivity(doneAuthentication);
+					UserApplication.uname = uname;		
 					unregisterReceiver(this);
 					finish();							
 				}						
@@ -95,7 +91,7 @@ public class UserAuthenticationActivity extends Activity
 					prefEditor.commit();
 					Intent sendPushMessageToActivity = new Intent();
 					sendPushMessageToActivity.setAction(UserApplication.INTENT_TO_SERVICE);
-					PushableMessage m = new PushableMessage(uname, "hello");
+					PushableMessage m = new PushableMessage(uname, PushableMessage.CONTROL_HELLO);
 					m.setMessageContent(upass);
 					sendPushMessageToActivity.putExtra("pushablemessage", m);
 					sendStickyBroadcast(sendPushMessageToActivity);
@@ -115,6 +111,7 @@ public class UserAuthenticationActivity extends Activity
 						public void onReceive(Context context, Intent intent) 
 						{
 							Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
+							UserApplication.uname = uname;							
 							startActivity(doneAuthentication);
 							unregisterReceiver(this);
 							finish();							

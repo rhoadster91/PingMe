@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
+
 public class UserApplication extends Application
 {
 	protected static int notifCount = 0;
@@ -24,11 +25,13 @@ public class UserApplication extends Application
 	protected static final String INTENT_TO_ACTIVITY = "PingMeUserIntentToActivity";
 	protected static final String NOTIFICATION_CALL = "PingMeUserNotificationCall";
 	protected static final int USER_PORT_NUMBER = 9975;
-	protected static final String IP_ADDRESS = "192.168.0.101";
+	protected static final String LAN_IP_ADDRESS = "192.168.0.101";
+	protected static final String WAN_IP_ADDRESS = "117.195.41.132";
+	
 	private static final String LOCAL_FILE_FOR_SPLASH_BOX = "splashbox_";
 	
 	protected static String uname = "";
-	
+	protected static String IP_ADDRESS;
 	protected static ArrayList<PushableMessage> splashBox = new ArrayList<PushableMessage>();
 	
 	protected static void writeSplashBoxToFile(Context context) 
@@ -63,13 +66,14 @@ public class UserApplication extends Application
     }
 
    
-    public static Object readObjectFromFile(Context context, String filename) 
+    @SuppressWarnings("unchecked")
+	public static void readObjectFromFile(Context context) 
     {
         ObjectInputStream objectIn = null;
         Object object = null;
         try 
         {
-            FileInputStream fileIn = context.getApplicationContext().openFileInput(filename);
+            FileInputStream fileIn = context.getApplicationContext().openFileInput(LOCAL_FILE_FOR_SPLASH_BOX + uname);
             objectIn = new ObjectInputStream(fileIn);
             object = objectIn.readObject();
 
@@ -100,9 +104,15 @@ public class UserApplication extends Application
                 }
             }
         }
-        return object;
+        if(object!=null)
+        	splashBox = (ArrayList<PushableMessage>) object;
+        else
+        	splashBox = new ArrayList<PushableMessage>();
+        
     }
 
+
+	
 
 	
 
