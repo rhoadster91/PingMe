@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -21,6 +22,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.util.Log;
 
 public class UserCommunicatorService extends Service
 {
@@ -53,8 +55,8 @@ public class UserCommunicatorService extends Service
 			try 
 			{
 				socket = new Socket(UserApplication.IP_ADDRESS, UserApplication.USER_PORT_NUMBER);
-				objOut = new ObjectOutputStream(socket.getOutputStream());
 				objIn = new ObjectInputStream(socket.getInputStream());					
+				objOut = new ObjectOutputStream(socket.getOutputStream());				
 				PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_HELLO);
 				try 
 				{
@@ -71,17 +73,25 @@ public class UserCommunicatorService extends Service
 					m = (PushableMessage)objIn.readObject();
 					if(m.getControl().contentEquals(PushableMessage.CONTROL_AUTHENTIC))
 					{
-						Intent iIsAuthentic = new Intent();
-						iIsAuthentic.setAction(UserApplication.INTENT_TO_ACTIVITY);
-						sendBroadcast(iIsAuthentic);
-						showPersistentNotification();	
-						UserApplication.isAuthentic = true;																				
+						if(!UserApplication.isAuthentic)
+						{
+							Intent iIsAuthentic = new Intent();
+							iIsAuthentic.setAction(UserApplication.INTENT_TO_ACTIVITY);
+							sendBroadcast(iIsAuthentic);
+							UserApplication.isAuthentic = true;
+						}
+						showPersistentNotification();						
 					}
 					else
 					{
 						stopSelf();
 					}
 				} 
+				catch(ConnectException ce)
+				{
+					errorMessage = "Server not working.";
+					Log.d("ConnectExcept", "Not connecting");
+				}
 				catch (StreamCorruptedException e)
 				{
 					errorMessage = "Stream corrupted. Sorry for the inconvenience.";					
@@ -121,7 +131,6 @@ public class UserCommunicatorService extends Service
 			new MessageReader().execute();
 			super.onPostExecute(result);
 		}
-
 	}
 	
 	private class MessageReader extends AsyncTask<Void, Void, Void>
@@ -212,6 +221,7 @@ public class UserCommunicatorService extends Service
 			catch (IOException e)
 			{
 				// TODO Auto-generated catch block
+				stopSelf();				
 				e.printStackTrace();
 			} 			
 			return null;					 			
@@ -304,4 +314,3 @@ public class UserCommunicatorService extends Service
         nm.notify(R.string.notificationtext, notification);
 	}	
 }
-

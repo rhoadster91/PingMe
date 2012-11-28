@@ -1,6 +1,5 @@
 package beit.skn.pingmeuser;
 
-import beit.skn.classes.PushableMessage;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,31 +41,7 @@ public class UserAuthenticationActivity extends Activity
 	
 	@Override
     public void onCreate(Bundle savedInstanceState)
-    {
-		sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		uname = sharedPref.getString("uname", "");
-		upass = sharedPref.getString("upass", "");
-		UserApplication.uname = uname;
-		if((!uname.contentEquals("") && !upass.contentEquals("")) || UserApplication.isAuthentic)
-		{
-			Intent startCommunicator = new Intent(getApplicationContext(), UserCommunicatorService.class);
-			startService(startCommunicator);
-			ifIncomingMessage = new IntentFilter();
-			ifIncomingMessage.addAction(UserApplication.INTENT_TO_ACTIVITY);
-			brVerifyAuthenticity = new BroadcastReceiver()
-			{
-				@Override
-				public void onReceive(Context context, Intent intent) 
-				{
-					Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
-					startActivity(doneAuthentication);
-					UserApplication.uname = uname;		
-					unregisterReceiver(this);
-					finish();							
-				}						
-			};
-			registerReceiver(brVerifyAuthenticity, ifIncomingMessage);			
-		}
+    {				
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         Typeface cfont = Typeface.createFromAsset(getAssets(),"fonts/customfont.otf");
@@ -74,7 +49,22 @@ public class UserAuthenticationActivity extends Activity
         buttonTitle.setTypeface(cfont);
     	login = (Button)findViewById(R.id.button1);
 		txt1 = (EditText)findViewById(R.id.txtUser);
-		txt2 = (EditText)findViewById(R.id.txtPass);	
+		txt2 = (EditText)findViewById(R.id.txtPass);
+		sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		uname = sharedPref.getString("uname", "");
+		upass = sharedPref.getString("upass", "");
+		if(!(uname.contentEquals("") || upass.contentEquals("")))
+		{
+			txt1.setText(uname);
+			txt2.setText(upass);
+			UserApplication.uname = uname;
+			UserApplication.isAuthentic = true;
+			Intent startCommunicator = new Intent(getApplicationContext(), UserCommunicatorService.class);
+			startService(startCommunicator);	
+			Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
+			startActivity(doneAuthentication);
+			finish();
+		}
 		login.setOnClickListener
 		(
 			new OnClickListener()
@@ -82,19 +72,10 @@ public class UserAuthenticationActivity extends Activity
 				public void onClick(View v) 
 				{	
 					uname = txt1.getText().toString();
-					upass = txt2.getText().toString();							
+					upass = txt2.getText().toString();			
+					UserApplication.uname = uname;					
 					Intent startCommunicator = new Intent(getApplicationContext(), UserCommunicatorService.class);
 					startService(startCommunicator);
-					prefEditor = sharedPref.edit();
-					prefEditor.putString("uname", uname);
-					prefEditor.putString("upass", upass);
-					prefEditor.commit();
-					Intent sendPushMessageToActivity = new Intent();
-					sendPushMessageToActivity.setAction(UserApplication.INTENT_TO_SERVICE);
-					PushableMessage m = new PushableMessage(uname, PushableMessage.CONTROL_HELLO);
-					m.setMessageContent(upass);
-					sendPushMessageToActivity.putExtra("pushablemessage", m);
-					sendStickyBroadcast(sendPushMessageToActivity);
 					ifIncomingMessage = new IntentFilter();
 					ifIncomingMessage.addAction(UserApplication.INTENT_TO_ACTIVITY);
 					try
@@ -111,7 +92,10 @@ public class UserAuthenticationActivity extends Activity
 						public void onReceive(Context context, Intent intent) 
 						{
 							Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
-							UserApplication.uname = uname;							
+							prefEditor = sharedPref.edit();
+							prefEditor.putString("uname", uname);
+							prefEditor.putString("upass", upass);
+							prefEditor.commit();							
 							startActivity(doneAuthentication);
 							unregisterReceiver(this);
 							finish();							
