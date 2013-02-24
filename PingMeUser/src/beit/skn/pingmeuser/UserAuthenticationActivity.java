@@ -16,6 +16,7 @@ import android.widget.EditText;
 
 public class UserAuthenticationActivity extends Activity
 {
+	
 	private Button login = null;
 	private EditText txt1 = null;
 	private EditText txt2 = null;	

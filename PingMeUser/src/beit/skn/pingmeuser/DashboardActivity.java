@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -20,43 +21,74 @@ public class DashboardActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{		
 		setContentView(R.layout.dash);
-		super.onCreate(savedInstanceState);			
+		super.onCreate(savedInstanceState);	
+		DashboardPagerAdapter adapter = new DashboardPagerAdapter();
+        final ViewPager myPager = (ViewPager) findViewById(R.id.mythreepanelpager);
+        myPager.setAdapter(adapter);
+        
+		
 		UserApplication.readObjectFromFile(getApplicationContext());
 		
-		bPingText = (Button)findViewById(R.id.buttonPingText);
-		bPingText.setOnClickListener(new OnClickListener()
-		{
-			public void onClick(View arg0)
+		myPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void onPageScrolled(int arg0, float arg1, int arg2) 
 			{
-				Intent iPingText = new Intent(getApplicationContext(), PingTextActivity.class);
-				startActivity(iPingText);
-			}			
+				switch(myPager.getCurrentItem())
+				{
+				case 2:
+					bPingText = (Button)findViewById(R.id.buttonPingText);
+					bPingText.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent iPingText = new Intent(getApplicationContext(), PingTextActivity.class);
+							startActivity(iPingText);
+						}			
+					});
+					
+					bLogout = (Button)findViewById(R.id.buttonLogOut);
+					bLogout.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent sendMessageToService = new Intent();
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_LOGOUT);
+							sendMessageToService.putExtra("pushablemessage", m);
+							sendBroadcast(sendMessageToService);
+							Toast.makeText(getApplicationContext(), "Logged out successfully.", Toast.LENGTH_LONG).show();
+							finish();
+						}			
+					});
+					
+					bSplash = (Button)findViewById(R.id.dashtosplash);
+					bSplash.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent iSplashbox = new Intent(getApplicationContext(), SplashBoxActivity.class);
+							startActivity(iSplashbox);
+						}			
+					});
+					break;
+				
+				}
+			}
+
+			public void onPageSelected(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
 		});
 		
-		bLogout = (Button)findViewById(R.id.buttonLogout);
-		bLogout.setOnClickListener(new OnClickListener()
-		{
-			public void onClick(View arg0)
-			{
-				Intent sendMessageToService = new Intent();
-				sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
-				PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_LOGOUT);
-				sendMessageToService.putExtra("pushablemessage", m);
-				sendBroadcast(sendMessageToService);
-				Toast.makeText(getApplicationContext(), "Logged out successfully.", Toast.LENGTH_LONG).show();
-				finish();
-			}			
-		});
-		
-		bSplash = (Button)findViewById(R.id.dashtosplash);
-		bSplash.setOnClickListener(new OnClickListener()
-		{
-			public void onClick(View arg0)
-			{
-				Intent iSplashbox = new Intent(getApplicationContext(), SplashBoxActivity.class);
-				startActivity(iSplashbox);
-			}			
-		});
+		myPager.setCurrentItem(1);
+
 		
 	}
 

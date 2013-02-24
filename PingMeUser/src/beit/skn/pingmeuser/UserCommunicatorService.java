@@ -30,9 +30,9 @@ public class UserCommunicatorService extends Service
 	private static IntentFilter ifSendRequested = null;
 	private static String errorMessage = null;
 	private static boolean logoutRequested = false;
-	Socket socket;
-	ObjectOutputStream objOut;
-	ObjectInputStream objIn;
+	Socket socket = null;
+	ObjectOutputStream objOut = null;
+	ObjectInputStream objIn = null;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
@@ -128,7 +128,8 @@ public class UserCommunicatorService extends Service
 		protected void onPostExecute(Void result) 
 		{
 			initiateSendRequestListeners();
-			new MessageReader().execute();
+			if(socket!=null)
+				new MessageReader().execute();
 			super.onPostExecute(result);
 		}
 	}

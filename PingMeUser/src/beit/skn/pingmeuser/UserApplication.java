@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import beit.skn.classes.PushableMessage;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
@@ -39,7 +38,7 @@ public class UserApplication extends Application
         ObjectOutputStream objectOut = null;
         try {
 
-            FileOutputStream fileOut = context.openFileOutput(LOCAL_FILE_FOR_SPLASH_BOX + uname, Activity.MODE_PRIVATE);
+            FileOutputStream fileOut = context.openFileOutput(LOCAL_FILE_FOR_SPLASH_BOX + uname, Context.MODE_PRIVATE);
             objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(splashBox);
             fileOut.getFD().sync();

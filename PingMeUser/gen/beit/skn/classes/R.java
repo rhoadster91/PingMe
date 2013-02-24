@@ -4,81 +4,17 @@
  * aapt tool from the resource data it found.  It
  * should not be modified by hand.
  */
-
 package beit.skn.classes;
 
 public final class R {
-    public static final class attr {
-    }
-    public static final class color {
-        public static final int aqua=0x7f050009;
-        public static final int black=0x7f05000f;
-        public static final int blue=0x7f05000d;
-        public static final int fuchsia=0x7f050002;
-        public static final int gray=0x7f050005;
-        public static final int green=0x7f05000c;
-        public static final int lime=0x7f05000a;
-        public static final int maroon=0x7f050008;
-        public static final int navy=0x7f05000e;
-        public static final int olive=0x7f050006;
-        public static final int purple=0x7f050007;
-        public static final int red=0x7f050003;
-        public static final int silver=0x7f050004;
-        public static final int teal=0x7f05000b;
-        public static final int white=0x7f050000;
-        public static final int yellow=0x7f050001;
-    }
-    public static final class drawable {
-        public static final int icon=0x7f020000;
-        public static final int pingmeback=0x7f020001;
-        public static final int stop=0x7f020002;
-        public static final int text=0x7f020003;
-        public static final int titlebar=0x7f020004;
-        public static final int titlebutton=0x7f020005;
-    }
-    public static final class id {
-        public static final int bLAN=0x7f060006;
-        public static final int bWAN=0x7f060007;
-        public static final int button1=0x7f060010;
-        public static final int buttonLogout=0x7f060004;
-        public static final int buttonPingText=0x7f060003;
-        public static final int customip=0x7f060008;
-        public static final int dashtosplash=0x7f060005;
-        public static final int imageView1=0x7f060009;
-        public static final int linearLayout1=0x7f06000f;
-        public static final int linearLayout2=0x7f060000;
-        public static final int listView1=0x7f060016;
-        public static final int pushToClient=0x7f060013;
-        public static final int splashContent=0x7f060018;
-        public static final int splashSender=0x7f060017;
-        public static final int tBarDash=0x7f060002;
-        public static final int tBarLogin=0x7f06000a;
-        public static final int tBarSplash=0x7f060015;
-        public static final int tButtonLogin=0x7f060001;
-        public static final int tButtonSplash=0x7f060014;
-        public static final int textView1=0x7f06000b;
-        public static final int textView2=0x7f06000d;
-        public static final int txtContent=0x7f060012;
-        public static final int txtDest=0x7f060011;
-        public static final int txtPass=0x7f06000e;
-        public static final int txtUser=0x7f06000c;
-    }
-    public static final class layout {
-        public static final int dash=0x7f030000;
-        public static final int intro=0x7f030001;
-        public static final int main=0x7f030002;
-        public static final int pingtext=0x7f030003;
-        public static final int splash=0x7f030004;
-        public static final int splashrow=0x7f030005;
-    }
-    public static final class string {
-        public static final int app_name=0x7f040001;
-        public static final int enter_password=0x7f040003;
-        public static final int enter_username=0x7f040002;
-        public static final int hello=0x7f040000;
-        public static final int login_button=0x7f040004;
-        public static final int notificationtext=0x7f040007;
-        public static final int servicename=0x7f040006;
-        public static final int servicetext=0x7f040005;
-    }
+	public static final class string {
+		public static final int hello = 0x7f040000;
+		public static final int app_name = 0x7f040001;
+	}
+	public static final class layout {
+		public static final int main = 0x7f030005;
+	}
+	public static final class drawable {
+		public static final int icon = 0x7f020004;
+	}
 }

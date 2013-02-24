@@ -9,31 +9,19 @@
         <Button android:background="@drawable/titlebar" android:layout_height="fill_parent" android:layout_width="match_parent" android:id="@+id/tBarDash" android:textSize="12pt" android:gravity="left|center_vertical" android:textColor="@color/white" android:text=" Dashboard"></Button>
 
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    
+<android.support.v4.view.ViewPager
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/mythreepanelpager">
+    <android.support.v4.view.PagerTabStrip 
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal" >
-
-        <Button
-            android:id="@+id/buttonPingText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/text" />
-
-        <Button
-            android:id="@+id/buttonLogout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/stop" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:gravity="bottom"
-        android:orientation="vertical" >
+             android:layout_gravity="top" 
+             />
+    
+   </android.support.v4.view.ViewPager>
+  
 
         <Button
             android:id="@+id/dashtosplash"
@@ -41,6 +29,6 @@
             android:layout_height="wrap_content"
             android:text="Check Splashbox" />
 
-    </LinearLayout>
+   
     
 </LinearLayout>
