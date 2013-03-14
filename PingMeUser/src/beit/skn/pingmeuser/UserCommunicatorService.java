@@ -33,6 +33,7 @@ public class UserCommunicatorService extends Service
 	Socket socket = null;
 	ObjectOutputStream objOut = null;
 	ObjectInputStream objIn = null;
+	private static boolean handshaked = false;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
