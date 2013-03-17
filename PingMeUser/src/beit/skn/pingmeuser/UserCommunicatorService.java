@@ -29,11 +29,11 @@ public class UserCommunicatorService extends Service
 	private static BroadcastReceiver brSendRequested = null;
 	private static IntentFilter ifSendRequested = null;
 	private String errorMessage = null;
-	private static boolean logoutRequested = false;
+	private boolean logoutRequested = false;
 	Socket socket = null;
 	ObjectOutputStream objOut = null;
 	ObjectInputStream objIn = null;
-	private static boolean handshaked = false;
+	private boolean handshaked = false;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
@@ -130,7 +130,10 @@ public class UserCommunicatorService extends Service
 		{
 			initiateSendRequestListeners();
 			if(socket!=null)
+			{
+				handshaked = true;
 				new MessageReader().execute();
+			}
 			super.onPostExecute(result);
 		}
 	}
@@ -159,6 +162,7 @@ public class UserCommunicatorService extends Service
 						objIn = null;
 						objOut = null;
 						logoutRequested = true;
+						handshaked = false;
 						this.cancel(true);		
 						break;
 					}
@@ -224,7 +228,10 @@ public class UserCommunicatorService extends Service
 		@Override
 		protected Void doInBackground(PushableMessage... params)
 		{			
-			
+			if(!handshaked)
+			{
+				new Handshaker().execute();
+			}
 			PushableMessage m = params[0];
 			try 
 			{
@@ -250,6 +257,7 @@ public class UserCommunicatorService extends Service
 		}
 
 	}
+	
 	
 	public void initiateSendRequestListeners()
 	{
@@ -291,6 +299,7 @@ public class UserCommunicatorService extends Service
 	    }	  
 	    else
 	    	UserApplication.errorMessage = "";
+	    unregisterReceiver(brSendRequested);
 		super.onDestroy();
 	}
 

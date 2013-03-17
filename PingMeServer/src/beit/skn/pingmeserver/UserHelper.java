@@ -86,7 +86,7 @@ public class UserHelper extends Thread
 		
 	}
 
-	public void pushMessage(PushableMessage m)
+	public synchronized void pushMessage(PushableMessage m)
 	{
 		try 
 		{

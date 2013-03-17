@@ -17,6 +17,10 @@ public class DashboardActivity extends Activity
 	Button bPingText = null;
 	Button bLogout = null;
 	Button bSplash = null;
+	Button bPingCab = null;
+	Button bPingRick = null;
+	Button bPingCop = null;
+	Button bPingAmb = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -41,6 +45,67 @@ public class DashboardActivity extends Activity
 			{
 				switch(myPager.getCurrentItem())
 				{
+				case 1:
+					bPingCab = (Button)findViewById(R.id.buttonPingTaxi);
+					bPingCab.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent sendMessageToService = new Intent();
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+							m.setMessageContent(new String("CAB"));
+							sendMessageToService.putExtra("pushablemessage", m);
+							sendBroadcast(sendMessageToService);
+							Toast.makeText(getApplicationContext(), "Pinged for a cab.", Toast.LENGTH_LONG).show();							
+						}			
+					});
+					
+					bPingCop = (Button)findViewById(R.id.buttonPingCop);
+					bPingCop.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent sendMessageToService = new Intent();
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+							m.setMessageContent(new String("COP"));
+							sendMessageToService.putExtra("pushablemessage", m);
+							sendBroadcast(sendMessageToService);
+							Toast.makeText(getApplicationContext(), "Pinged for the police.", Toast.LENGTH_LONG).show();							
+						}			
+					});
+					
+					bPingRick = (Button)findViewById(R.id.buttonPingAuto);
+					bPingRick.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent sendMessageToService = new Intent();
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+							m.setMessageContent(new String("RICK"));
+							sendMessageToService.putExtra("pushablemessage", m);
+							sendBroadcast(sendMessageToService);
+							Toast.makeText(getApplicationContext(), "Pinged for a rickshaw.", Toast.LENGTH_LONG).show();							
+						}			
+					});
+					
+					bPingAmb = (Button)findViewById(R.id.buttonPingAmbulance);
+					bPingAmb.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent sendMessageToService = new Intent();
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+							m.setMessageContent(new String("AMB"));
+							sendMessageToService.putExtra("pushablemessage", m);
+							sendBroadcast(sendMessageToService);
+							Toast.makeText(getApplicationContext(), "Pinged for an ambulance.", Toast.LENGTH_LONG).show();							
+						}			
+					});
+					break;
 				case 2:
 					bPingText = (Button)findViewById(R.id.buttonPingText);
 					bPingText.setOnClickListener(new OnClickListener()
