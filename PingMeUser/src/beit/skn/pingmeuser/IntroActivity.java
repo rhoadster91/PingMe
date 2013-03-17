@@ -25,6 +25,8 @@ public class IntroActivity extends Activity
 		bWAN = (Button)findViewById(R.id.bWAN);
 		customIP = (EditText)findViewById(R.id.customip);
 		
+		
+		
 		bLAN.setOnClickListener(new OnClickListener()
 		{
 			public void onClick(View v) 

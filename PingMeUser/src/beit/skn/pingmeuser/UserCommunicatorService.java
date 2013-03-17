@@ -28,7 +28,7 @@ public class UserCommunicatorService extends Service
 {
 	private static BroadcastReceiver brSendRequested = null;
 	private static IntentFilter ifSendRequested = null;
-	private static String errorMessage = null;
+	private String errorMessage = null;
 	private static boolean logoutRequested = false;
 	Socket socket = null;
 	ObjectOutputStream objOut = null;
@@ -78,7 +78,7 @@ public class UserCommunicatorService extends Service
 						{
 							Intent iIsAuthentic = new Intent();
 							iIsAuthentic.setAction(UserApplication.INTENT_TO_ACTIVITY);
-							sendBroadcast(iIsAuthentic);
+							sendBroadcast(iIsAuthentic);							
 							UserApplication.isAuthentic = true;
 						}
 						showPersistentNotification();						
@@ -135,12 +135,13 @@ public class UserCommunicatorService extends Service
 		}
 	}
 	
+	
 	private class MessageReader extends AsyncTask<Void, Void, Void>
 	{		
 		@Override
 		protected Void doInBackground(Void...params)
 		{			
-			while(true)
+			while(socket!=null)
 			{
 				PushableMessage m;
 				try 
@@ -150,6 +151,16 @@ public class UserCommunicatorService extends Service
 					{
 						UserApplication.splashBox.add(m);
 						UserApplication.writeSplashBoxToFile(getApplicationContext());
+					}
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
+					{
+						socket.close();
+						socket = null;
+						objIn = null;
+						objOut = null;
+						logoutRequested = true;
+						this.cancel(true);		
+						break;
 					}
 					Intent iReadRequested = new Intent();
 					iReadRequested.setAction(UserApplication.INTENT_TO_ACTIVITY);
@@ -217,8 +228,11 @@ public class UserCommunicatorService extends Service
 			PushableMessage m = params[0];
 			try 
 			{
-				objOut.writeObject(m);						
-				objOut.flush(); 
+				if(socket!=null)
+				{
+					objOut.writeObject(m);						
+					objOut.flush();
+				}
 			} 
 			catch (IOException e)
 			{
@@ -274,7 +288,9 @@ public class UserCommunicatorService extends Service
 	    {
 	    	UserApplication.errorMessage = errorMessage;
 	    	DashboardActivity.onErrorOccured(getApplicationContext());
-	    }	    
+	    }	  
+	    else
+	    	UserApplication.errorMessage = "";
 		super.onDestroy();
 	}
 

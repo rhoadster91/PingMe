@@ -97,13 +97,7 @@ public class ServerMain extends Thread
 				temp = agentIterator.next();
 				if(temp.getAgentID().contentEquals(id) && id!=null)
 				{
-					try 
-					{
-						temp.socket.close();
-					} catch (IOException e)
-					{
-						e.printStackTrace();
-					}
+					temp.pushMessage(new PushableMessage(null, PushableMessage.CONTROL_LOGOUT));
 					agentIterator.remove();					
 					System.out.println("Agent " + id + " unregistered.");
 					break;
@@ -120,6 +114,7 @@ public class ServerMain extends Thread
 				temp = userIterator.next();
 				if(temp.getUserID().contentEquals(id))
 				{
+					temp.pushMessage(new PushableMessage(null, PushableMessage.CONTROL_LOGOUT));					
 					userIterator.remove();
 					System.out.println("User " + id + " unregistered.");
 					break;

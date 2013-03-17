@@ -2,6 +2,7 @@ package beit.skn.pingmeuser;
 
 import beit.skn.classes.PushableMessage;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -62,6 +63,8 @@ public class DashboardActivity extends Activity
 							sendMessageToService.putExtra("pushablemessage", m);
 							sendBroadcast(sendMessageToService);
 							Toast.makeText(getApplicationContext(), "Logged out successfully.", Toast.LENGTH_LONG).show();
+							NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+							nm.cancel(R.string.servicetext);
 							finish();
 						}			
 					});
@@ -96,7 +99,8 @@ public class DashboardActivity extends Activity
 	
 	protected static void onErrorOccured(Context con)
 	{
-		Toast.makeText(con, UserApplication.errorMessage, Toast.LENGTH_LONG).show();
+		if(!UserApplication.errorMessage.contentEquals(""))
+			Toast.makeText(con, UserApplication.errorMessage, Toast.LENGTH_LONG).show();
 	}	
 	
 }

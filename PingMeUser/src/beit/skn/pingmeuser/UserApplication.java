@@ -17,7 +17,7 @@ import android.content.Context;
 public class UserApplication extends Application
 {
 	protected static int notifCount = 0;
-	protected static String errorMessage;
+	protected static String errorMessage = "";
 	protected static boolean isAuthentic = false;
 	
 	protected static final String INTENT_TO_SERVICE = "PingMeUserIntentToService";
