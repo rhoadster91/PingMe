@@ -3,8 +3,10 @@ package beit.skn.pingmeuser;
 import beit.skn.classes.PushableMessage;
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -21,12 +23,32 @@ public class DashboardActivity extends Activity
 	Button bPingRick = null;
 	Button bPingCop = null;
 	Button bPingAmb = null;
-	
+	Button bPingPlace = null;
+	static IntentFilter ifLocationUpdate; 
+	static BroadcastReceiver brLocationUpdate;
+	String myLoc = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{		
 		setContentView(R.layout.dash);
 		super.onCreate(savedInstanceState);	
+		ifLocationUpdate = new IntentFilter();		
+		ifLocationUpdate.addAction(UserApplication.LOCATION_UPDATE);		
+		brLocationUpdate = new BroadcastReceiver()
+		{
+
+			@Override
+			public void onReceive(Context arg0, Intent arg1) 
+			{
+				myLoc = (String) arg1.getSerializableExtra("Location");
+				
+			}
+			
+		};
+		registerReceiver(brLocationUpdate, ifLocationUpdate);
+		Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+		startService(startLocMgr);
+		
 		DashboardPagerAdapter adapter = new DashboardPagerAdapter();
         final ViewPager myPager = (ViewPager) findViewById(R.id.mythreepanelpager);
         myPager.setAdapter(adapter);
@@ -51,13 +73,21 @@ public class DashboardActivity extends Activity
 					{
 						public void onClick(View arg0)
 						{
-							Intent sendMessageToService = new Intent();
-							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
-							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-							m.setMessageContent(new String("CAB"));
-							sendMessageToService.putExtra("pushablemessage", m);
-							sendBroadcast(sendMessageToService);
-							Toast.makeText(getApplicationContext(), "Pinged for a cab.", Toast.LENGTH_LONG).show();							
+							Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+							startService(startLocMgr);
+							
+							if(myLoc!=null)
+							{
+								Intent sendMessageToService = new Intent();
+								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+								m.setMessageContent(new String("CAB&&&" + myLoc));
+								sendMessageToService.putExtra("pushablemessage", m);
+								sendBroadcast(sendMessageToService);
+								Toast.makeText(getApplicationContext(), "Pinged for a cab.", Toast.LENGTH_LONG).show();
+							}
+							else
+								Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
 						}			
 					});
 					
@@ -66,13 +96,22 @@ public class DashboardActivity extends Activity
 					{
 						public void onClick(View arg0)
 						{
-							Intent sendMessageToService = new Intent();
-							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
-							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-							m.setMessageContent(new String("COP"));
-							sendMessageToService.putExtra("pushablemessage", m);
-							sendBroadcast(sendMessageToService);
-							Toast.makeText(getApplicationContext(), "Pinged for the police.", Toast.LENGTH_LONG).show();							
+							Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+							startService(startLocMgr);
+							
+							if(myLoc!=null)
+							{
+							
+								Intent sendMessageToService = new Intent();
+								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+								m.setMessageContent(new String("COP"));
+								sendMessageToService.putExtra("pushablemessage", m);
+								sendBroadcast(sendMessageToService);
+								Toast.makeText(getApplicationContext(), "Pinged for the police.", Toast.LENGTH_LONG).show();
+							}
+							else
+								Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
 						}			
 					});
 					
@@ -81,13 +120,22 @@ public class DashboardActivity extends Activity
 					{
 						public void onClick(View arg0)
 						{
-							Intent sendMessageToService = new Intent();
-							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
-							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-							m.setMessageContent(new String("RICK"));
-							sendMessageToService.putExtra("pushablemessage", m);
-							sendBroadcast(sendMessageToService);
-							Toast.makeText(getApplicationContext(), "Pinged for a rickshaw.", Toast.LENGTH_LONG).show();							
+							Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+							startService(startLocMgr);
+						
+							if(myLoc!=null)
+							{
+								Intent sendMessageToService = new Intent();
+							
+								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+								m.setMessageContent(new String("RICK"));
+								sendMessageToService.putExtra("pushablemessage", m);
+								sendBroadcast(sendMessageToService);
+								Toast.makeText(getApplicationContext(), "Pinged for a rickshaw.", Toast.LENGTH_LONG).show();
+							}
+							else
+								Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
 						}			
 					});
 					
@@ -96,13 +144,21 @@ public class DashboardActivity extends Activity
 					{
 						public void onClick(View arg0)
 						{
-							Intent sendMessageToService = new Intent();
-							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
-							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-							m.setMessageContent(new String("AMB"));
-							sendMessageToService.putExtra("pushablemessage", m);
-							sendBroadcast(sendMessageToService);
-							Toast.makeText(getApplicationContext(), "Pinged for an ambulance.", Toast.LENGTH_LONG).show();							
+							Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+							startService(startLocMgr);
+							
+							if(myLoc!=null)
+							{
+								Intent sendMessageToService = new Intent();
+								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+								m.setMessageContent(new String("AMB"));
+								sendMessageToService.putExtra("pushablemessage", m);
+								sendBroadcast(sendMessageToService);
+								Toast.makeText(getApplicationContext(), "Pinged for an ambulance.", Toast.LENGTH_LONG).show();
+							}
+							else
+								Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
 						}			
 					});
 					break;
@@ -117,6 +173,23 @@ public class DashboardActivity extends Activity
 						}			
 					});
 					
+					bPingPlace = (Button)findViewById(R.id.buttonPingPlace);
+					bPingPlace.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+							startService(startLocMgr);						
+							if(myLoc!=null)
+							{								
+								Intent iPingText = new Intent(getApplicationContext(), PingTextActivity.class);
+								iPingText.putExtra("Loc", new String("LOC " + myLoc.split("&&&")[0] + " " + myLoc.split("&&&")[1]));
+								startActivity(iPingText);
+							}
+							else
+								Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
+						}			
+					});					
 					bLogout = (Button)findViewById(R.id.buttonLogOut);
 					bLogout.setOnClickListener(new OnClickListener()
 					{
@@ -162,6 +235,55 @@ public class DashboardActivity extends Activity
 
 	
 	
+	@Override
+	protected void onDestroy()
+	{
+		try
+		{
+			unregisterReceiver(brLocationUpdate);
+		}
+		catch(IllegalArgumentException iae)
+		{
+			
+		}
+		super.onDestroy();
+	}
+
+
+
+	@Override
+	protected void onPause() 
+	{
+		try
+		{
+			unregisterReceiver(brLocationUpdate);
+		}
+		catch(IllegalArgumentException iae)
+		{
+			
+		}
+		super.onPause();
+	}
+
+
+
+	@Override
+	protected void onResume() 
+	{
+		try
+		{
+			unregisterReceiver(brLocationUpdate);
+		}
+		catch(IllegalArgumentException iae)
+		{
+			
+		}
+		registerReceiver(brLocationUpdate, ifLocationUpdate);
+		super.onResume();
+	}
+
+
+
 	protected static void onErrorOccured(Context con)
 	{
 		if(!UserApplication.errorMessage.contentEquals(""))

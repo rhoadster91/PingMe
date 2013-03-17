@@ -39,5 +39,7 @@
 		
 		<service android:name=".UserCommunicatorService">
 		</service>
+		<service android:name=".UserLocationManagerService">
+		</service>
     </application>
 </manifest>

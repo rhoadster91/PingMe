@@ -55,7 +55,10 @@ public class UserHelper extends Thread
 				m = (PushableMessage)objIn.readObject();
 				System.out.println("Received packet");
 				if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
+				{
 					ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
+					System.out.println("Call for " + ((String)m.getMessageContent()).split("&&&")[0] + " from lat " + ((String)m.getMessageContent()).split("&&&")[1] + " long " + ((String)m.getMessageContent()).split("&&&")[2]);
+				}
 				else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
 				else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))

@@ -19,6 +19,10 @@ public class PingTextActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pingtext);
+		aname = (EditText)findViewById(R.id.txtDest);				
+		atext = (EditText)findViewById(R.id.txtContent);
+		String loc = (String) getIntent().getCharSequenceExtra("Loc");
+		atext.setText(loc);
 		sendMessage = (Button)findViewById(R.id.pushToClient);
 		sendMessage.setOnClickListener(new OnClickListener()
 		{
@@ -27,8 +31,6 @@ public class PingTextActivity extends Activity
 				Intent sendMessageToService = new Intent();
 				sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
 				PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PING_TEXT);
-				aname = (EditText)findViewById(R.id.txtDest);				
-				atext = (EditText)findViewById(R.id.txtContent);	
 				m.setDestination(aname.getText().toString());			
 				m.setMessageContent(atext.getText().toString());
 				sendMessageToService.putExtra("pushablemessage", m);

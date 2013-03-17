@@ -41,6 +41,7 @@ public class UserCommunicatorService extends Service
 		return START_STICKY;
 	}	
 	
+	
 	@Override
 	public void onCreate() 
 	{		
@@ -163,7 +164,9 @@ public class UserCommunicatorService extends Service
 						objOut = null;
 						logoutRequested = true;
 						handshaked = false;
+						UserApplication.isAuthentic = false;
 						this.cancel(true);		
+						stopSelf();
 						break;
 					}
 					Intent iReadRequested = new Intent();
@@ -299,7 +302,14 @@ public class UserCommunicatorService extends Service
 	    }	  
 	    else
 	    	UserApplication.errorMessage = "";
-	    unregisterReceiver(brSendRequested);
+	    try
+	    {
+	    	unregisterReceiver(brSendRequested);
+	    }
+	    catch(Exception e)
+	    {
+	    	
+	    }
 		super.onDestroy();
 	}
 

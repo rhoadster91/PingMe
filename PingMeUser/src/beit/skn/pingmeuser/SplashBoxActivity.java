@@ -1,11 +1,16 @@
 package beit.skn.pingmeuser;
 
+import beit.skn.classes.PushableMessage;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class SplashBoxActivity extends Activity
@@ -14,7 +19,7 @@ public class SplashBoxActivity extends Activity
 	SplashBoxAdapter splashAdapter = null;
 	private static BroadcastReceiver brGetIncomingMessages = null;
 	private static IntentFilter ifIncomingMessage = null;
-	
+	int count;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -41,7 +46,27 @@ public class SplashBoxActivity extends Activity
 	{
 		splashList = (ListView)findViewById(R.id.listView1);
 		splashAdapter = new SplashBoxAdapter(getApplicationContext(), UserApplication.splashBox.toArray());
-		splashList.setAdapter(splashAdapter);		
+		splashList.setAdapter(splashAdapter);	
+		splashList.setClickable(true);
+		count = splashList.getCount();
+		splashList.setOnItemClickListener(new OnItemClickListener()
+		{
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) 
+			{
+				
+				Object o = splashList.getItemAtPosition(count - arg2 - 1);
+				PushableMessage m = (PushableMessage)o;				
+				if(((String)m.getMessageContent()).split(" ")[0].contentEquals("LOC"))
+				{
+					String uri = "geo:0,0?q=" + ((String)m.getMessageContent()).split(" ")[1] + "," + ((String)m.getMessageContent()).split(" ")[2] + "(" + m.getSender() + ")";
+					Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+					startActivity(intent);
+				}
+				
+			}
+			
+		});
 	}
 
 	@Override
