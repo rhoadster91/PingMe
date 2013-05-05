@@ -21,6 +21,14 @@ public class AgentHelper extends Thread
 	public AgentHelper(Socket s)
 	{
 		socket = s;		
+		try 
+		{
+			objOut = new ObjectOutputStream(socket.getOutputStream());
+			objIn = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -30,28 +38,32 @@ public class AgentHelper extends Thread
 		String ctrl = null;
 		try 
 		{
-			if(objIn==null)
-				objIn = new ObjectInputStream(socket.getInputStream());
 			m = (PushableMessage)objIn.readObject();
-			System.out.println("New agent connected. Waiting for ID.");
+			System.out.println("New user connected. Waiting for ID.");
 			ctrl = m.getControl();
 			if(ctrl.contentEquals(PushableMessage.CONTROL_HELLO))				
-				agentID = m.getSender();			
-			System.out.println("Agent " + agentID + " registered to server and is waiting for requests.");
+				agentID = m.getSender();					
+			System.out.println("Agent " + agentID + " registered to server and waiting for user request.");
 			m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
-			pushMessage(m);
+			pushMessage(m);			
 			while(true)
 			{				
 				m = (PushableMessage)objIn.readObject();
+				System.out.println("Received packet");
 				if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
+				{
+					ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
+					System.out.println("Call for " + ((String)m.getMessageContent()).split("&&&")[0] + " from lat " + ((String)m.getMessageContent()).split("&&&")[1] + " long " + ((String)m.getMessageContent()).split("&&&")[2]);
+				}
+				else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
 					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
 				else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
 				{
 					System.out.println("Agent " + agentID + " requested log out. Deleting entry.");
-					ServerMain.deleteEntry(agentID, "agent");
+					ServerMain.deleteEntry(agentID, "user");	
 					return;
 				}
-			}			
+			}
 		} 
 		catch(SocketException se)
 		{

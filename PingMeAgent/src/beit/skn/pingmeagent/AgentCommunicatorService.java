@@ -1,7 +1,11 @@
 package beit.skn.pingmeagent;
 
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -16,34 +20,159 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.IBinder;
-import android.widget.Toast;
+import android.util.Log;
 
 public class AgentCommunicatorService extends Service
 {
-	private Socket socket = null;
 	private static BroadcastReceiver brSendRequested = null;
 	private static IntentFilter ifSendRequested = null;
-	private static String errorMessage = null;
-	private static final int MAX_ATTEMPTS = 10;
+	private String errorMessage = null;
+	private boolean logoutRequested = false;
+	Socket socket = null;
+	ObjectOutputStream objOut = null;
+	ObjectInputStream objIn = null;
+	private boolean handshaked = false;
 	
-	private Thread incomingMessageReader = new Thread()
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) 
 	{
+		return START_STICKY;
+	}	
+	
+		
+	@Override
+	public void onCreate() 
+	{		
+		new Handshaker().execute();
+		super.onCreate();
+	}
+	
+	private class Handshaker extends AsyncTask<Void, Void, Void>
+	{		
 		
 		@Override
-		public void run() 
-		{
-			PushableMessage m;
-			while(true)
+		protected Void doInBackground(Void... params)
+		{			
+			try 
 			{
+				socket = new Socket(AgentApplication.IP_ADDRESS, AgentApplication.AGENT_PORT_NUMBER);
+				objIn = new ObjectInputStream(socket.getInputStream());					
+				objOut = new ObjectOutputStream(socket.getOutputStream());				
+				PushableMessage m = new PushableMessage(AgentApplication.uname, PushableMessage.CONTROL_HELLO);
 				try 
 				{
-					m = AgentTalker.readMessage();
+					objOut.writeObject(m);						
+					objOut.flush(); 
+				} 
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+				try
+				{						
+					m = (PushableMessage)objIn.readObject();
+					if(m.getControl().contentEquals(PushableMessage.CONTROL_AUTHENTIC))
+					{
+						if(!AgentApplication.isAuthentic)
+						{
+							Intent iIsAuthentic = new Intent();
+							iIsAuthentic.setAction(AgentApplication.INTENT_TO_ACTIVITY);
+							sendBroadcast(iIsAuthentic);							
+							AgentApplication.isAuthentic = true;
+						}
+						showPersistentNotification();						
+					}
+					else
+					{
+						stopSelf();
+					}
+				} 
+				catch(ConnectException ce)
+				{
+					errorMessage = "Server not working.";
+					Log.d("ConnectExcept", "Not connecting");
+				}
+				catch (StreamCorruptedException e)
+				{
+					errorMessage = "Stream corrupted. Sorry for the inconvenience.";					
+					stopSelf();
+					e.printStackTrace();
+				} 
+				catch (IOException e) 
+				{
+					errorMessage = "Server shut down. Sorry for the inconvenience. Please try again later.";					
+					stopSelf();
+					e.printStackTrace();
+				} 
+				catch (ClassNotFoundException e) 
+				{
+					errorMessage = "Version mismatch. Please update your app.";
+					stopSelf();
+					e.printStackTrace();
+				}					
+			} 
+			catch (UnknownHostException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) 
+		{
+			initiateSendRequestListeners();
+			if(socket!=null)
+			{
+				handshaked = true;
+				new MessageReader().execute();
+			}
+			super.onPostExecute(result);
+		}
+	}
+	
+	
+	private class MessageReader extends AsyncTask<Void, Void, Void>
+	{		
+		@Override
+		protected Void doInBackground(Void...params)
+		{			
+			while(socket!=null)
+			{
+				PushableMessage m;
+				try 
+				{
+					m = (PushableMessage)objIn.readObject();
+					if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT) || m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
+					{
+						AgentApplication.splashBox.add(m);
+						AgentApplication.writeSplashBoxToFile(getApplicationContext());
+					}
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
+					{
+						socket.close();
+						socket = null;
+						objIn = null;
+						objOut = null;
+						logoutRequested = true;
+						handshaked = false;
+						AgentApplication.isAuthentic = false;
+						this.cancel(true);		
+						stopSelf();
+						break;
+					}
 					Intent iReadRequested = new Intent();
 					iReadRequested.setAction(AgentApplication.INTENT_TO_ACTIVITY);
 					iReadRequested.putExtra("pushablemessage", m);
-					AgentApplication.splashBox.add(m);
-					AgentApplication.writeSplashBoxToFile(getApplicationContext());
 					sendOrderedBroadcast(iReadRequested, null, new BroadcastReceiver()
 					{
 						@Override
@@ -85,126 +214,76 @@ public class AgentCommunicatorService extends Service
 					break;
 				}				
 			}
-		}		
-	};	
-	
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) 
-	{
-		return START_STICKY;
-	}
-
-	@Override
-	public void onCreate() 
-	{
-		socket = null;
-		int attempts = 0;
-		AgentApplication.errorMessage = null;
-		errorMessage = null;
-		if(AgentApplication.isAuthentic==false)
-		{
-			try 
-			{			
-				socket = new Socket(AgentApplication.IP_ADDRESS, AgentApplication.AGENT_PORT_NUMBER);
-			} 
-			catch (UnknownHostException uhe) 
-			{
-				attempts++;
-				if(attempts==MAX_ATTEMPTS)
-					stopSelf();
-				try 
-				{
-					Thread.sleep(5000);
-				}
-				catch (InterruptedException e) 
-				{
-					e.printStackTrace();
-				}
-				uhe.printStackTrace();
-			} 
-			catch (IOException e) 
-			{
-				e.printStackTrace();
-			}
+			return null;
+			
 		}
-		else
-		{
-			socket = AgentTalker.getSocket();
-		}
-				
 		
-		AgentTalker.setSocket(socket);
+		@Override
+		protected void onPostExecute(Void result) 
+		{
+			initiateSendRequestListeners();
+			super.onPostExecute(result);
+		}
+
+	}
+	
+	private class MessageSender extends AsyncTask<PushableMessage, Void, Void>
+	{		
+		@Override
+		protected Void doInBackground(PushableMessage... params)
+		{			
+			if(!handshaked)
+			{
+				new Handshaker().execute();
+			}
+			PushableMessage m = params[0];
+			try 
+			{
+				if(socket!=null)
+				{
+					objOut.writeObject(m);						
+					objOut.flush();
+				}
+			} 
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				stopSelf();				
+				e.printStackTrace();
+			} 			
+			return null;					 			
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) 
+		{
+			super.onPostExecute(result);
+		}
+
+	}
+	
+	
+	public void initiateSendRequestListeners()
+	{
+		ifSendRequested = new IntentFilter();
+		ifSendRequested.addAction(AgentApplication.INTENT_TO_SERVICE);		
 		brSendRequested = new BroadcastReceiver()
 		{
+
 			@Override
-			public void onReceive(Context arg0, Intent arg1) 
+			public void onReceive(Context context, Intent intent) 
 			{
-				PushableMessage m = (PushableMessage)arg1.getSerializableExtra("pushablemessage");
-				if(m.getControl().contentEquals(PushableMessage.CONTROL_HELLO) && !AgentApplication.isAuthentic)
-				{				
-					AgentTalker.pushMessage(m);
-					try
-					{
-						m = AgentTalker.readMessage();
-						if(m.getControl().contentEquals(PushableMessage.CONTROL_AUTHENTIC))
-						{
-							Toast.makeText(getApplicationContext(), "Authenticated and registered on server", Toast.LENGTH_LONG).show();
-							Intent iIsAuthentic = new Intent();
-							iIsAuthentic.setAction(AgentApplication.INTENT_TO_ACTIVITY);
-							sendBroadcast(iIsAuthentic);
-							showPersistentNotification();	
-							AgentApplication.isAuthentic = true;
-							AgentApplication.uname = m.getDestination();
-							incomingMessageReader.start();						
-						}
-						else
-						{
-							Toast.makeText(getApplicationContext(), "Could not authenticate.", Toast.LENGTH_LONG).show();
-							stopSelf();
-						}
-					} 
-					catch (StreamCorruptedException e)
-					{
-						errorMessage = "Stream corrupted. Sorry for the inconvenience.";		
-						e.printStackTrace();
-						stopSelf();
-						
-					} 
-					catch (IOException e) 
-					{
-						errorMessage = "Server shut down. Sorry for the inconvenience. Please try again later.";					
-						e.printStackTrace();
-						stopSelf();
-					} 
-					catch (ClassNotFoundException e) 
-					{
-						errorMessage = "Version mismatch. Please update your app.";						
-						e.printStackTrace();
-						stopSelf();
-					}										
-				}
-				else if(m.getControl().contentEquals(PushableMessage.CONTROL_HELLO) && AgentApplication.isAuthentic)
-				{
-					Intent iIsAuthentic = new Intent();
-					iIsAuthentic.setAction(AgentApplication.INTENT_TO_ACTIVITY);
-					sendBroadcast(iIsAuthentic);
-				}
-				else
-					AgentTalker.pushMessage(m);
-			}			
+				PushableMessage m = (PushableMessage) intent.getSerializableExtra("pushablemessage");
+				new MessageSender().execute(m);
+			}
+			
 		};
-		ifSendRequested = new IntentFilter();
-		ifSendRequested.addAction(AgentApplication.INTENT_TO_SERVICE);
-		registerReceiver(brSendRequested, ifSendRequested);	
-		super.onCreate();
+		registerReceiver(brSendRequested, ifSendRequested);
 	}
-	
-	
 	
 	@Override
 	public void onDestroy() 
-	{		
-		
+	{				
 		try
 		{
 			unregisterReceiver(brSendRequested);			
@@ -216,25 +295,31 @@ public class AgentCommunicatorService extends Service
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 	    nm.cancel(R.string.servicetext);
 	    nm.cancel(R.string.notificationtext);
-	    if(errorMessage!=null)
-	    {	
-		    AgentApplication.isAuthentic = false;	    
-		    AgentApplication.errorMessage = errorMessage;
-		    DashboardActivity.onErrorOccured(getApplicationContext());
-		    if(socket!=null)
-		    {
-			    PushableMessage m = new PushableMessage(AgentApplication.uname, PushableMessage.CONTROL_LOGOUT);
-			    AgentTalker.pushMessage(m);			   
-		    }
+	    AgentApplication.isAuthentic = false;
+	    if(!logoutRequested)
+	    {
+	    	AgentApplication.errorMessage = errorMessage;
+	    	DashboardActivity.onErrorOccured(getApplicationContext());
+	    }	  
+	    else
+	    	AgentApplication.errorMessage = "";
+	    try
+	    {
+	    	unregisterReceiver(brSendRequested);
 	    }
-		//android.os.Process.killProcess(android.os.Process.myPid());	    
+	    catch(Exception e)
+	    {
+	    	
+	    }
 		super.onDestroy();
 	}
+
 	@Override
 	public IBinder onBind(Intent arg0) 
 	{
 		return null;
 	}
+	
 	
 	private void showPersistentNotification()
 	{
@@ -256,17 +341,14 @@ public class AgentCommunicatorService extends Service
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         String text = String.format(getString(R.string.notificationtext), AgentApplication.notifCount);
         Notification notification = new Notification(R.drawable.icon, text, 0);
-        Intent showActivity = new Intent(this, DashboardActivity.class);
-        showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        showActivity.putExtra("pushablemessage", m);
-        showActivity.setAction(AgentApplication.INTENT_TO_ACTIVITY);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);        
-        notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
+        //Intent showActivity = new Intent(this, SplashBoxActivity.class);
+       // showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+       // showActivity.putExtra("pushablemessage", m);
+       // showActivity.setAction(UserApplication.INTENT_TO_ACTIVITY);
+       // PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);        
+      //  notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_AUTO_CANCEL;
-        notification.defaults = Notification.DEFAULT_ALL;
+        notification.defaults = Notification.DEFAULT_ALL;        
         nm.notify(R.string.notificationtext, notification);
-	}
-	
-
-	
+	}	
 }

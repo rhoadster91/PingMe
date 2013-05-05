@@ -1,6 +1,5 @@
 package beit.skn.pingmeagent;
 
-import beit.skn.classes.PushableMessage;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +16,7 @@ import android.widget.EditText;
 
 public class AgentAuthenticationActivity extends Activity
 {
+	
 	private Button login = null;
 	private EditText txt1 = null;
 	private EditText txt2 = null;	
@@ -25,8 +25,8 @@ public class AgentAuthenticationActivity extends Activity
 	private static SharedPreferences.Editor prefEditor = null;
 	private static BroadcastReceiver brVerifyAuthenticity = null;
 	private static IntentFilter ifIncomingMessage = null;
-	
-		@Override
+		
+	@Override
 	protected void onDestroy() 
 	{
 		try
@@ -42,35 +42,7 @@ public class AgentAuthenticationActivity extends Activity
 	
 	@Override
     public void onCreate(Bundle savedInstanceState)
-    {
-		sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		uname = sharedPref.getString("uname", "");
-		upass = sharedPref.getString("upass", "");
-		if((!uname.contentEquals("") && !upass.contentEquals("")) || AgentApplication.isAuthentic)
-		{
-			Intent startCommunicator = new Intent(getApplicationContext(), AgentCommunicatorService.class);
-			startService(startCommunicator);
-			Intent sendPushMessageToActivity = new Intent();
-			sendPushMessageToActivity.setAction(AgentApplication.INTENT_TO_SERVICE);
-			PushableMessage m = new PushableMessage(uname, PushableMessage.CONTROL_HELLO);
-			m.setMessageContent(upass);
-			sendPushMessageToActivity.putExtra("pushablemessage", m);
-			sendStickyBroadcast(sendPushMessageToActivity);
-			ifIncomingMessage = new IntentFilter();
-			ifIncomingMessage.addAction(AgentApplication.INTENT_TO_ACTIVITY);
-			brVerifyAuthenticity = new BroadcastReceiver()
-			{
-				@Override
-				public void onReceive(Context context, Intent intent) 
-				{
-					Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
-					startActivity(doneAuthentication);
-					unregisterReceiver(this);
-					finish();							
-				}						
-			};
-			registerReceiver(brVerifyAuthenticity, ifIncomingMessage);			
-		}
+    {				
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         Typeface cfont = Typeface.createFromAsset(getAssets(),"fonts/customfont.otf");
@@ -78,7 +50,22 @@ public class AgentAuthenticationActivity extends Activity
         buttonTitle.setTypeface(cfont);
     	login = (Button)findViewById(R.id.button1);
 		txt1 = (EditText)findViewById(R.id.txtUser);
-		txt2 = (EditText)findViewById(R.id.txtPass);	
+		txt2 = (EditText)findViewById(R.id.txtPass);
+		sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		uname = sharedPref.getString("uname", "");
+		upass = sharedPref.getString("upass", "");
+		if(!(uname.contentEquals("") || upass.contentEquals("")))
+		{
+			txt1.setText(uname);
+			txt2.setText(upass);
+			AgentApplication.uname = uname;
+			AgentApplication.isAuthentic = true;
+			Intent startCommunicator = new Intent(getApplicationContext(), AgentCommunicatorService.class);
+			startService(startCommunicator);	
+			Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
+			startActivity(doneAuthentication);
+			finish();
+		}
 		login.setOnClickListener
 		(
 			new OnClickListener()
@@ -86,19 +73,10 @@ public class AgentAuthenticationActivity extends Activity
 				public void onClick(View v) 
 				{	
 					uname = txt1.getText().toString();
-					upass = txt2.getText().toString();							
+					upass = txt2.getText().toString();			
+					AgentApplication.uname = uname;					
 					Intent startCommunicator = new Intent(getApplicationContext(), AgentCommunicatorService.class);
 					startService(startCommunicator);
-					prefEditor = sharedPref.edit();
-					prefEditor.putString("uname", uname);
-					prefEditor.putString("upass", upass);
-					prefEditor.commit();
-					Intent sendPushMessageToActivity = new Intent();
-					sendPushMessageToActivity.setAction(AgentApplication.INTENT_TO_SERVICE);
-					PushableMessage m = new PushableMessage(uname, PushableMessage.CONTROL_HELLO);
-					m.setMessageContent(upass);
-					sendPushMessageToActivity.putExtra("pushablemessage", m);
-					sendStickyBroadcast(sendPushMessageToActivity);
 					ifIncomingMessage = new IntentFilter();
 					ifIncomingMessage.addAction(AgentApplication.INTENT_TO_ACTIVITY);
 					try
@@ -115,6 +93,10 @@ public class AgentAuthenticationActivity extends Activity
 						public void onReceive(Context context, Intent intent) 
 						{
 							Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
+							prefEditor = sharedPref.edit();
+							prefEditor.putString("uname", uname);
+							prefEditor.putString("upass", upass);
+							prefEditor.commit();							
 							startActivity(doneAuthentication);
 							unregisterReceiver(this);
 							finish();							
