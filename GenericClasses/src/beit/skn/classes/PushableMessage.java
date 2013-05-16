@@ -12,6 +12,7 @@ public class PushableMessage implements Serializable
 	private boolean isEncrypted = false;
 	
 	public static final String CONTROL_HELLO = "Hello";
+	public static final String CONTROL_LOGIN = "Login";
 	public static final String CONTROL_LOGOUT = "Logout";
 	public static final String CONTROL_PUSH = "Push";
 	public static final String CONTROL_PING_TEXT = "Text Ping Message";

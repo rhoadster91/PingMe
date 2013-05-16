@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import beit.skn.classes.PushableMessage;
-
 import android.app.Application;
 import android.content.Context;
 
@@ -18,8 +17,7 @@ public class UserApplication extends Application
 {
 	protected static int notifCount = 0;
 	protected static String errorMessage = "";
-	protected static boolean isAuthentic = false;
-	
+	protected static boolean isAuthentic = false;	
 	protected static final String INTENT_TO_SERVICE = "PingMeUserIntentToService";
 	protected static final String INTENT_TO_ACTIVITY = "PingMeUserIntentToActivity";
 	protected static final String LOCATION_UPDATE = "PingMeUserLocationUpdated";
@@ -30,7 +28,9 @@ public class UserApplication extends Application
 	
 	private static final String LOCAL_FILE_FOR_SPLASH_BOX = "splashbox_";
 	
+	
 	protected static String uname = "";
+	protected static String upass = "fakepassword";
 	protected static String IP_ADDRESS;
 	protected static ArrayList<PushableMessage> splashBox = new ArrayList<PushableMessage>();
 	
@@ -111,6 +111,8 @@ public class UserApplication extends Application
         
     }
 
+
+	
 
 	
 

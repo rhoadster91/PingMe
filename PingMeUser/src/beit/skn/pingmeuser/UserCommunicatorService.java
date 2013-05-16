@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import beit.skn.classes.PushableMessage;
+import beit.skn.classes.RSAEncryptorClass;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -34,6 +35,7 @@ public class UserCommunicatorService extends Service
 	ObjectOutputStream objOut = null;
 	ObjectInputStream objIn = null;
 	private boolean handshaked = false;
+	private int serverPublicKey, serverModulus;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
@@ -60,21 +62,40 @@ public class UserCommunicatorService extends Service
 				objIn = new ObjectInputStream(socket.getInputStream());					
 				objOut = new ObjectOutputStream(socket.getOutputStream());				
 				PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_HELLO);
+				String publicKeySpecification = new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus());
+				m.setMessageContent(publicKeySpecification);
 				try 
 				{
 					objOut.writeObject(m);						
 					objOut.flush(); 
+					m = (PushableMessage)objIn.readObject();
+					if(m.getControl().contentEquals(PushableMessage.CONTROL_HELLO))
+					{
+						serverPublicKey = Integer.parseInt(((String)m.getMessageContent()).split(",")[0]);
+						serverModulus = Integer.parseInt(((String)m.getMessageContent()).split(",")[1]);
+					}
+					m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_LOGIN);
+					m.setMessageContent(RSAEncryptorClass.encryptText(UserApplication.upass, serverModulus, serverPublicKey));
+					objOut.writeObject(m);						
+					objOut.flush(); 
+					
 				} 
 				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) 
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
 				try
 				{						
-					m = (PushableMessage)objIn.readObject();
+					
+					m = (PushableMessage)objIn.readObject();					
 					if(m.getControl().contentEquals(PushableMessage.CONTROL_AUTHENTIC))
 					{
+						
 						if(!UserApplication.isAuthentic)
 						{
 							Intent iIsAuthentic = new Intent();

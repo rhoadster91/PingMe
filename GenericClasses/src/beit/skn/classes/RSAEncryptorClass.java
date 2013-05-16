@@ -1,7 +1,7 @@
 package beit.skn.classes;
 
 import java.math.BigInteger;
-import java.util.Random;
+import java.security.SecureRandom;
 
 public class RSAEncryptorClass 
 {
@@ -39,7 +39,7 @@ public class RSAEncryptorClass
 			if(j==i)
 				primeArray[top++] = i;
 		}
-		Random randomNumberGenerator = new Random();
+		SecureRandom randomNumberGenerator = new SecureRandom();
 		i = randomNumberGenerator.nextInt(MAX_PRIME_NUMBERS);
 		do
 		{

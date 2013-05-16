@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import beit.skn.classes.PushableMessage;
+import beit.skn.classes.RSAEncryptorClass;
 
 public class ServerMain extends Thread
 {
@@ -78,7 +79,8 @@ public class ServerMain extends Thread
 	
 	public static void main(String[] args)
 	{
-		System.out.print("Server initializing...");
+		System.out.println("Server initializing...");
+		System.out.println("Server Public Key Pair: (" + RSAEncryptorClass.getPublicKey() + ", " + RSAEncryptorClass.getModulus() + ")");
 		new ServerMain("agent").start();
 		new ServerMain("user").start();		
 		userHelpers = new ArrayList<UserHelper>();

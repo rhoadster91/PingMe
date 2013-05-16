@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.net.*;
 
 import beit.skn.classes.PushableMessage;
+import beit.skn.classes.RSAEncryptorClass;
 
 public class UserHelper extends Thread 
 {
@@ -14,7 +15,7 @@ public class UserHelper extends Thread
 	private String userID = null;
 	private ObjectOutputStream objOut = null;
 	private ObjectInputStream objIn = null;
-	
+	private int userPublicKey, userModulus;
 	
 	public String getUserID() 
 	{
@@ -45,11 +46,21 @@ public class UserHelper extends Thread
 			m = (PushableMessage)objIn.readObject();
 			System.out.println("New user connected. Waiting for ID.");
 			ctrl = m.getControl();
-			if(ctrl.contentEquals(PushableMessage.CONTROL_HELLO))				
-				userID = m.getSender();					
-			System.out.println("User " + userID + " registered to server. Standby for user request.");
-			m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
+			if(ctrl.contentEquals(PushableMessage.CONTROL_HELLO))			
+				userID = m.getSender();				
+			String pair = (String)m.getMessageContent(); 
+			userPublicKey = Integer.parseInt(pair.split(",")[0]);
+			userModulus = Integer.parseInt(pair.split(",")[1]);
+			System.out.println("User " + userID + " registered to server with public key pair (" + userPublicKey + ", " + userModulus + "). Standby for user request.");
+			m = new PushableMessage("server", PushableMessage.CONTROL_HELLO);
+			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
 			pushMessage(m);			
+			m = (PushableMessage)objIn.readObject();
+			System.out.println("Received password: " + (RSAEncryptorClass.decryptText((int [])m.getMessageContent())).trim()); 
+			m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
+			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
+			pushMessage(m);			
+			
 			while(true)
 			{				
 				m = (PushableMessage)objIn.readObject();
