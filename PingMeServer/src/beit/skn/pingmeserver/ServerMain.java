@@ -43,6 +43,7 @@ public class ServerMain extends Thread
 			while(true)
 			{
 				s = userServer.accept();
+				s.setKeepAlive(true);				
 				tempUser = new UserHelper(s);
 				tempUser.start();				
 				userHelpers.add(tempUser);
@@ -66,6 +67,7 @@ public class ServerMain extends Thread
 			while(true)
 			{
 				s = agentServer.accept();
+				s.setKeepAlive(true);
 				tempAgent = new AgentHelper(s);
 				tempAgent.start();
 				agentHelpers.add(tempAgent);				
