@@ -107,6 +107,10 @@ public class UserCommunicatorService extends Service
 					}
 					else
 					{
+						errorMessage = "Could not authenticate. Please check credentials and/or your internet connection.";
+						socket.close();
+						socket = null;
+						this.cancel(true);
 						stopSelf();
 					}
 				} 
@@ -152,7 +156,7 @@ public class UserCommunicatorService extends Service
 		{
 			initiateSendRequestListeners();
 			if(socket!=null)
-			{
+			{								
 				handshaked = true;
 				new MessageReader().execute();
 			}
@@ -306,18 +310,18 @@ public class UserCommunicatorService extends Service
 	{				
 		try
 		{
-			unregisterReceiver(brSendRequested);			
+			unregisterReceiver(brSendRequested);	
+			NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+		    nm.cancel(R.string.servicetext);
+		    nm.cancel(R.string.notificationtext);		    
 		}
 		catch(IllegalArgumentException iae)
 		{
 			// Do nothing
 		} 
-		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-	    nm.cancel(R.string.servicetext);
-	    nm.cancel(R.string.notificationtext);
-	    UserApplication.isAuthentic = false;
-	    if(!logoutRequested)
+		if(!logoutRequested)
 	    {
+			UserApplication.isAuthentic = false;		    
 	    	UserApplication.errorMessage = errorMessage;
 	    	DashboardActivity.onErrorOccured(getApplicationContext());
 	    }	  

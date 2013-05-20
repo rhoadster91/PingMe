@@ -41,7 +41,7 @@ public class AgentHelper extends Thread
 		try 
 		{
 			m = (PushableMessage)objIn.readObject();
-			System.out.println("New user connected. Waiting for ID.");
+			System.out.println("New agent connected. Waiting for ID.");
 			ctrl = m.getControl();
 			if(ctrl.contentEquals(PushableMessage.CONTROL_HELLO))				
 				agentID = m.getSender();		

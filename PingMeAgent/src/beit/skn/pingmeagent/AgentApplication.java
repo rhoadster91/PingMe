@@ -23,7 +23,7 @@ public class AgentApplication extends Application
 	protected static final String INTENT_TO_SERVICE = "PingMeIntentToService";
 	protected static final String INTENT_TO_ACTIVITY = "PingMeIntentToActivity";
 	protected static final String NOTIFICATION_CALL = "PingMeNotificationCall";
-	protected static final int AGENT_PORT_NUMBER = 9974;
+	protected static final int AGENT_PORT_NUMBER = 9976;
 	protected static final String IP_ADDRESS = "10.0.2.2";//"117.195.37.84"; //"117.195.37.84";
 	private static final String LOCAL_FILE_FOR_SPLASH_BOX = "splashbox_";
 	

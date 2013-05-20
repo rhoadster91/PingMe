@@ -12,8 +12,8 @@ public class ServerMain extends Thread
 {
 	private static ServerSocket userServer = null;
 	private static ServerSocket agentServer = null;	
-	private static final int USER_PORT_NUMBER = 9973;
-	private static final int AGENT_PORT_NUMBER = 9974;
+	private static final int USER_PORT_NUMBER = 9975;
+	private static final int AGENT_PORT_NUMBER = 9976;
 	private static ArrayList<UserHelper> userHelpers = null;
 	private static ArrayList<AgentHelper> agentHelpers = null;
 	private String type = null;

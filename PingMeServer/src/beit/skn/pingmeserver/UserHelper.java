@@ -51,35 +51,45 @@ public class UserHelper extends Thread
 			String pair = (String)m.getMessageContent(); 
 			userPublicKey = Integer.parseInt(pair.split(",")[0]);
 			userModulus = Integer.parseInt(pair.split(",")[1]);
-			System.out.println("User " + userID + " registered to server with public key pair (" + userPublicKey + ", " + userModulus + "). Standby for user request.");
+			System.out.println("User " + userID + " attempting to authenticate, public key pair (" + userPublicKey + ", " + userModulus + ")");
 			m = new PushableMessage("server", PushableMessage.CONTROL_HELLO);
 			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
 			pushMessage(m);			
 			m = (PushableMessage)objIn.readObject();
-			System.out.println("Received password: " + (RSAEncryptorClass.decryptText((int [])m.getMessageContent())).trim()); 
-			m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
-			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
-			pushMessage(m);			
-			
-			while(true)
-			{				
-				m = (PushableMessage)objIn.readObject();
-				System.out.println("Received packet");
-				if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
-				{
-					ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
-					System.out.println("Call for " + ((String)m.getMessageContent()).split("&&&")[0] + " from lat " + ((String)m.getMessageContent()).split("&&&")[1] + " long " + ((String)m.getMessageContent()).split("&&&")[2]);
-				}
-				else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
-					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
-				else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
-				{
-					System.out.println("User " + userID + " requested log out. Deleting entry.");
-					ServerMain.deleteEntry(userID, "user");	
-					return;
+			if(DBConnect.isAuthentic(userID, (RSAEncryptorClass.decryptText((int [])m.getMessageContent())).trim()))
+			{
+				System.out.println("User " + userID + " authenticated. Stand by for requests.");				
+				m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
+				m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
+				pushMessage(m);			
+				
+				while(true)
+				{				
+					m = (PushableMessage)objIn.readObject();
+					System.out.println("Received packet");
+					if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
+					{
+						ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
+						System.out.println("Call for " + ((String)m.getMessageContent()).split("&&&")[0] + " from lat " + ((String)m.getMessageContent()).split("&&&")[1] + " long " + ((String)m.getMessageContent()).split("&&&")[2]);
+					}
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
+						ServerMain.pushMessageToClient(m, m.getDestination(), "user");
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
+					{
+						System.out.println("User " + userID + " requested log out. Deleting entry.");
+						ServerMain.deleteEntry(userID, "user");	
+						return;
+					}
 				}
 			}
-			
+			else
+			{
+				System.out.println("User " + userID + " failed to authenticate. Deleting entry.");
+				m = new PushableMessage("server", PushableMessage.CONTROL_ABORT);
+				pushMessage(m);
+				ServerMain.deleteEntry(userID, "user");	
+				return;
+			}
 		} 
 		catch(SocketException se)
 		{
