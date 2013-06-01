@@ -13,6 +13,7 @@ public class UserHelper extends Thread
 {
 	protected Socket socket = null;
 	private String userID = null;
+	private String userPassword = null;	
 	private ObjectOutputStream objOut = null;
 	private ObjectInputStream objIn = null;
 	private int userPublicKey, userModulus;
@@ -56,11 +57,15 @@ public class UserHelper extends Thread
 			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
 			pushMessage(m);			
 			m = (PushableMessage)objIn.readObject();
-			if(DBConnect.isAuthentic(userID, (RSAEncryptorClass.decryptText((int [])m.getMessageContent())).trim()))
+			userPassword = RSAEncryptorClass.decryptText((int [])m.getMessageContent()).trim();
+			if(m.isEncrypted())
+				userPassword = EncryptionStub.decrypt(userPassword);			
+			if(DBConnect.isAuthentic(userID, userPassword))
 			{
 				System.out.println("User " + userID + " authenticated. Stand by for requests.");				
 				m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
-				m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
+				userPassword = EncryptionStub.encrypt(userPassword);
+				m.setMessageContent(RSAEncryptorClass.encryptText(userPassword, userModulus, userPublicKey));
 				pushMessage(m);			
 				
 				while(true)

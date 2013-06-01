@@ -21,8 +21,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class UserCommunicatorService extends Service
@@ -75,7 +77,15 @@ public class UserCommunicatorService extends Service
 						serverModulus = Integer.parseInt(((String)m.getMessageContent()).split(",")[1]);
 					}
 					m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_LOGIN);
-					m.setMessageContent(RSAEncryptorClass.encryptText(UserApplication.upass, serverModulus, serverPublicKey));
+					SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+					String upass = sharedPref.getString("upass", "");
+					if(upass.contentEquals(""))					
+						m.setMessageContent(RSAEncryptorClass.encryptText(UserApplication.upass, serverModulus, serverPublicKey));					
+					else					
+					{
+						m.setMessageContent(RSAEncryptorClass.encryptText(upass, serverModulus, serverPublicKey));
+						m.setEncrypted(true);
+					}
 					objOut.writeObject(m);						
 					objOut.flush(); 
 					
@@ -94,19 +104,27 @@ public class UserCommunicatorService extends Service
 					
 					m = (PushableMessage)objIn.readObject();					
 					if(m.getControl().contentEquals(PushableMessage.CONTROL_AUTHENTIC))
-					{
-						
+					{						
 						if(!UserApplication.isAuthentic)
 						{
+							UserApplication.upass = RSAEncryptorClass.decryptText((int [])m.getMessageContent());							
 							Intent iIsAuthentic = new Intent();
 							iIsAuthentic.setAction(UserApplication.INTENT_TO_ACTIVITY);
-							sendBroadcast(iIsAuthentic);							
+							sendBroadcast(iIsAuthentic);
 							UserApplication.isAuthentic = true;
 						}
 						showPersistentNotification();						
 					}
 					else
 					{
+						if(m.getControl().contentEquals(PushableMessage.CONTROL_ABORT))
+						{
+							SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+							SharedPreferences.Editor prefEditor = sharedPref.edit();						
+							prefEditor.putString("uname", "");
+							prefEditor.putString("upass", "");
+							prefEditor.commit();	
+						}
 						errorMessage = "Could not authenticate. Please check credentials and/or your internet connection.";
 						socket.close();
 						socket = null;

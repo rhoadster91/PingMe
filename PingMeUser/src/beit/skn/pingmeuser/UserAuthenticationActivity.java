@@ -74,7 +74,8 @@ public class UserAuthenticationActivity extends Activity
 				{	
 					uname = txt1.getText().toString();
 					upass = txt2.getText().toString();			
-					UserApplication.uname = uname;					
+					UserApplication.uname = uname;		
+					UserApplication.upass = upass;
 					Intent startCommunicator = new Intent(getApplicationContext(), UserCommunicatorService.class);
 					startService(startCommunicator);
 					ifIncomingMessage = new IntentFilter();
@@ -94,8 +95,8 @@ public class UserAuthenticationActivity extends Activity
 						{
 							Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
 							prefEditor = sharedPref.edit();
-							prefEditor.putString("uname", uname);
-							prefEditor.putString("upass", upass);
+							prefEditor.putString("uname", UserApplication.uname);
+							prefEditor.putString("upass", UserApplication.upass);
 							prefEditor.commit();							
 							startActivity(doneAuthentication);
 							unregisterReceiver(this);

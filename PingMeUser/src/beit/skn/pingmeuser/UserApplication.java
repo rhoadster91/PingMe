@@ -30,7 +30,7 @@ public class UserApplication extends Application
 	
 	
 	protected static String uname = "";
-	protected static String upass = "fireworks";
+	protected static String upass = "";
 	protected static String IP_ADDRESS;
 	protected static ArrayList<PushableMessage> splashBox = new ArrayList<PushableMessage>();
 	
