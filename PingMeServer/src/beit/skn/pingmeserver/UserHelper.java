@@ -60,7 +60,7 @@ public class UserHelper extends Thread
 			userPassword = RSAEncryptorClass.decryptText((int [])m.getMessageContent()).trim();
 			if(m.isEncrypted())
 				userPassword = EncryptionStub.decrypt(userPassword);			
-			if(DBConnect.isAuthentic(userID, userPassword))
+			if(DBConnect.isAuthentic(userID, userPassword, "users"))
 			{
 				System.out.println("User " + userID + " authenticated. Stand by for requests.");				
 				m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);

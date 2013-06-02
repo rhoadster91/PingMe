@@ -20,8 +20,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class AgentCommunicatorService extends Service
@@ -76,7 +78,15 @@ public class AgentCommunicatorService extends Service
 						serverModulus = Integer.parseInt(((String)m.getMessageContent()).split(",")[1]);
 					}
 					m = new PushableMessage(AgentApplication.uname, PushableMessage.CONTROL_LOGIN);
-					m.setMessageContent(RSAEncryptorClass.encryptText(AgentApplication.upass, serverModulus, serverPublicKey));
+					SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+					String upass = sharedPref.getString("upass", "");
+					if(upass.contentEquals(""))					
+						m.setMessageContent(RSAEncryptorClass.encryptText(AgentApplication.upass, serverModulus, serverPublicKey));					
+					else					
+					{
+						m.setMessageContent(RSAEncryptorClass.encryptText(upass, serverModulus, serverPublicKey));
+						m.setEncrypted(true);
+					}
 					objOut.writeObject(m);						
 					objOut.flush(); 
 				} 
@@ -97,6 +107,7 @@ public class AgentCommunicatorService extends Service
 					{
 						if(!AgentApplication.isAuthentic)
 						{
+							AgentApplication.upass = RSAEncryptorClass.decryptText((int [])m.getMessageContent());							
 							Intent iIsAuthentic = new Intent();
 							iIsAuthentic.setAction(AgentApplication.INTENT_TO_ACTIVITY);
 							sendBroadcast(iIsAuthentic);							
@@ -106,6 +117,18 @@ public class AgentCommunicatorService extends Service
 					}
 					else
 					{
+						if(m.getControl().contentEquals(PushableMessage.CONTROL_ABORT))
+						{
+							SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+							SharedPreferences.Editor prefEditor = sharedPref.edit();						
+							prefEditor.putString("uname", "");
+							prefEditor.putString("upass", "");
+							prefEditor.commit();	
+						}
+						errorMessage = "Could not authenticate. Please check credentials and/or your internet connection.";
+						socket.close();
+						socket = null;
+						this.cancel(true);
 						stopSelf();
 					}
 				} 

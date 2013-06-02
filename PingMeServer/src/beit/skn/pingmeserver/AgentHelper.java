@@ -11,6 +11,7 @@ public class AgentHelper extends Thread
 {
 	protected Socket socket = null;
 	private String agentID = "";
+	private String agentPassword = "";
 	private ObjectOutputStream objOut = null;
 	private ObjectInputStream objIn = null;
 	private int agentPublicKey, agentModulus;
@@ -53,29 +54,41 @@ public class AgentHelper extends Thread
 			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
 			pushMessage(m);			
 			m = (PushableMessage)objIn.readObject();
-			System.out.println("Received password: " + (RSAEncryptorClass.decryptText((int [])m.getMessageContent())).trim());
-			
-			m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
-			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
-			
-			pushMessage(m);			
-			while(true)
-			{				
-				m = (PushableMessage)objIn.readObject();
-				System.out.println("Received packet");
-				if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
-				{
-					ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
-					System.out.println("Call for " + ((String)m.getMessageContent()).split("&&&")[0] + " from lat " + ((String)m.getMessageContent()).split("&&&")[1] + " long " + ((String)m.getMessageContent()).split("&&&")[2]);
+			agentPassword = RSAEncryptorClass.decryptText((int [])m.getMessageContent()).trim();
+			if(m.isEncrypted())
+				agentPassword = EncryptionStub.decrypt(agentPassword);
+			if(DBConnect.isAuthentic(agentID, agentPassword, "agents"))
+			{
+				m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
+				m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
+				
+				pushMessage(m);			
+				while(true)
+				{				
+					m = (PushableMessage)objIn.readObject();
+					System.out.println("Received packet");
+					if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
+					{
+						ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
+						System.out.println("Call for " + ((String)m.getMessageContent()).split("&&&")[0] + " from lat " + ((String)m.getMessageContent()).split("&&&")[1] + " long " + ((String)m.getMessageContent()).split("&&&")[2]);
+					}
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
+						ServerMain.pushMessageToClient(m, m.getDestination(), "user");
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
+					{
+						System.out.println("Agent " + agentID + " requested log out. Deleting entry.");
+						ServerMain.deleteEntry(agentID, "agent");	
+						return;
+					}
 				}
-				else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
-					ServerMain.pushMessageToClient(m, m.getDestination(), "user");
-				else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
-				{
-					System.out.println("Agent " + agentID + " requested log out. Deleting entry.");
-					ServerMain.deleteEntry(agentID, "user");	
-					return;
-				}
+			}
+			else
+			{
+				System.out.println("Agent" + agentID + " failed to authenticate. Deleting entry.");
+				m = new PushableMessage("server", PushableMessage.CONTROL_ABORT);
+				pushMessage(m);
+				ServerMain.deleteEntry(agentID, "agent");	
+				return;
 			}
 		} 
 		catch(SocketException se)

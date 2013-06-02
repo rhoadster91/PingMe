@@ -45,11 +45,11 @@ public class DBConnect
 		
 	}
 	
-	public static boolean isAuthentic(String name, String password)
+	public static boolean isAuthentic(String name, String password, String table)
 	{
 		try 
 		{
-			ResultSet rs = con.prepareStatement("select * from users where uname = '" + name + "' and password = '" + password + "'").executeQuery();			
+			ResultSet rs = con.prepareStatement("select * from " + table + " where uname = '" + name + "' and password = '" + password + "'").executeQuery();			
 			if(!rs.next())
 				return false;
 			else

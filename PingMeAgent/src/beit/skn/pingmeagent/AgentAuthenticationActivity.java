@@ -74,7 +74,8 @@ public class AgentAuthenticationActivity extends Activity
 				{	
 					uname = txt1.getText().toString();
 					upass = txt2.getText().toString();			
-					AgentApplication.uname = uname;					
+					AgentApplication.uname = uname;	
+					AgentApplication.upass = upass;
 					Intent startCommunicator = new Intent(getApplicationContext(), AgentCommunicatorService.class);
 					startService(startCommunicator);
 					ifIncomingMessage = new IntentFilter();
@@ -94,8 +95,8 @@ public class AgentAuthenticationActivity extends Activity
 						{
 							Intent doneAuthentication = new Intent(getApplicationContext(), DashboardActivity.class);
 							prefEditor = sharedPref.edit();
-							prefEditor.putString("uname", uname);
-							prefEditor.putString("upass", upass);
+							prefEditor.putString("uname", AgentApplication.uname);
+							prefEditor.putString("upass", AgentApplication.upass);
 							prefEditor.commit();							
 							startActivity(doneAuthentication);
 							unregisterReceiver(this);
