@@ -18,18 +18,19 @@ public class AgentApplication extends Application
 {
 	protected static int notifCount = 0;
 	protected static String errorMessage;
-	protected static boolean isAuthentic = false;
-	
-	protected static final String INTENT_TO_SERVICE = "PingMeIntentToService";
-	protected static final String INTENT_TO_ACTIVITY = "PingMeIntentToActivity";
-	protected static final String NOTIFICATION_CALL = "PingMeNotificationCall";
+	protected static boolean isAuthentic = false;	
+	protected static final String INTENT_TO_SERVICE = "PingMeAgentIntentToService";
+	protected static final String INTENT_TO_ACTIVITY = "PingMeAgentIntentToActivity";
+	protected static final String LOCATION_UPDATE = "PingMeAgentLocationUpdated";	
+	protected static final String NOTIFICATION_CALL = "PingMeAgentNotificationCall";
 	protected static final int AGENT_PORT_NUMBER = 9976;
-	protected static final String IP_ADDRESS = "192.168.0.102";//"10.0.2.2";//"117.195.37.84"; //"117.195.37.84";
 	private static final String LOCAL_FILE_FOR_SPLASH_BOX = "splashbox_";
+	protected static final String LAN_IP_ADDRESS = "192.168.0.102";
+	protected static final String WAN_IP_ADDRESS = "rhoadster91.no-ip.org";
 	
 	protected static String uname = "";
 	protected static String upass = "";
-	
+	protected static String IP_ADDRESS;	
 	protected static ArrayList<PushableMessage> splashBox = new ArrayList<PushableMessage>();
 	
 	protected static void writeSplashBoxToFile(Context context) 

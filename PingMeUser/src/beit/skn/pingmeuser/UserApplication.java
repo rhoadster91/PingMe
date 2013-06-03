@@ -24,7 +24,7 @@ public class UserApplication extends Application
 	protected static final String NOTIFICATION_CALL = "PingMeUserNotificationCall";
 	protected static final int USER_PORT_NUMBER = 9975;
 	protected static final String LAN_IP_ADDRESS = "192.168.0.101";
-	protected static final String WAN_IP_ADDRESS = "117.195.41.132";
+	protected static final String WAN_IP_ADDRESS = "rhoadster91.no-ip.org";
 	
 	private static final String LOCAL_FILE_FOR_SPLASH_BOX = "splashbox_";
 	

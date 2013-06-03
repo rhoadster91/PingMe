@@ -11,14 +11,19 @@
     <application android:icon="@drawable/icon" android:label="@string/app_name"  android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".AgentApplication">
         <activity android:name=".AgentAuthenticationActivity"
                   android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            
         </activity>
 		<activity android:name=".DashboardActivity"
                   android:label="@string/app_name">
         </activity>
+        <activity android:name=".IntroActivity"
+                  android:label="@string/app_name">
+                  <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
         <service android:name=".AgentCommunicatorService">
         </service>	
     </application>

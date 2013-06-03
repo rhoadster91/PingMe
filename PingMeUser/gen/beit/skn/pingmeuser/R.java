@@ -46,8 +46,8 @@ public final class R {
         public static final int titlebutton=0x7f02000e;
     }
     public static final class id {
-        public static final int bLAN=0x7f060012;
-        public static final int bWAN=0x7f060013;
+        public static final int bLAN=0x7f060013;
+        public static final int bWAN=0x7f060012;
         public static final int button1=0x7f06001c;
         public static final int buttonLogOut=0x7f06000d;
         public static final int buttonPingAmbulance=0x7f060011;
