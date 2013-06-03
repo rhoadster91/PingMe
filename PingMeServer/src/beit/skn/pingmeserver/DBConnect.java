@@ -60,9 +60,25 @@ public class DBConnect
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}		
+		return false;		
+	}
+	
+	public static String getAgentClassFromDatabase(String agentID)
+	{
+		try 
+		{
+			ResultSet rs = con.prepareStatement("select class from agents where uname = '" + agentID + "'").executeQuery();	
+			rs.first();
+			String agentClass = rs.getString(1);
+			return agentClass;
+				
+		} 
+		catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		return false;
-		
+		return null;
 	}
 }

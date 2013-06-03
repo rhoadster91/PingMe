@@ -15,6 +15,7 @@ public class AgentHelper extends Thread
 	private ObjectOutputStream objOut = null;
 	private ObjectInputStream objIn = null;
 	private int agentPublicKey, agentModulus;
+	private String agentClass = null;
 	
 	public String getAgentID()
 	{
@@ -49,7 +50,7 @@ public class AgentHelper extends Thread
 			String pair = (String)m.getMessageContent(); 
 			agentPublicKey = Integer.parseInt(pair.split(",")[0]);
 			agentModulus = Integer.parseInt(pair.split(",")[1]);			
-			System.out.println("Agent " + agentID + " registered to server with public key pair (" + agentPublicKey + ", " + agentModulus + "). Waiting for user request.");
+			System.out.println("Agent " + agentID + " attempting to authenticate with public key pair (" + agentPublicKey + ", " + agentModulus + "). Waiting for user request.");
 			m = new PushableMessage("server", PushableMessage.CONTROL_HELLO);
 			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
 			pushMessage(m);			
@@ -59,9 +60,11 @@ public class AgentHelper extends Thread
 				agentPassword = EncryptionStub.decrypt(agentPassword);
 			if(DBConnect.isAuthentic(agentID, agentPassword, "agents"))
 			{
+				agentClass = DBConnect.getAgentClassFromDatabase(agentID);
+				System.out.println("Agent " + agentID + " of class " + agentClass + " authenticated. Standind by for user requests.");				
 				m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
-				m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
-				
+				agentPassword = EncryptionStub.encrypt(agentPassword);
+				m.setMessageContent(RSAEncryptorClass.encryptText(agentPassword, agentModulus, agentPublicKey));				
 				pushMessage(m);			
 				while(true)
 				{				
@@ -84,7 +87,7 @@ public class AgentHelper extends Thread
 			}
 			else
 			{
-				System.out.println("Agent" + agentID + " failed to authenticate. Deleting entry.");
+				System.out.println("Agent " + agentID + " failed to authenticate. Deleting entry.");
 				m = new PushableMessage("server", PushableMessage.CONTROL_ABORT);
 				pushMessage(m);
 				ServerMain.deleteEntry(agentID, "agent");	
@@ -127,4 +130,9 @@ public class AgentHelper extends Thread
 			e.printStackTrace();
 		}		
 	}
+
+	public String getAgentClass() 
+	{
+		return agentClass;
+	}	
 }
