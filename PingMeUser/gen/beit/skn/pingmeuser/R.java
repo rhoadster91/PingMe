@@ -35,14 +35,15 @@ public final class R {
         public static final int cops=0x7f020003;
         public static final int icon=0x7f020004;
         public static final int images=0x7f020005;
-        public static final int pingmeback=0x7f020006;
-        public static final int places=0x7f020007;
-        public static final int refresh=0x7f020008;
-        public static final int stop=0x7f020009;
-        public static final int taxi=0x7f02000a;
-        public static final int text=0x7f02000b;
-        public static final int titlebar=0x7f02000c;
-        public static final int titlebutton=0x7f02000d;
+        public static final int mailbox=0x7f020006;
+        public static final int pingmeback=0x7f020007;
+        public static final int places=0x7f020008;
+        public static final int refresh=0x7f020009;
+        public static final int stop=0x7f02000a;
+        public static final int taxi=0x7f02000b;
+        public static final int text=0x7f02000c;
+        public static final int titlebar=0x7f02000d;
+        public static final int titlebutton=0x7f02000e;
     }
     public static final class id {
         public static final int bLAN=0x7f060012;

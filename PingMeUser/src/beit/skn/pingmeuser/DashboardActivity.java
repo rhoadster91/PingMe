@@ -24,6 +24,8 @@ public class DashboardActivity extends Activity
 	Button bPingCop = null;
 	Button bPingAmb = null;
 	Button bPingPlace = null;
+	ViewPager myPager;
+	
 	static IntentFilter ifLocationUpdate; 
 	static BroadcastReceiver brLocationUpdate;
 	String myLoc = null;
@@ -50,20 +52,25 @@ public class DashboardActivity extends Activity
 		startService(startLocMgr);
 		
 		DashboardPagerAdapter adapter = new DashboardPagerAdapter();
-        final ViewPager myPager = (ViewPager) findViewById(R.id.mythreepanelpager);
+        myPager = (ViewPager) findViewById(R.id.mythreepanelpager);
         myPager.setAdapter(adapter);
         
 		
 		UserApplication.readObjectFromFile(getApplicationContext());
 		
-		myPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+		ViewPager.OnPageChangeListener myListener = new ViewPager.OnPageChangeListener(){
 
 			public void onPageScrollStateChanged(int arg0) {
 				// TODO Auto-generated method stub
 				
 			}
-
-			public void onPageScrolled(int arg0, float arg1, int arg2) 
+			
+			public void onPageSelected(int arg0) 
+			
+			{
+				
+			}
+			public void onPageScrolled(int arg0, float arg1, int arg2)			
 			{
 				switch(myPager.getCurrentItem())
 				{
@@ -105,7 +112,7 @@ public class DashboardActivity extends Activity
 								Intent sendMessageToService = new Intent();
 								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
 								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-								m.setMessageContent(new String("COP"));
+								m.setMessageContent(new String("COP&&&"));
 								sendMessageToService.putExtra("pushablemessage", m);
 								sendBroadcast(sendMessageToService);
 								Toast.makeText(getApplicationContext(), "Pinged for the police.", Toast.LENGTH_LONG).show();
@@ -129,7 +136,7 @@ public class DashboardActivity extends Activity
 							
 								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
 								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-								m.setMessageContent(new String("RICK"));
+								m.setMessageContent(new String("RICK&&&"));
 								sendMessageToService.putExtra("pushablemessage", m);
 								sendBroadcast(sendMessageToService);
 								Toast.makeText(getApplicationContext(), "Pinged for a rickshaw.", Toast.LENGTH_LONG).show();
@@ -152,7 +159,7 @@ public class DashboardActivity extends Activity
 								Intent sendMessageToService = new Intent();
 								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
 								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-								m.setMessageContent(new String("AMB"));
+								m.setMessageContent(new String("AMB&&&"));
 								sendMessageToService.putExtra("pushablemessage", m);
 								sendBroadcast(sendMessageToService);
 								Toast.makeText(getApplicationContext(), "Pinged for an ambulance.", Toast.LENGTH_LONG).show();
@@ -161,7 +168,19 @@ public class DashboardActivity extends Activity
 								Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
 						}			
 					});
+					
+					bSplash = (Button)findViewById(R.id.dashtosplash);
+					bSplash.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent iSplashbox = new Intent(getApplicationContext(), SplashBoxActivity.class);
+							startActivity(iSplashbox);
+						}			
+					});
 					break;
+					
+					
 				case 2:
 					bPingText = (Button)findViewById(R.id.buttonPingText);
 					bPingText.setOnClickListener(new OnClickListener()
@@ -207,32 +226,20 @@ public class DashboardActivity extends Activity
 						}			
 					});
 					
-					bSplash = (Button)findViewById(R.id.dashtosplash);
-					bSplash.setOnClickListener(new OnClickListener()
-					{
-						public void onClick(View arg0)
-						{
-							Intent iSplashbox = new Intent(getApplicationContext(), SplashBoxActivity.class);
-							startActivity(iSplashbox);
-						}			
-					});
+					
 					break;
 				
 				}
 			}
-
-			public void onPageSelected(int arg0) {
-				// TODO Auto-generated method stub
-				
-			}
 			
-		});
-		
-		myPager.setCurrentItem(1);
-
+		};
+		myPager.setOnPageChangeListener(myListener);
+		myPager.setCurrentItem(0);	
 		
 	}
-
+	
+	
+	
 	
 	
 	@Override
@@ -265,7 +272,7 @@ public class DashboardActivity extends Activity
 		super.onPause();
 	}
 
-
+	
 
 	@Override
 	protected void onResume() 

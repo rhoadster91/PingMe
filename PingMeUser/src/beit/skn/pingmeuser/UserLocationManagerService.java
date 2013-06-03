@@ -26,7 +26,7 @@ public class UserLocationManagerService extends Service
 	        	iUpdatedLocation.setAction(UserApplication.LOCATION_UPDATE);
 	        	String str = new String(loc.getLatitude()  + "&&&" + loc.getLongitude());
 				iUpdatedLocation.putExtra("Location", str);
-				sendBroadcast(iUpdatedLocation);   	 
+				sendStickyBroadcast(iUpdatedLocation);   	 
 				stopSelf();
 	        }
 	         
@@ -47,7 +47,9 @@ public class UserLocationManagerService extends Service
 
 			
 	    };
-	    locmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,10000.0f,onLocationChange);
+	    locmgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,onLocationChange);
+	    if(locmgr.isProviderEnabled(LocationManager.GPS_PROVIDER))
+	    	locmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,onLocationChange);
 	    super.onCreate();
 	}
 	
