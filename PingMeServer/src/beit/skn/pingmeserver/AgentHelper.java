@@ -16,6 +16,7 @@ public class AgentHelper extends Thread
 	private ObjectInputStream objIn = null;
 	private int agentPublicKey, agentModulus;
 	private String agentClass = null;
+	private boolean isBusy = false;
 	
 	public String getAgentID()
 	{
@@ -72,11 +73,18 @@ public class AgentHelper extends Thread
 					System.out.println("Received packet");
 					if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
 					{
-						ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
-						System.out.println("Call for " + ((String)m.getMessageContent()).split("&&&")[0] + " from lat " + ((String)m.getMessageContent()).split("&&&")[1] + " long " + ((String)m.getMessageContent()).split("&&&")[2]);
+						int serviceID = Integer.parseInt(m.getDestination());
+						if(!ServerMain.isServiced(serviceID))
+						{
+							ServerMain.setServiced(serviceID, true);							
+							m.setDestination(ServerMain.getServiceUser(serviceID));
+							m.setMessageContent(new String("Your rickshaw in on its way to your location"));
+							ServerMain.pushMessageToClient(m, m.getDestination(), "user");
+						}
+						
 					}
-					else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
-						ServerMain.pushMessageToClient(m, m.getDestination(), "user");
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_ABORT))
+						isBusy = false;
 					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
 					{
 						System.out.println("Agent " + agentID + " requested log out. Deleting entry.");
@@ -134,5 +142,15 @@ public class AgentHelper extends Thread
 	public String getAgentClass() 
 	{
 		return agentClass;
+	}
+
+	public boolean isBusy() 
+	{
+		return isBusy;
+	}
+
+	public void setBusy(boolean isBusy) 
+	{
+		this.isBusy = isBusy;
 	}	
 }

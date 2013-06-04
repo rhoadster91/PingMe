@@ -97,6 +97,12 @@ public class DashboardActivity extends Activity
 		        	String uri = "geo:0,0?q=" + ((String)AgentApplication.pendingMessage.getMessageContent()).split("&&&")[1] + "," + ((String)AgentApplication.pendingMessage.getMessageContent()).split("&&&")[2] + "(go here)";
 					Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
 					startActivity(intent);
+					Intent sendMessageToService = new Intent();
+					sendMessageToService.setAction(AgentApplication.INTENT_TO_SERVICE);
+					PushableMessage m = new PushableMessage(AgentApplication.uname, PushableMessage.CONTROL_PUSH);
+					m.setDestination(""+AgentApplication.pendingMessage.getSender());
+					sendMessageToService.putExtra("pushablemessage", m);
+					sendBroadcast(sendMessageToService);
 		        	AgentApplication.pendingMessage = null;
 		        }
 		     })
@@ -104,6 +110,11 @@ public class DashboardActivity extends Activity
 		    {
 		        public void onClick(DialogInterface dialog, int which) 
 		        { 
+		        	Intent sendMessageToService = new Intent();
+					sendMessageToService.setAction(AgentApplication.INTENT_TO_SERVICE);
+					PushableMessage m = new PushableMessage(AgentApplication.uname, PushableMessage.CONTROL_ABORT);
+					sendMessageToService.putExtra("pushablemessage", m);
+					sendBroadcast(sendMessageToService);
 		        	AgentApplication.pendingMessage = null;
 		        }
 		     })

@@ -17,6 +17,8 @@ public class ServerMain extends Thread
 	private static ArrayList<UserHelper> userHelpers = null;
 	private static ArrayList<AgentHelper> agentHelpers = null;
 	private String type = null;
+	private static ArrayList<Boolean> serviceRequests = null;
+	private static ArrayList<String> serviceRequestUsers = null;
 	
 	public ServerMain(String param)
 	{
@@ -87,6 +89,8 @@ public class ServerMain extends Thread
 		new ServerMain("user").start();		
 		userHelpers = new ArrayList<UserHelper>();
 		agentHelpers = new ArrayList<AgentHelper>();	
+		serviceRequests = new ArrayList<Boolean>();
+		serviceRequestUsers = new ArrayList<String>();
 		System.out.println("done.");
 	}
 	
@@ -165,17 +169,37 @@ public class ServerMain extends Thread
 	
 	public static void multicastToAgents(PushableMessage m, String agentClass)
 	{
+		int serviceID = serviceRequests.size();
+		serviceRequests.add(new Boolean(false));
+		serviceRequestUsers.add(m.getSender());
+		m.setSender(""+serviceID);
 		Iterator<AgentHelper> agentIterator = null;
 		AgentHelper temp;
 		agentIterator = agentHelpers.iterator();
 		while(agentIterator.hasNext())
 		{
 			temp = agentIterator.next();
-			if(temp.getAgentClass().contentEquals(agentClass))
+			if(temp.getAgentClass().contentEquals(agentClass) && !temp.isBusy())
 			{
 				temp.pushMessage(m);
+				temp.setBusy(true);
 				System.out.println("Call message forwarded to " + temp.getAgentID());
 			}
 		}
+	}
+	
+	public static boolean isServiced(int id)
+	{
+		return serviceRequests.get(id).booleanValue();		
+	}
+	
+	public static void setServiced(int id, boolean value)
+	{
+		serviceRequests.set(id, new Boolean(value));		
+	}
+	
+	public static String getServiceUser(int id)
+	{
+		return serviceRequestUsers.get(id);		
 	}
 }
