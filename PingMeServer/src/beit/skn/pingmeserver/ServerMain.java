@@ -11,11 +11,14 @@ import beit.skn.classes.RSAEncryptorClass;
 public class ServerMain extends Thread
 {
 	private static ServerSocket userServer = null;
-	private static ServerSocket agentServer = null;	
+	private static ServerSocket agentServer = null;
+	private static ServerSocket coderunnerServer = null;
+	private static final int CODERUNNER_PORT_NUMBER = 9974;
 	private static final int USER_PORT_NUMBER = 9975;
 	private static final int AGENT_PORT_NUMBER = 9976;
 	private static ArrayList<UserHelper> userHelpers = null;
 	private static ArrayList<AgentHelper> agentHelpers = null;
+	private static ArrayList<CodeRunnerHelper> coderunnerHelpers = null;
 	private String type = null;
 	private static ArrayList<Boolean> serviceRequests = null;
 	private static ArrayList<String> serviceRequestUsers = null;
@@ -29,9 +32,34 @@ public class ServerMain extends Thread
 	{
 		if(type.contentEquals("agent"))
 			this.runAgentThread();
-		else
+		else if(type.contentEquals("user"))
 			this.runUserThread();		
+		else
+			this.runCodeRunnerThread();
 		super.run();
+	}
+	
+	public void runCodeRunnerThread()
+	{
+		CodeRunnerHelper tempCodeRunner = null;		
+		try 
+		{
+			Socket s = null;
+			coderunnerServer = new ServerSocket(CODERUNNER_PORT_NUMBER);
+			System.out.println("New Code Runner Server up and running, and listening on port " + CODERUNNER_PORT_NUMBER + "...");
+			while(true)
+			{
+				s = coderunnerServer.accept();
+				s.setKeepAlive(true);				
+				tempCodeRunner = new CodeRunnerHelper(s);
+				tempCodeRunner.start();				
+				coderunnerHelpers.add(tempCodeRunner);
+			}
+		} 
+		catch (IOException e)		
+		{			
+			e.printStackTrace();
+		}
 	}
 	
 	public void runUserThread()
@@ -86,9 +114,11 @@ public class ServerMain extends Thread
 		System.out.println("Server initializing...");
 		System.out.println("Server Public Key Pair: (" + RSAEncryptorClass.getPublicKey() + ", " + RSAEncryptorClass.getModulus() + ")");
 		new ServerMain("agent").start();
-		new ServerMain("user").start();		
+		new ServerMain("user").start();
+		new ServerMain("coderunner").start();
 		userHelpers = new ArrayList<UserHelper>();
-		agentHelpers = new ArrayList<AgentHelper>();	
+		agentHelpers = new ArrayList<AgentHelper>();
+		coderunnerHelpers = new ArrayList<CodeRunnerHelper>();
 		serviceRequests = new ArrayList<Boolean>();
 		serviceRequestUsers = new ArrayList<String>();
 		System.out.println("done.");
