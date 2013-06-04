@@ -162,4 +162,20 @@ public class ServerMain extends Thread
 			}
 		}
 	}
+	
+	public static void multicastToAgents(PushableMessage m, String agentClass)
+	{
+		Iterator<AgentHelper> agentIterator = null;
+		AgentHelper temp;
+		agentIterator = agentHelpers.iterator();
+		while(agentIterator.hasNext())
+		{
+			temp = agentIterator.next();
+			if(temp.getAgentClass().contentEquals(agentClass))
+			{
+				temp.pushMessage(m);
+				System.out.println("Call message forwarded to " + temp.getAgentID());
+			}
+		}
+	}
 }

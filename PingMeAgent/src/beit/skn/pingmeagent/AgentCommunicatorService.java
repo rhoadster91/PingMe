@@ -197,6 +197,7 @@ public class AgentCommunicatorService extends Service
 					if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT) || m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
 					{
 						AgentApplication.splashBox.add(m);
+						AgentApplication.pendingMessage = m;
 						AgentApplication.writeSplashBoxToFile(getApplicationContext());
 					}
 					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
@@ -383,12 +384,12 @@ public class AgentCommunicatorService extends Service
 		NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         String text = String.format(getString(R.string.notificationtext), AgentApplication.notifCount);
         Notification notification = new Notification(R.drawable.icon, text, 0);
-        //Intent showActivity = new Intent(this, SplashBoxActivity.class);
-       // showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-       // showActivity.putExtra("pushablemessage", m);
-       // showActivity.setAction(UserApplication.INTENT_TO_ACTIVITY);
-       // PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);        
-      //  notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
+        Intent showActivity = new Intent(this, DashboardActivity.class);
+        showActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        showActivity.putExtra("pushablemessage", m);
+        showActivity.setAction(AgentApplication.INTENT_TO_ACTIVITY);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);        
+        notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_AUTO_CANCEL;
         notification.defaults = Notification.DEFAULT_ALL;        
         nm.notify(R.string.notificationtext, notification);

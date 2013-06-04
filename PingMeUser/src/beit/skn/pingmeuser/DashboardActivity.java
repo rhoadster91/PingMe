@@ -112,7 +112,7 @@ public class DashboardActivity extends Activity
 								Intent sendMessageToService = new Intent();
 								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
 								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-								m.setMessageContent(new String("COP&&&"));
+								m.setMessageContent(new String("COP&&&" + myLoc));
 								sendMessageToService.putExtra("pushablemessage", m);
 								sendBroadcast(sendMessageToService);
 								Toast.makeText(getApplicationContext(), "Pinged for the police.", Toast.LENGTH_LONG).show();
@@ -136,7 +136,7 @@ public class DashboardActivity extends Activity
 							
 								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
 								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-								m.setMessageContent(new String("RICK&&&"));
+								m.setMessageContent(new String("RICKSHAW&&&" + myLoc));
 								sendMessageToService.putExtra("pushablemessage", m);
 								sendBroadcast(sendMessageToService);
 								Toast.makeText(getApplicationContext(), "Pinged for a rickshaw.", Toast.LENGTH_LONG).show();
@@ -159,7 +159,7 @@ public class DashboardActivity extends Activity
 								Intent sendMessageToService = new Intent();
 								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
 								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
-								m.setMessageContent(new String("AMB&&&"));
+								m.setMessageContent(new String("AMBULANCE&&&" + myLoc));
 								sendMessageToService.putExtra("pushablemessage", m);
 								sendBroadcast(sendMessageToService);
 								Toast.makeText(getApplicationContext(), "Pinged for an ambulance.", Toast.LENGTH_LONG).show();

@@ -2,10 +2,13 @@ package beit.skn.pingmeagent;
 
 import beit.skn.classes.PushableMessage;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -18,7 +21,8 @@ public class DashboardActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{		
 		setContentView(R.layout.dash);
-		super.onCreate(savedInstanceState);		
+		super.onCreate(savedInstanceState);	
+		displayPendingMessage();		
 		AgentApplication.readSplashBoxFromFile(getApplicationContext());
 		AgentApplication.notifCount = 0;		
 		ifIncomingMessage = new IntentFilter();
@@ -67,6 +71,8 @@ public class DashboardActivity extends Activity
 	@Override
 	protected void onResume() 
 	{
+		displayPendingMessage();
+		AgentApplication.notifCount = 0;		
 		registerReceiver(brGetIncomingMessages, ifIncomingMessage);	
 		super.onResume();
 	}	
@@ -76,5 +82,33 @@ public class DashboardActivity extends Activity
 	{
 		Toast.makeText(con, AgentApplication.errorMessage, Toast.LENGTH_LONG).show();
 	}	
+	
+	protected void displayPendingMessage()
+	{
+		if(AgentApplication.pendingMessage!=null)
+		{
+			new AlertDialog.Builder(this)
+		    .setTitle("New pending request")
+		    .setMessage("Do you want to respond?")
+		    .setPositiveButton("Yes", new DialogInterface.OnClickListener() 
+		    {
+		        public void onClick(DialogInterface dialog, int which) 
+		        { 
+		        	String uri = "geo:0,0?q=" + ((String)AgentApplication.pendingMessage.getMessageContent()).split("&&&")[1] + "," + ((String)AgentApplication.pendingMessage.getMessageContent()).split("&&&")[2] + "(go here)";
+					Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+					startActivity(intent);
+		        	AgentApplication.pendingMessage = null;
+		        }
+		     })
+		    .setNegativeButton("No", new DialogInterface.OnClickListener() 
+		    {
+		        public void onClick(DialogInterface dialog, int which) 
+		        { 
+		        	AgentApplication.pendingMessage = null;
+		        }
+		     })
+		     .show();
+		}
+	}
 }
 

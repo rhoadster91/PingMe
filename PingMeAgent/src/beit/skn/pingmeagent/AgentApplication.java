@@ -32,6 +32,7 @@ public class AgentApplication extends Application
 	protected static String upass = "";
 	protected static String IP_ADDRESS;	
 	protected static ArrayList<PushableMessage> splashBox = new ArrayList<PushableMessage>();
+	protected static PushableMessage pendingMessage = null;
 	
 	protected static void writeSplashBoxToFile(Context context) 
 	{
