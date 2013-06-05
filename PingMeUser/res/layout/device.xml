@@ -3,7 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+	<LinearLayout android:id="@+id/linearLayout2" android:layout_height="64dp" android:layout_width="match_parent">
+        <Button android:layout_height="fill_parent" android:background="@drawable/titlebutton" android:id="@+id/tButtonLogin" android:layout_width="64dp"></Button>
+        <Button android:background="@drawable/titlebar" android:layout_height="fill_parent" android:layout_width="match_parent" android:id="@+id/tBarDash" android:textSize="12pt" android:gravity="left|center_vertical" android:textColor="@color/white" android:text=" Devices"></Button>
 
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >

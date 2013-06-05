@@ -36,11 +36,14 @@
                   android:label="@string/app_name">
             
         </activity>
-		<activity android:name=".SplashBoxActivity"
+        <activity android:name=".SplashBoxActivity"
                   android:label="@string/app_name">
             
         </activity>
-		
+		<activity android:name=".DeviceListActivity"
+                  android:label="@string/app_name">
+            
+        </activity>
 		<service android:name=".UserCommunicatorService">
 		</service>
 		<service android:name=".UserLocationManagerService">
