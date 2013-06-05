@@ -24,6 +24,7 @@ public class DashboardActivity extends Activity
 	Button bPingCop = null;
 	Button bPingAmb = null;
 	Button bPingPlace = null;
+	Button bPingCode = null;
 	ViewPager myPager;
 	
 	static IntentFilter ifLocationUpdate; 
@@ -56,7 +57,7 @@ public class DashboardActivity extends Activity
         myPager.setAdapter(adapter);
         
 		
-		UserApplication.readObjectFromFile(getApplicationContext());
+		UserApplication.readSplashboxFromFile(getApplicationContext());
 		
 		ViewPager.OnPageChangeListener myListener = new ViewPager.OnPageChangeListener(){
 
@@ -189,6 +190,16 @@ public class DashboardActivity extends Activity
 						{
 							Intent iPingText = new Intent(getApplicationContext(), PingTextActivity.class);
 							startActivity(iPingText);
+						}			
+					});
+					
+					bPingCode = (Button)findViewById(R.id.buttonPingCode);
+					bPingCode.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent iShowDevices = new Intent(getApplicationContext(), DeviceListActivity.class);
+							startActivity(iShowDevices);
 						}			
 					});
 					

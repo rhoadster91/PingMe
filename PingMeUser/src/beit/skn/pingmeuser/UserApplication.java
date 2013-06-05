@@ -27,12 +27,13 @@ public class UserApplication extends Application
 	protected static final String WAN_IP_ADDRESS = "rhoadster91.no-ip.org";
 	
 	private static final String LOCAL_FILE_FOR_SPLASH_BOX = "splashbox_";
-	
+	private static final String LOCAL_FILE_FOR_DEVICES = "devices_";
 	
 	protected static String uname = "";
 	protected static String upass = "";
 	protected static String IP_ADDRESS;
 	protected static ArrayList<PushableMessage> splashBox = new ArrayList<PushableMessage>();
+	protected static ArrayList<String> deviceList = new ArrayList<String>();
 	
 	protected static void writeSplashBoxToFile(Context context) 
 	{
@@ -64,10 +65,41 @@ public class UserApplication extends Application
             }
         }
     }
+	
+	protected static void writeDeviceListToFile(Context context) 
+	{
+        ObjectOutputStream objectOut = null;
+        try {
+
+            FileOutputStream fileOut = context.openFileOutput(LOCAL_FILE_FOR_DEVICES + uname, Context.MODE_PRIVATE);
+            objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(deviceList);
+            fileOut.getFD().sync();
+
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        } 
+        finally 
+        {
+            if (objectOut != null) 
+            {                
+            	try 
+            	{
+                    objectOut.close();
+                } 
+            	catch (IOException e)
+                {
+                    
+                }
+            }
+        }
+    }
 
    
     @SuppressWarnings("unchecked")
-	public static void readObjectFromFile(Context context) 
+	public static void readSplashboxFromFile(Context context) 
     {
         ObjectInputStream objectIn = null;
         Object object = null;
@@ -111,11 +143,48 @@ public class UserApplication extends Application
         
     }
 
+    @SuppressWarnings("unchecked")
+	public static void readDevicelistFromFile(Context context) 
+    {
+        ObjectInputStream objectIn = null;
+        Object object = null;
+        try 
+        {
+            FileInputStream fileIn = context.getApplicationContext().openFileInput(LOCAL_FILE_FOR_DEVICES + uname);
+            objectIn = new ObjectInputStream(fileIn);
+            object = objectIn.readObject();
 
-	
-
-	
-
-	
-
+        } 
+        catch (FileNotFoundException e)
+        {
+            
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        } 
+        finally
+        {
+            if (objectIn != null)
+            {
+                try 
+                {
+                    objectIn.close();
+                } 
+                catch (IOException e)
+                {
+                    
+                }
+            }
+        }
+        if(object!=null)
+        	deviceList = (ArrayList<String>) object;
+        else
+        	deviceList = new ArrayList<String>();
+        
+    }
 }

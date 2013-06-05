@@ -48,7 +48,7 @@ public class UserAuthenticationActivity extends Activity
         Typeface cfont = Typeface.createFromAsset(getAssets(),"fonts/customfont.otf");
         Button buttonTitle = (Button)findViewById(R.id.tBarLogin);
         buttonTitle.setTypeface(cfont);
-    	login = (Button)findViewById(R.id.button1);
+    	login = (Button)findViewById(R.id.bAddDevice);
 		txt1 = (EditText)findViewById(R.id.txtUser);
 		txt2 = (EditText)findViewById(R.id.txtPass);
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
