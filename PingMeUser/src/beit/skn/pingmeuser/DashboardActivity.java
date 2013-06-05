@@ -12,15 +12,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.text.InputType;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class DashboardActivity extends Activity 
@@ -35,6 +41,11 @@ public class DashboardActivity extends Activity
 	Button bPingPlace = null;
 	Button bPingCode = null;
 	Button bPingImage = null;
+	Button bChangeICE = null;
+	Button bSignOut = null;
+	CheckBox checkPersistent = null;
+	CheckBox checkDND = null;
+	
 	ProgressDialog loading = null;
 	ViewPager myPager;
 	ViewPager.OnPageChangeListener myListener;
@@ -90,7 +101,135 @@ public class DashboardActivity extends Activity
 				{
 					switch(myPager.getCurrentItem())
 					{
-					
+					case 0:
+						bChangeICE = (Button)findViewById(R.id.buttonICE);
+						bChangeICE.setOnClickListener(new OnClickListener()
+						{
+							public void onClick(View arg0)
+							{
+								SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());								
+								AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
+					        	builder.setTitle("Current contact number: " + sharedPref.getString("emergency number", "(none)"));
+					        	final EditText input = new EditText(getApplicationContext());
+					        	input.setInputType(InputType.TYPE_CLASS_PHONE);
+					        	builder.setView(input);
+					        	builder.setPositiveButton("Change", new DialogInterface.OnClickListener() 
+					        	{ 
+					        	    public void onClick(DialogInterface dialog, int which) 
+					        	    {
+					        	    	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+										SharedPreferences.Editor prefEditor = sharedPref.edit();	
+										prefEditor.putString("emergency number", input.getText().toString());
+										prefEditor.commit();	    				
+					        	    }
+					        	});
+					        	builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() 
+					        	{
+					        	    public void onClick(DialogInterface dialog, int which) {
+					        	        dialog.cancel();
+					        	    }
+					        	});
+
+					        	builder.show();
+							}			
+						});
+						
+						bSignOut = (Button)findViewById(R.id.buttonSignOut);
+						bSignOut.setOnClickListener(new OnClickListener()
+						{
+							public void onClick(View arg0)
+							{
+								Intent sendMessageToService = new Intent();
+								sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+								PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_LOGOUT);
+								sendMessageToService.putExtra("pushablemessage", m);
+								sendBroadcast(sendMessageToService);
+								Toast.makeText(getApplicationContext(), "Logged out successfully.", Toast.LENGTH_LONG).show();
+								NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+								nm.cancel(R.string.servicetext);
+								SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+								SharedPreferences.Editor prefEditor = sharedPref.edit();	
+								prefEditor.clear();
+								prefEditor.commit();
+								finish();
+							}			
+						});
+						
+						checkPersistent = (CheckBox)findViewById(R.id.checkPersistent);
+						checkPersistent.setChecked(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("persistent notification", true));
+						checkPersistent.setOnCheckedChangeListener(new OnCheckedChangeListener()
+						{
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
+							{
+								if(!isChecked)
+								{
+									AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
+						        	builder.setTitle("Caution");
+						        	final TextView text = new TextView(getApplicationContext());
+						        	text.setText("The persistent notification tells the Android system that PingMe is active, thereby preventing the system from closing it automatically. It is not recommended to close this service, especially if your device has less RAM.");
+						        	builder.setView(text);
+						        	builder.setPositiveButton("Turn off anyway", new DialogInterface.OnClickListener() 
+						        	{ 
+						        	    public void onClick(DialogInterface dialog, int which) 
+						        	    {
+						        	    	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+											SharedPreferences.Editor prefEditor = sharedPref.edit();	
+											prefEditor.putBoolean("persistent notification", false);
+											try
+											{
+												NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+											    nm.cancel(R.string.servicetext);
+											    nm.cancel(R.string.notificationtext);		    
+											}
+											catch(Exception e)
+											{
+												// Do nothing
+											}
+											prefEditor.commit();	    				
+						        	    }
+						        	});
+						        	builder.setNegativeButton("Keep on", new DialogInterface.OnClickListener() 
+						        	{
+						        	    public void onClick(DialogInterface dialog, int which) 
+						        	    {
+						        	    	checkPersistent.setChecked(true);
+						        	    }
+						        	});
+
+						        	builder.show();
+								}
+								else
+								{
+									SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+									if(!sharedPref.getBoolean("persistent notification", true))
+										Toast.makeText(getApplicationContext(), "Changes will reflect next time you log in", Toast.LENGTH_LONG).show();
+									SharedPreferences.Editor prefEditor = sharedPref.edit();	
+									prefEditor.putBoolean("persistent notification", true);
+									prefEditor.commit();									
+								}
+							}							
+						});
+						
+						checkDND = (CheckBox)findViewById(R.id.checkDND);
+						checkDND.setChecked(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("dnd", false));
+						checkDND.setOnCheckedChangeListener(new OnCheckedChangeListener()
+						{
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
+							{
+								
+									SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();	
+									prefEditor.putBoolean("dnd", isChecked);
+									prefEditor.commit();					
+									if(isChecked)
+										Toast.makeText(getApplicationContext(), "New pings will not be notified.", Toast.LENGTH_LONG).show();
+									else
+										Toast.makeText(getApplicationContext(), "New pings will be notified.", Toast.LENGTH_LONG).show();
+							}
+														
+						});	
+						
+						break;
+
 					case 1:					
 						bPingCab = (Button)findViewById(R.id.buttonPingTaxi);
 						bPingCab.setOnClickListener(new OnClickListener()

@@ -5,31 +5,26 @@
     android:orientation="vertical" >
 
     <CheckBox
-        android:id="@+id/checkBox1"
+        android:id="@+id/checkPersistent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show persistent notification" />
 
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/checkDND"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Do not disturb mode" />
 
+    
     <Button
-        android:id="@+id/button1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="View paired devices" />
-
-    <Button
-        android:id="@+id/button3"
+        android:id="@+id/buttonICE"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Change emergency contact number" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/buttonSignOut"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sign out of this device" />

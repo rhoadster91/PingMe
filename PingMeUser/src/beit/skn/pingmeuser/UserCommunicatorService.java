@@ -113,7 +113,8 @@ public class UserCommunicatorService extends Service
 							sendBroadcast(iIsAuthentic);
 							UserApplication.isAuthentic = true;
 						}
-						showPersistentNotification();						
+						if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("persistent notification", true))
+							showPersistentNotification();						
 					}
 					else
 					{
@@ -360,8 +361,7 @@ public class UserCommunicatorService extends Service
 	public IBinder onBind(Intent arg0) 
 	{
 		return null;
-	}
-	
+	}	
 	
 	private void showPersistentNotification()
 	{
@@ -390,7 +390,8 @@ public class UserCommunicatorService extends Service
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showActivity, 0);        
         notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_AUTO_CANCEL;
-        notification.defaults = Notification.DEFAULT_ALL;        
-        nm.notify(R.string.notificationtext, notification);
+        notification.defaults = Notification.DEFAULT_ALL;  
+        if(!PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("dnd", true))			
+        	nm.notify(R.string.notificationtext, notification);
 	}	
 }
