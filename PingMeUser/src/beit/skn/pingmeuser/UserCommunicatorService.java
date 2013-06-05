@@ -391,7 +391,7 @@ public class UserCommunicatorService extends Service
         notification.setLatestEventInfo(this, getText(R.string.servicename), text, contentIntent);
         notification.flags = Notification.FLAG_AUTO_CANCEL;
         notification.defaults = Notification.DEFAULT_ALL;  
-        if(!PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("dnd", true))			
+        if(!PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("dnd", false))			
         	nm.notify(R.string.notificationtext, notification);
 	}	
 }
