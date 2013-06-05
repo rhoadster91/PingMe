@@ -65,7 +65,8 @@ public class UserHelper extends Thread
 				System.out.println("User " + userID + " authenticated. Stand by for requests.");				
 				m = new PushableMessage("server", PushableMessage.CONTROL_AUTHENTIC);
 				userPassword = EncryptionStub.encrypt(userPassword);
-				m.setMessageContent(RSAEncryptorClass.encryptText(userPassword, userModulus, userPublicKey));
+				System.out.println("Sending emergency number " + DBConnect.getEmergencyNumberFromDatabase(userID) + " to user");
+				m.setMessageContent(RSAEncryptorClass.encryptText(userPassword + "&&&delimiter&&&" + DBConnect.getEmergencyNumberFromDatabase(userID), userModulus, userPublicKey));
 				pushMessage(m);			
 				
 				while(true)

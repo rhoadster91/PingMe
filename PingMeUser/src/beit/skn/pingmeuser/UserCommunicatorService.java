@@ -107,11 +107,16 @@ public class UserCommunicatorService extends Service
 					{						
 						if(!UserApplication.isAuthentic)
 						{
-							UserApplication.upass = RSAEncryptorClass.decryptText((int [])m.getMessageContent());							
+							UserApplication.upass = RSAEncryptorClass.decryptText((int [])m.getMessageContent()).split("&&&delimiter&&&")[0];
+							SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+							SharedPreferences.Editor prefEditor = sharedPref.edit();						
+							prefEditor.putString("emergency number", RSAEncryptorClass.decryptText((int [])m.getMessageContent()).split("&&&delimiter&&&")[1]);							
+							prefEditor.commit();
 							Intent iIsAuthentic = new Intent();
 							iIsAuthentic.setAction(UserApplication.INTENT_TO_ACTIVITY);
 							sendBroadcast(iIsAuthentic);
-							UserApplication.isAuthentic = true;
+							UserApplication.isAuthentic = true;							
+							
 						}
 						if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("persistent notification", true))
 							showPersistentNotification();						
@@ -195,11 +200,11 @@ public class UserCommunicatorService extends Service
 				try 
 				{
 					m = (PushableMessage)objIn.readObject();
-					if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT) || m.getControl().contentEquals(PushableMessage.CONTROL_PUSH) || m.getControl().contentEquals(PushableMessage.CONTROL_PING_IMAGE))
+					if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT) || m.getControl().contentEquals(PushableMessage.CONTROL_PUSH)  || m.getControl().contentEquals(PushableMessage.CONTROL_PING_IMAGE))
 					{
 						UserApplication.splashBox.add(m);
 						UserApplication.writeSplashBoxToFile(getApplicationContext());
-					}
+					}					
 					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
 					{
 						socket.close();

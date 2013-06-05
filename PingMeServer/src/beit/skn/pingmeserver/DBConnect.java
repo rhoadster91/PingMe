@@ -64,6 +64,24 @@ public class DBConnect
 		return false;		
 	}
 	
+	public static String getEmergencyNumberFromDatabase(String userID)
+	{
+		try 
+		{
+			ResultSet rs = con.prepareStatement("select ice from users where uname = '" + userID + "'").executeQuery();	
+			rs.first();
+			String emergencyNumber = rs.getString(1);
+			return emergencyNumber;
+				
+		} 
+		catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static String getAgentClassFromDatabase(String agentID)
 	{
 		try 
