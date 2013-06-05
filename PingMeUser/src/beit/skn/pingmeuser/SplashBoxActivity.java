@@ -56,12 +56,19 @@ public class SplashBoxActivity extends Activity
 			{
 				
 				Object o = splashList.getItemAtPosition(count - arg2 - 1);
-				PushableMessage m = (PushableMessage)o;				
-				if(((String)m.getMessageContent()).split(" ")[0].contentEquals("LOC"))
+				PushableMessage m = (PushableMessage)o;		
+				if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_IMAGE))
 				{
-					String uri = "geo:0,0?q=" + ((String)m.getMessageContent()).split(" ")[1] + "," + ((String)m.getMessageContent()).split(" ")[2] + "(" + m.getSender() + ")";
-					Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
-					startActivity(intent);
+					
+				}
+				else
+				{
+					if(((String)m.getMessageContent()).split(" ")[0].contentEquals("LOC"))
+					{
+						String uri = "geo:0,0?q=" + ((String)m.getMessageContent()).split(" ")[1] + "," + ((String)m.getMessageContent()).split(" ")[2] + "(" + m.getSender() + ")";
+						Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+						startActivity(intent);
+					}
 				}
 				
 			}

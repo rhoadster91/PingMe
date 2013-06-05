@@ -2,16 +2,21 @@ package beit.skn.pingmeuser;
 
 import beit.skn.classes.PushableMessage;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.InputType;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class DashboardActivity extends Activity 
@@ -25,10 +30,12 @@ public class DashboardActivity extends Activity
 	Button bPingAmb = null;
 	Button bPingPlace = null;
 	Button bPingCode = null;
+	Button bPingImage = null;
 	ViewPager myPager;
 	
 	static IntentFilter ifLocationUpdate; 
 	static BroadcastReceiver brLocationUpdate;
+	static Bitmap bitmap;
 	String myLoc = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -193,6 +200,17 @@ public class DashboardActivity extends Activity
 						}			
 					});
 					
+					bPingImage = (Button)findViewById(R.id.buttonPingImage);
+					bPingImage.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View arg0)
+						{
+							Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+							startActivityForResult(cameraIntent, 0);
+							
+						}			
+					});
+					
 					bPingCode = (Button)findViewById(R.id.buttonPingCode);
 					bPingCode.setOnClickListener(new OnClickListener()
 					{
@@ -249,7 +267,49 @@ public class DashboardActivity extends Activity
 		
 	}
 	
-	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) 
+	{
+	    super.onActivityResult(requestCode, resultCode, data);
+	    if (requestCode == 0) 
+	    {
+	        if (resultCode == RESULT_OK) 
+	        {
+	        	bitmap = (Bitmap) data.getExtras().get("data");	        	
+	        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        	builder.setTitle("Enter recepient name");
+	        	final EditText input = new EditText(this);
+	        	input.setInputType(InputType.TYPE_CLASS_TEXT);
+	        	builder.setView(input);
+	        	builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+	        	{ 
+	        	    public void onClick(DialogInterface dialog, int which) 
+	        	    {
+	        	    	Intent sendMessageToService = new Intent();
+	    				sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+	    				PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PING_IMAGE);
+	    				m.setDestination(input.getText().toString());
+	    				sendMessageToService.putExtra("pushablemessage", m);
+	    				sendBroadcast(sendMessageToService);
+	        	    }
+	        	});
+	        	builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() 
+	        	{
+	        	    public void onClick(DialogInterface dialog, int which) {
+	        	        dialog.cancel();
+	        	    }
+	        	});
+
+	        	builder.show();
+	        	
+	            
+	        }
+	        if(resultCode == RESULT_CANCELED)
+	        {
+	        	// do nothing
+	        }
+	    }
+	}
 	
 	
 	

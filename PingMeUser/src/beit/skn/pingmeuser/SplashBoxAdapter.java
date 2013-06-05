@@ -30,10 +30,12 @@ public class SplashBoxAdapter extends ArrayAdapter<Object>
 	    TextView sender = (TextView) rowView.findViewById(R.id.splashSender);
 	    m = (PushableMessage)values[count - position - 1];
 	    sender.setText(m.getSender());
-	    sender.setTextColor(getContext().getResources().getColor(R.color.black));
-	    
+	    sender.setTextColor(getContext().getResources().getColor(R.color.black));	    
 	    TextView content = (TextView) rowView.findViewById(R.id.splashContent);
-	    content.setText((String)m.getMessageContent());	    	    
+	    if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_IMAGE))
+	    	content.setText("Image");
+	    else
+	    	content.setText((String)m.getMessageContent());	    	    
 	    return rowView;
 	  }
 }

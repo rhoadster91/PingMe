@@ -78,7 +78,7 @@ public class UserHelper extends Thread
 						System.out.println("Call for " + ((String)m.getMessageContent()).split("&&&")[0] + " from lat " + ((String)m.getMessageContent()).split("&&&")[1] + " long " + ((String)m.getMessageContent()).split("&&&")[2]);
 						ServerMain.multicastToAgents(m, ((String)m.getMessageContent()).split("&&&")[0]);
 					}
-					else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT) || m.getControl().contentEquals(PushableMessage.CONTROL_PING_IMAGE))
 						ServerMain.pushMessageToClient(m, m.getDestination(), "user");
 					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
 					{

@@ -194,7 +194,7 @@ public class UserCommunicatorService extends Service
 				try 
 				{
 					m = (PushableMessage)objIn.readObject();
-					if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT) || m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
+					if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT) || m.getControl().contentEquals(PushableMessage.CONTROL_PUSH) || m.getControl().contentEquals(PushableMessage.CONTROL_PING_IMAGE))
 					{
 						UserApplication.splashBox.add(m);
 						UserApplication.writeSplashBoxToFile(getApplicationContext());
