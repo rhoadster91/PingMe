@@ -1,5 +1,7 @@
 package beit.skn.pingmeuser;
 
+import java.io.ByteArrayOutputStream;
+
 import beit.skn.classes.PushableMessage;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,7 +37,7 @@ public class DashboardActivity extends Activity
 	
 	static IntentFilter ifLocationUpdate; 
 	static BroadcastReceiver brLocationUpdate;
-	static Bitmap bitmap;
+	static Bitmap bitmap = null;
 	String myLoc = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -289,8 +291,12 @@ public class DashboardActivity extends Activity
 	    				sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
 	    				PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PING_IMAGE);
 	    				m.setDestination(input.getText().toString());
+	    				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	    				bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+	    				byte[] byteArray = stream.toByteArray();
+	    				m.setMessageContent(byteArray);
 	    				sendMessageToService.putExtra("pushablemessage", m);
-	    				sendBroadcast(sendMessageToService);
+	    				sendBroadcast(sendMessageToService);	    				
 	        	    }
 	        	});
 	        	builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() 

@@ -59,7 +59,9 @@ public class SplashBoxActivity extends Activity
 				PushableMessage m = (PushableMessage)o;		
 				if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_IMAGE))
 				{
-					
+					Intent iPingImage = new Intent(getApplicationContext(), ImageViewer.class);
+					iPingImage.putExtra("image message", m);
+					startActivity(iPingImage);
 				}
 				else
 				{
