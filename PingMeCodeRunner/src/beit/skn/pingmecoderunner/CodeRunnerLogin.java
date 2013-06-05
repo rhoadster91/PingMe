@@ -44,6 +44,7 @@ public class CodeRunnerLogin extends JDialog
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				new CodeRunnerCommunicator(ipaddress, textUsername.getText(), new String(textPassword.getPassword()));	
+				setVisible(false);
 			}
 			
 		});

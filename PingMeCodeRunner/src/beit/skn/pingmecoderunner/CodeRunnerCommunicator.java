@@ -1,5 +1,8 @@
 package beit.skn.pingmecoderunner;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -21,6 +24,7 @@ public class CodeRunnerCommunicator
 	
 	CodeRunnerCommunicator(String ipaddress, String uname, String password)
 	{
+		CodeRunnerCommunicator.uname = uname;
 		try 
 		{
 			socket = new Socket(ipaddress, 9974);
@@ -48,12 +52,13 @@ public class CodeRunnerCommunicator
 			} 
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (ClassNotFoundException e) 
+				System.exit(0);
+			}
+			catch (ClassNotFoundException e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.exit(0);
 			} 
 			try
 			{						
@@ -61,7 +66,18 @@ public class CodeRunnerCommunicator
 				m = (PushableMessage)objIn.readObject();					
 				if(m.getControl().contentEquals(PushableMessage.CONTROL_AUTHENTIC))
 				{						
-					new CodeRunnerUI();						
+					File hostname = new File("hostname.txt");
+					try
+					{
+						FileReader fr = new FileReader(hostname);
+						new CodeRunnerUI();
+						fr.close();
+					}
+					catch(FileNotFoundException fnfe)
+					{
+						new HostNameDialog();
+					}
+											
 				}
 				else
 				{
@@ -71,19 +87,22 @@ public class CodeRunnerCommunicator
 			} 
 			catch(ConnectException ce)
 			{
-			
+				System.exit(0);
 			}
 			catch (StreamCorruptedException e)
 			{
 				e.printStackTrace();
+				System.exit(0);
 			} 
 			catch (IOException e) 
 			{
 				e.printStackTrace();
+				System.exit(0);
 			} 
 			catch (ClassNotFoundException e) 
 			{
 				e.printStackTrace();
+				System.exit(0);
 			}					
 		} 
 		catch (UnknownHostException e) 
@@ -96,6 +115,30 @@ public class CodeRunnerCommunicator
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		new Thread()
+		{
+			public void run()
+			{
+				while(true)
+				{
+					try 
+					{
+						PushableMessage m = (PushableMessage)objIn.readObject();
+						
+					}
+					catch (ClassNotFoundException e) 
+					{
+						e.printStackTrace();
+						System.exit(0);
+					}
+					catch (IOException e) 
+					{
+						e.printStackTrace();
+						System.exit(0);
+					}					
+					
+				}
+			}	
+		}.start();
 	}
 }
