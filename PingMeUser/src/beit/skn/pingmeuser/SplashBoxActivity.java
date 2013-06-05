@@ -2,8 +2,10 @@ package beit.skn.pingmeuser;
 
 import beit.skn.classes.PushableMessage;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -11,7 +13,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class SplashBoxActivity extends Activity
 {
@@ -51,8 +55,7 @@ public class SplashBoxActivity extends Activity
 		count = splashList.getCount();
 		splashList.setOnItemClickListener(new OnItemClickListener()
 		{
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) 
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) 
 			{
 				
 				Object o = splashList.getItemAtPosition(count - arg2 - 1);
@@ -71,7 +74,58 @@ public class SplashBoxActivity extends Activity
 						Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
 						startActivity(intent);
 					}
+					else
+					{
+						AlertDialog.Builder builder = new AlertDialog.Builder(SplashBoxActivity.this);
+			        	builder.setTitle(m.getSender());
+			        	final TextView text = new TextView(getApplicationContext());
+			        	text.setText((String)m.getMessageContent());
+			        	builder.setView(text);
+			        	builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+			        	{ 
+			        	    public void onClick(DialogInterface dialog, int which) 
+			        	    {
+			        	    	// Do nothing									    				
+			        	    }
+			        	});
+			        	
+			        	builder.show();
+					}
 				}
+				
+			}
+			
+		});
+		
+		splashList.setOnItemLongClickListener(new OnItemLongClickListener()
+		{
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) 
+			{				
+				AlertDialog.Builder builder = new AlertDialog.Builder(SplashBoxActivity.this);
+	        	builder.setTitle("Confirm");
+	        	final int i = arg2;
+	        	final TextView text = new TextView(getApplicationContext());
+	        	text.setText("Do you want to delete this ping?");
+	        	builder.setView(text);
+	        	builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
+	        	{ 
+	        	    public void onClick(DialogInterface dialog, int which) 
+	        	    {
+	        	    	UserApplication.splashBox.remove(count - i - 1);	 
+	        	    	UserApplication.writeSplashBoxToFile(getApplicationContext());
+	        	    	refreshList();
+	        	    }
+	        	});
+	        	builder.setNegativeButton("No", new DialogInterface.OnClickListener() 
+	        	{
+	        	    public void onClick(DialogInterface dialog, int which) 
+	        	    {
+	        	    	
+	        	    }
+	        	});
+
+	        	builder.show();
+				return false;
 				
 			}
 			
