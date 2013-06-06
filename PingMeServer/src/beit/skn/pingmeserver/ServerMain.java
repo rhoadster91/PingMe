@@ -113,6 +113,9 @@ public class ServerMain extends Thread
 	{
 		System.out.println("Server initializing...");
 		System.out.println("Server Public Key Pair: (" + RSAEncryptorClass.getPublicKey() + ", " + RSAEncryptorClass.getModulus() + ")");
+		System.out.print("Initializing database...");
+		DBConnect.initializeDatabase();
+		System.out.println("OK!");		
 		new ServerMain("agent").start();
 		new ServerMain("user").start();
 		new ServerMain("coderunner").start();
@@ -121,7 +124,7 @@ public class ServerMain extends Thread
 		coderunnerHelpers = new ArrayList<CodeRunnerHelper>();
 		serviceRequests = new ArrayList<Boolean>();
 		serviceRequestUsers = new ArrayList<String>();
-		System.out.println("done.");
+		System.out.println("Done.");
 	}
 	
 	public static void deleteEntry(String id, String clientClass)

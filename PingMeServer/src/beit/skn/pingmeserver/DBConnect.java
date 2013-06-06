@@ -8,6 +8,11 @@ import java.sql.Statement;
 
 public class DBConnect 
 {
+	public static void initializeDatabase()
+	{
+		
+	}
+	
 	private static Connection con;
 	static
 	{
