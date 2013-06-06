@@ -200,6 +200,8 @@ public class ServerMain extends Thread
 	public static void multicastToAgents(PushableMessage m, String agentClass)
 	{
 		int serviceID = serviceRequests.size();
+		double lat = Double.parseDouble((((String)m.getMessageContent()).split("&&&")[1]));
+		double lon = Double.parseDouble((((String)m.getMessageContent()).split("&&&")[2]));
 		serviceRequests.add(new Boolean(false));
 		serviceRequestUsers.add(m.getSender());
 		m.setSender(""+serviceID);
@@ -209,11 +211,11 @@ public class ServerMain extends Thread
 		while(agentIterator.hasNext())
 		{
 			temp = agentIterator.next();
-			if(temp.getAgentClass().contentEquals(agentClass) && !temp.isBusy())
+			if(temp.getAgentClass().contentEquals(agentClass) && !temp.isBusy() && !(LocationMath.distance(lat, lon, temp.getLatitude(), temp.getLongitude()) > 500))
 			{
 				temp.pushMessage(m);
 				temp.setBusy(true);
-				System.out.println("Call message forwarded to " + temp.getAgentID());
+				System.out.println("Call distance: " + LocationMath.distance(lat, lon, temp.getLatitude(), temp.getLongitude()) + "Call message forwarded to " + temp.getAgentID());
 			}
 		}
 	}

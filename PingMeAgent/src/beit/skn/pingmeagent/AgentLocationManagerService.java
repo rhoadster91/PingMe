@@ -1,5 +1,6 @@
-package beit.skn.pingmeuser;
+package beit.skn.pingmeagent;
 
+import beit.skn.classes.PushableMessage;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -9,19 +10,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 
-public class UserLocationManagerService extends Service 
+
+public class AgentLocationManagerService extends Service
 {
 	static LocationManager locmgr = null;	
 	static LocationListener onLocationChange = null;
 	
-	@Override
-	public void onDestroy()
-	{
-		locmgr.removeUpdates(onLocationChange);
-		super.onDestroy();
-	}
-
-
 	@Override
 	public void onCreate() 
 	{
@@ -31,12 +25,17 @@ public class UserLocationManagerService extends Service
 	        public void onLocationChanged(Location loc) 
 	        {
 	        	Intent iUpdatedLocation = new Intent();
-	        	iUpdatedLocation.setAction(UserApplication.LOCATION_UPDATE);
+	        	iUpdatedLocation.setAction(AgentApplication.LOCATION_UPDATE);
 	        	String str = new String(loc.getLatitude()  + "&&&" + loc.getLongitude());
 				iUpdatedLocation.putExtra("Location", str);
-				sendStickyBroadcast(iUpdatedLocation);   	 
-				stopSelf();
-	        }
+				sendStickyBroadcast(iUpdatedLocation);	
+				Intent sendMessageToService = new Intent();
+				sendMessageToService.setAction(AgentApplication.INTENT_TO_SERVICE);
+				PushableMessage m = new PushableMessage(AgentApplication.uname, PushableMessage.CONTROL_UPDATE_LOCATION);
+				m.setMessageContent(loc.getLatitude() + "&&&" + loc.getLongitude());
+				sendMessageToService.putExtra("pushablemessage", m);
+				sendBroadcast(sendMessageToService);
+			}
 	         
 	        public void onProviderDisabled(String provider) 
 	        {
@@ -55,9 +54,9 @@ public class UserLocationManagerService extends Service
 
 			
 	    };
-	    locmgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,onLocationChange);
+	    locmgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,100,onLocationChange);
 	    if(locmgr.isProviderEnabled(LocationManager.GPS_PROVIDER))
-	    	locmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,onLocationChange);
+	    	locmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,100,onLocationChange);
 	    super.onCreate();
 	}
 	
@@ -69,6 +68,14 @@ public class UserLocationManagerService extends Service
 		return START_STICKY;
 	}
 
+	
+
+	@Override
+	public void onDestroy() 
+	{
+		locmgr.removeUpdates(onLocationChange);
+		super.onDestroy();
+	}
 
 
 	@Override

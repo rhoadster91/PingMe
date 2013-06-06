@@ -172,9 +172,11 @@ public class AgentCommunicatorService extends Service
 		@Override
 		protected void onPostExecute(Void result) 
 		{
-			initiateSendRequestListeners();
+			initiateSendRequestListeners();			
 			if(socket!=null)
 			{
+				Intent startLocMgr = new Intent(getApplicationContext(), AgentLocationManagerService.class);
+				startService(startLocMgr);
 				handshaked = true;
 				new MessageReader().execute();
 			}

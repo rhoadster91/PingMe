@@ -20,6 +20,7 @@ public class PushableMessage implements Serializable
 	public static final String CONTROL_ABORT = "Abort";
 	public static final String CONTROL_PING_IMAGE = "Image Ping Message";
 	public static final String CONTROL_PING_CODE = "Code Ping Message";
+	public static final String CONTROL_UPDATE_LOCATION = "Update Location";
 	
 	public PushableMessage()
 	{

@@ -17,6 +17,7 @@ public class AgentHelper extends Thread
 	private int agentPublicKey, agentModulus;
 	private String agentClass = null;
 	private boolean isBusy = false;
+	private double latitude, longitude;
 	
 	public String getAgentID()
 	{
@@ -85,6 +86,12 @@ public class AgentHelper extends Thread
 					}
 					else if(m.getControl().contentEquals(PushableMessage.CONTROL_ABORT))
 						isBusy = false;
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_UPDATE_LOCATION))
+					{
+						latitude = Double.parseDouble(((String)m.getMessageContent()).split("&&&")[0]);
+						longitude = Double.parseDouble(((String)m.getMessageContent()).split("&&&")[1]);
+						System.out.println("UPDATE: Agent " + agentID + " has moved to location " + latitude + ", " + longitude);
+					}
 					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
 					{
 						System.out.println("Agent " + agentID + " requested log out. Deleting entry.");
@@ -152,5 +159,18 @@ public class AgentHelper extends Thread
 	public void setBusy(boolean isBusy) 
 	{
 		this.isBusy = isBusy;
-	}	
+	}
+
+	public double getLatitude() 
+	{
+		return latitude;
+	}
+
+	
+	public double getLongitude() 
+	{
+		return longitude;
+	}
+
+	
 }
