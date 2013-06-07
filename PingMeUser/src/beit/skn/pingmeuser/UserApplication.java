@@ -23,6 +23,8 @@ public class UserApplication extends Application
 	protected static final String LOCATION_UPDATE = "PingMeUserLocationUpdated";
 	protected static final String NOTIFICATION_CALL = "PingMeUserNotificationCall";
 	protected static final String TERMINATE_LOCATION_SERVICE = "PingMeAgentTerminateLocationService";	
+	protected static final String SMS_SENT = "PingMeUserSMSSent";
+	protected static final String SMS_DELIVERED = "PingMeUserSMSDelivered";	
 	protected static final int USER_PORT_NUMBER = 9975;
 	protected static final String LAN_IP_ADDRESS = "192.168.0.102";
 	protected static final String WAN_IP_ADDRESS = "rhoadster91.no-ip.org";

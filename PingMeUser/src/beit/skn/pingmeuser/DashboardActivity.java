@@ -6,6 +6,7 @@ import beit.skn.classes.PushableMessage;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
+import android.telephony.SmsManager;
 import android.text.InputType;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,6 +49,8 @@ public class DashboardActivity extends Activity
 	CheckBox checkDND = null;
 	
 	ProgressDialog loading = null;
+	ProgressDialog sendingSMS = null;
+	static boolean sendSMSCanceled = false;
 	ViewPager myPager;
 	ViewPager.OnPageChangeListener myListener;
 	
@@ -319,6 +323,21 @@ public class DashboardActivity extends Activity
 									sendMessageToService.putExtra("pushablemessage", m);
 									sendBroadcast(sendMessageToService);
 									Toast.makeText(getApplicationContext(), "Pinged for an ambulance.", Toast.LENGTH_LONG).show();
+									sendSMSCanceled = false;									 
+									sendingSMS = new ProgressDialog(DashboardActivity.this);
+									sendingSMS.setMessage("Sending SMS to emergency contact...");
+									sendingSMS.setCancelable(false);
+									sendingSMS.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() 
+									{
+										public void onClick(DialogInterface dialog,	int which) 
+										{
+											 sendSMSCanceled = true;
+											 sendingSMS.dismiss();
+										}
+									    
+									});
+									sendingSMS.show();								
+									new SendEmergencySMS().execute();
 								}
 								else
 									Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
@@ -420,6 +439,48 @@ public class DashboardActivity extends Activity
 		loading = ProgressDialog.show(this, "", "Loading...");
 		new InitializePagerTask().execute();
 	}
+	
+	private class SendEmergencySMS extends AsyncTask<Void, Void, Void>
+	{
+
+		@Override
+		protected Void doInBackground(Void... params)
+		{
+			try 
+			{
+				Thread.sleep(5000);
+			}
+			catch (InterruptedException e) 
+			{
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) 
+		{
+			try
+			{
+				SmsManager manager = SmsManager.getDefault();
+			    PendingIntent piSend = PendingIntent.getBroadcast(DashboardActivity.this, 0, new Intent(UserApplication.SMS_SENT), 0);
+			    PendingIntent piDelivered = PendingIntent.getBroadcast(DashboardActivity.this, 0, new Intent(UserApplication.SMS_DELIVERED), 0);
+			    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());								
+				String phonenumber = sharedPref.getString("emergency number", "(none)");
+	        	if(!(phonenumber.contentEquals("(none") || sendSMSCanceled))
+	        		manager.sendTextMessage(phonenumber, null, "Your friend is in an emergency and may need your help. -SMS sent automatically by PingMe", piSend, piDelivered);        	
+	        	sendingSMS.dismiss();
+				super.onPostExecute(result);
+			}
+			catch(Exception e)
+			{
+				
+			}
+		}		
+	}
+	
+
+	
 	
 	private class InitializePagerTask extends AsyncTask<Void, Void, Void> 
 	{

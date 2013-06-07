@@ -401,4 +401,5 @@ public class UserCommunicatorService extends Service
         if(!PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("dnd", false))			
         	nm.notify(R.string.notificationtext, notification);
 	}	
+	
 }
