@@ -5,8 +5,9 @@
     <string name="enter_username">Enter the username:</string>
     <string name="enter_password">Enter the password:</string>
     <string name="login_button">Log in</string>
-    <string name="wait_now">Please wait for new requests...</string>
+    <string name="wait_now">You are online. Please wait for new requests.</string>
     <string name="servicetext">PingWin is listening for new incoming messages.</string>
     <string name="servicename">PingMe</string>
     <string name="notificationtext">You have %1$d new request(s)</string>
+    <string name="busy_now">You are busy. You will not receive new requests. Please press the green button to go online.</string>
 </resources>

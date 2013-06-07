@@ -215,6 +215,10 @@ public class AgentCommunicatorService extends Service
 						stopSelf();
 						break;
 					}
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_ABORT))
+					{
+						AgentApplication.pendingAbortMessage = m;						
+					}
 					Intent iReadRequested = new Intent();
 					iReadRequested.setAction(AgentApplication.INTENT_TO_ACTIVITY);
 					iReadRequested.putExtra("pushablemessage", m);
@@ -329,6 +333,9 @@ public class AgentCommunicatorService extends Service
 	@Override
 	public void onDestroy() 
 	{				
+		Intent iTerminateLocationService = new Intent();
+		iTerminateLocationService.setAction(AgentApplication.TERMINATE_LOCATION_SERVICE);
+		sendBroadcast(iTerminateLocationService);		
 		try
 		{
 			unregisterReceiver(brSendRequested);			

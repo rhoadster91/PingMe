@@ -86,6 +86,11 @@ public class UserHelper extends Thread
 						ServerMain.deleteEntry(userID, "user");	
 						return;
 					}
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_ABORT))
+					{
+						System.out.println("User " + userID + " aborting request. Forwarding abort message to " + m.getDestination() + ".");
+						ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
+					}
 				}
 			}
 			else

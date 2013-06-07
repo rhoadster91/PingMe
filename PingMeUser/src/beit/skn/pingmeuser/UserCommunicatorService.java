@@ -11,7 +11,6 @@ import java.net.UnknownHostException;
 
 import beit.skn.classes.PushableMessage;
 import beit.skn.classes.RSAEncryptorClass;
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -331,7 +330,10 @@ public class UserCommunicatorService extends Service
 	
 	@Override
 	public void onDestroy() 
-	{				
+	{			
+		Intent iTerminateLocationService = new Intent();
+		iTerminateLocationService.setAction(UserApplication.TERMINATE_LOCATION_SERVICE);
+		sendBroadcast(iTerminateLocationService);	
 		try
 		{
 			unregisterReceiver(brSendRequested);	

@@ -59,12 +59,40 @@ public class SplashBoxActivity extends Activity
 			{
 				
 				Object o = splashList.getItemAtPosition(count - arg2 - 1);
-				PushableMessage m = (PushableMessage)o;		
+				final PushableMessage m = (PushableMessage)o;		
 				if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_IMAGE))
 				{
 					Intent iPingImage = new Intent(getApplicationContext(), ImageViewer.class);
 					iPingImage.putExtra("image message", m);
 					startActivity(iPingImage);
+				}				
+				else if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
+				{
+					AlertDialog.Builder builder = new AlertDialog.Builder(SplashBoxActivity.this);
+		        	builder.setTitle(m.getSender());
+		        	final TextView text = new TextView(getApplicationContext());
+		        	text.setText((String)m.getMessageContent());
+		        	builder.setView(text);
+		        	builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+		        	{ 
+		        	    public void onClick(DialogInterface dialog, int which) 
+		        	    {
+		        	    	// Do nothing									    				
+		        	    }
+		        	});
+		        	builder.setNegativeButton("Cancel request", new DialogInterface.OnClickListener() 
+		        	{ 
+		        	    public void onClick(DialogInterface dialog, int which) 
+		        	    {
+		        	    	Intent sendMessageToService = new Intent();
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage msg = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_ABORT);
+							msg.setDestination(m.getSender());
+							sendMessageToService.putExtra("pushablemessage", msg);
+							sendBroadcast(sendMessageToService);				    				
+		        	    }
+		        	}).show();
+		        	
 				}
 				else
 				{

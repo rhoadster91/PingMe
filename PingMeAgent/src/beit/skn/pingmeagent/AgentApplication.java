@@ -23,6 +23,7 @@ public class AgentApplication extends Application
 	protected static final String INTENT_TO_ACTIVITY = "PingMeAgentIntentToActivity";
 	protected static final String LOCATION_UPDATE = "PingMeAgentLocationUpdated";	
 	protected static final String NOTIFICATION_CALL = "PingMeAgentNotificationCall";
+	protected static final String TERMINATE_LOCATION_SERVICE = "PingMeAgentTerminateLocationService";	
 	protected static final int AGENT_PORT_NUMBER = 9976;
 	private static final String LOCAL_FILE_FOR_SPLASH_BOX = "splashbox_";
 	protected static final String LAN_IP_ADDRESS = "192.168.0.102";
@@ -33,6 +34,7 @@ public class AgentApplication extends Application
 	protected static String IP_ADDRESS;	
 	protected static ArrayList<PushableMessage> splashBox = new ArrayList<PushableMessage>();
 	protected static PushableMessage pendingMessage = null;
+	protected static PushableMessage pendingAbortMessage = null;
 	
 	protected static void writeSplashBoxToFile(Context context) 
 	{

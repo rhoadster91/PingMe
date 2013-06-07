@@ -9,6 +9,60 @@
         <Button android:background="@drawable/titlebar" android:layout_height="fill_parent" android:layout_width="match_parent" android:id="@+id/tBarDashboard" android:textSize="12pt" android:gravity="left|center_vertical" android:textColor="@color/white" android:text=" Dashboard"></Button>
     </LinearLayout>
     
-    <TextView android:textAppearance="?android:attr/textAppearanceLarge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/textView1" android:text="@string/wait_now"></TextView>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" 
+        >
+    
+    <LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    >
+        
+
+
+     <TableRow
+         android:id="@+id/tableRow1"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:gravity="center_horizontal" 
+         android:padding="5dp">
+    
+ <Button
+         android:id="@+id/buttonToggleBusy"
+         android:layout_width="128dp"
+         android:layout_height="128dp"
+         android:background="@drawable/busy" 
+         />
+<View android:layout_width="10dip" android:layout_height="1dip"/>
+        
+     <Button
+         android:id="@+id/buttonLogout"
+         android:layout_width="128dp"
+         android:layout_height="128dp"
+         android:background="@drawable/stop" />
+      </TableRow>
+
+       <TableRow
+         android:id="@+id/tableRow1"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:gravity="center_horizontal" 
+         android:padding="5dp">
+     
+    <TextView android:textAppearance="?android:attr/textAppearanceLarge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/agentStatus" android:text="@string/wait_now"></TextView>
+
+      </TableRow>
+
+      
+      </LinearLayout>
+
+</FrameLayout>
+    
     
 </LinearLayout>

@@ -8,7 +8,7 @@
         <Button android:layout_height="fill_parent" android:background="@drawable/titlebutton" android:id="@+id/tButtonLogin" android:layout_width="64dp"></Button>
         <Button android:background="@drawable/titlebar" android:layout_height="fill_parent" android:layout_width="match_parent" android:id="@+id/tBarLogin" android:textSize="12pt" android:gravity="left|center_vertical" android:textColor="@color/white" android:text=" PingMe Login"></Button>
     </LinearLayout>
-    <TextView android:layout_height="wrap_content" android:id="@+id/textView1" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/enter_username"></TextView>
+    <TextView android:layout_height="wrap_content" android:id="@+id/agentStatus" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/enter_username"></TextView>
     <EditText android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/txtUser">
         <requestFocus></requestFocus>
     </EditText>
