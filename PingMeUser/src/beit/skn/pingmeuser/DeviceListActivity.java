@@ -1,15 +1,22 @@
 package beit.skn.pingmeuser;
 
+import beit.skn.classes.PushableMessage;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Toast;
 
 public class DeviceListActivity extends Activity 
@@ -64,8 +71,63 @@ public class DeviceListActivity extends Activity
 			{
 				
 				Object o = deviceList.getItemAtPosition(arg2);
-				String str = (String)o;			
-				Toast.makeText(getApplicationContext(), "You have selected the device: " + str, Toast.LENGTH_LONG).show();				
+				final String str = (String)o;			
+				AlertDialog.Builder builder = new AlertDialog.Builder(DeviceListActivity.this);
+	        	builder.setTitle("Enter command to be executed on this device:");
+	        	final EditText input = new EditText(DeviceListActivity.this);
+	        	input.setInputType(InputType.TYPE_CLASS_TEXT);
+	        	builder.setView(input);
+	        	builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+	        	{ 
+	        	    public void onClick(DialogInterface dialog, int which) 
+	        	    {
+	        	    	Intent sendMessageToService = new Intent();
+	    				sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+	    				PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PING_CODE);
+	    				m.setDestination(str);
+	    				m.setMessageContent(input.getText().toString());
+	    				sendMessageToService.putExtra("pushablemessage", m);
+	    				sendBroadcast(sendMessageToService);	    				
+	        	    }
+	        	});
+	        	builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() 
+	        	{
+	        	    public void onClick(DialogInterface dialog, int which) {
+	        	        dialog.cancel();
+	        	    }
+	        	}).show();				
+			}
+			
+		});
+		deviceList.setOnItemLongClickListener(new OnItemLongClickListener()
+		{
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)			
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(DeviceListActivity.this);
+	        	builder.setTitle("Confirm");
+	        	final int i = arg2;
+	        	final TextView text = new TextView(getApplicationContext());
+	        	text.setText("Do you want to remove this device?");
+	        	builder.setView(text);
+	        	builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
+	        	{ 
+	        	    public void onClick(DialogInterface dialog, int which) 
+	        	    {
+	        	    	UserApplication.deviceList.remove(i);	 
+	        	    	UserApplication.writeDeviceListToFile(getApplicationContext());
+	        	    	refreshList();
+	        	    }
+	        	});
+	        	builder.setNegativeButton("No", new DialogInterface.OnClickListener() 
+	        	{
+	        	    public void onClick(DialogInterface dialog, int which) 
+	        	    {
+	        	    	
+	        	    }
+	        	});
+
+	        	builder.show();
+	        	return false;
 			}
 			
 		});

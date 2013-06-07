@@ -42,15 +42,18 @@ public class HostNameDialog extends JDialog
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				if(!textHostname.getText().trim().contentEquals(""))
-				{
-					File hostname = new File("hostname.txt");
+				{					
+					File hostname = new File(CodeRunnerCommunicator.uname + "/hostname.txt");
 					try 
 					{
 						FileWriter fw = new FileWriter(hostname);
 						fw.write(textHostname.getText());
 						fw.close();
-						setVisible(false);
+						CodeRunnerCommunicator.setHostname(textHostname.getText());
+						CodeRunnerCommunicator.authenticate();
 						new CodeRunnerUI();
+						setVisible(false);
+						
 					} 
 					catch (IOException e) 
 					{
@@ -64,12 +67,4 @@ public class HostNameDialog extends JDialog
 		setVisible(true);
 		
 	}
-	
-	public static void main(String[] args) 
-	{
-		new HostNameDialog();
-
-	}
-	
-
 }

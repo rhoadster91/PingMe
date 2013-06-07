@@ -321,6 +321,8 @@ public class UserCommunicatorService extends Service
 			public void onReceive(Context context, Intent intent) 
 			{
 				PushableMessage m = (PushableMessage) intent.getSerializableExtra("pushablemessage");
+				if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_CODE))
+					m.setMessageContent(RSAEncryptorClass.encryptText((String)m.getMessageContent(), serverModulus, serverPublicKey));
 				new MessageSender().execute(m);
 			}
 			

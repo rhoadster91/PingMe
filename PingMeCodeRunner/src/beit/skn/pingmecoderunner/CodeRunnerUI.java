@@ -5,12 +5,9 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Scanner;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
@@ -28,14 +25,9 @@ public class CodeRunnerUI extends JFrame
 		setBounds(100, 100, 320, 320);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);		
 		try 
-		{
-			FileInputStream fis = new FileInputStream("hostname.txt");
-			Scanner sc = new Scanner(fis);
-			String hostname = sc.nextLine();
-			
-			ByteArrayOutputStream out = QRCode.from(hostname + "@" + CodeRunnerCommunicator.uname).to(ImageType.PNG).stream();
-	
-			FileOutputStream fout = new FileOutputStream(new File("hostqrcode.jpg"));
+		{									
+			ByteArrayOutputStream out = QRCode.from(CodeRunnerCommunicator.hostname + "@" + CodeRunnerCommunicator.uname).to(ImageType.PNG).stream();	
+			FileOutputStream fout = new FileOutputStream(new File(CodeRunnerCommunicator.uname + "/hostqrcode.jpg"));
 			fout.write(out.toByteArray());
 			fout.flush();
 			fout.close();
@@ -61,16 +53,9 @@ public class CodeRunnerUI extends JFrame
 	public void paint(Graphics g)
 	{
 		super.paint(g);
-		image = getToolkit().getImage("hostqrcode.jpg");
+		image = getToolkit().getImage(CodeRunnerCommunicator.uname + "/hostqrcode.jpg");
 		MediaTracker mt = new MediaTracker(this);
 		mt.addImage(image, 0);
 		g.drawImage(image, 50, 60, 200, 200, this);
 	}
-	
-	public static void main(String[] args) 
-	{
-		new CodeRunnerUI();
-
-	}
-
 }

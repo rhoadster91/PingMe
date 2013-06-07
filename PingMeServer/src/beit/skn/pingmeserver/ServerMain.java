@@ -146,7 +146,7 @@ public class ServerMain extends Thread
 				}
 			}
 		}
-		else
+		else if(clientClass.contentEquals("user"))
 		{
 			Iterator<UserHelper> userIterator = null;
 			UserHelper temp;
@@ -160,6 +160,22 @@ public class ServerMain extends Thread
 					userIterator.remove();
 					System.out.println("User " + id + " unregistered.");
 					break;
+				}
+			}
+		}
+		else
+		{
+			Iterator<CodeRunnerHelper> codeRunnerIterator = null;
+			CodeRunnerHelper temp;
+			codeRunnerIterator = coderunnerHelpers.iterator();
+			while(codeRunnerIterator.hasNext())
+			{
+				temp = codeRunnerIterator.next();
+				if(temp.getUserID().contentEquals(id.split("@")[1]) && temp.getHostname().contentEquals(id.split("@")[0]))
+				{
+					codeRunnerIterator.remove();
+					System.out.println("Host " + id.split("@")[0] + " of user " + id.split("@")[1] + " unregistered.");
+					break;	
 				}
 			}
 		}
@@ -183,7 +199,7 @@ public class ServerMain extends Thread
 				}
 			}			
 		}
-		else
+		else if(clientClass.contentEquals("user"))
 		{
 			Iterator<UserHelper> userIterator = null;
 			UserHelper temp;
@@ -192,6 +208,21 @@ public class ServerMain extends Thread
 			{
 				temp = userIterator.next();
 				if(temp.getUserID().contentEquals(id))
+				{
+					temp.pushMessage(m);
+					break;	
+				}
+			}
+		}
+		else
+		{
+			Iterator<CodeRunnerHelper> codeRunnerIterator = null;
+			CodeRunnerHelper temp;
+			codeRunnerIterator = coderunnerHelpers.iterator();
+			while(codeRunnerIterator.hasNext())
+			{
+				temp = codeRunnerIterator.next();
+				if(temp.getUserID().contentEquals(id.split("@")[1]) && temp.getHostname().contentEquals(id.split("@")[0]))
 				{
 					temp.pushMessage(m);
 					break;	
@@ -218,7 +249,7 @@ public class ServerMain extends Thread
 			{
 				temp.pushMessage(m);
 				temp.setBusy(true);
-				System.out.println("Call distance: " + LocationMath.distance(lat, lon, temp.getLatitude(), temp.getLongitude()) + "Call message forwarded to " + temp.getAgentID());
+				System.out.println("Call distance: " + LocationMath.distance(lat, lon, temp.getLatitude(), temp.getLongitude()) + "; Call message forwarded to " + temp.getAgentID());
 			}
 		}
 	}

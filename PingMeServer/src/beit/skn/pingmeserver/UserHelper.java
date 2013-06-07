@@ -91,6 +91,13 @@ public class UserHelper extends Thread
 						System.out.println("User " + userID + " aborting request. Forwarding abort message to " + m.getDestination() + ".");
 						ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
 					}
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_CODE))
+					{
+						String command = RSAEncryptorClass.decryptText((int [])m.getMessageContent()).trim();
+						System.out.println("User " + userID + " attempting to execute command " + command + " on machine " + m.getDestination() + ".");
+						m.setMessageContent(command);
+						ServerMain.pushMessageToClient(m, m.getDestination(), "coderunner");
+					}
 				}
 			}
 			else

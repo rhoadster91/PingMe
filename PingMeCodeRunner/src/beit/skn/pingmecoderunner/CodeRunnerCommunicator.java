@@ -1,8 +1,5 @@
 package beit.skn.pingmecoderunner;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,21 +13,31 @@ import beit.skn.classes.RSAEncryptorClass;
 
 public class CodeRunnerCommunicator 
 {
-	public static String uname;
-	public static Socket socket;
-	ObjectOutputStream objOut = null;
-	ObjectInputStream objIn = null;
-	private int serverPublicKey, serverModulus;
+	protected static String uname;
+	protected static String hostname;
+	protected static String password;
+	protected static Socket socket;
+	protected static String ipaddress;
+	protected static ObjectOutputStream objOut = null;
+	protected static ObjectInputStream objIn = null;
+	protected static int serverPublicKey, serverModulus;
 	
-	CodeRunnerCommunicator(String ipaddress, String uname, String password)
+	
+	protected static void prepareCommunicatorService(String ip, String user, String passwd)
 	{
-		CodeRunnerCommunicator.uname = uname;
+		ipaddress = ip;
+		uname = user;
+		password = passwd;
+	}
+	
+	protected static void authenticate()
+	{		
 		try 
 		{
 			socket = new Socket(ipaddress, 9974);
 			objIn = new ObjectInputStream(socket.getInputStream());					
 			objOut = new ObjectOutputStream(socket.getOutputStream());				
-			PushableMessage m = new PushableMessage(uname, PushableMessage.CONTROL_HELLO);
+			PushableMessage m = new PushableMessage(hostname + "@" + uname, PushableMessage.CONTROL_HELLO);
 			String publicKeySpecification = new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus());
 			m.setMessageContent(publicKeySpecification);
 			try 
@@ -66,17 +73,7 @@ public class CodeRunnerCommunicator
 				m = (PushableMessage)objIn.readObject();					
 				if(m.getControl().contentEquals(PushableMessage.CONTROL_AUTHENTIC))
 				{						
-					File hostname = new File("hostname.txt");
-					try
-					{
-						FileReader fr = new FileReader(hostname);
-						new CodeRunnerUI();
-						fr.close();
-					}
-					catch(FileNotFoundException fnfe)
-					{
-						new HostNameDialog();
-					}
+					
 											
 				}
 				else
@@ -119,15 +116,15 @@ public class CodeRunnerCommunicator
 		{
 			public void run()
 			{
+				String command = new String();
 				while(true)
 				{
 					try 
 					{
 						PushableMessage m = (PushableMessage)objIn.readObject();
-						String command = RSAEncryptorClass.decryptText((int [])m.getMessageContent());
-						Process p = Runtime.getRuntime().exec(command);
-						p.waitFor();
-						
+						command = RSAEncryptorClass.decryptText((int [])m.getMessageContent());
+						Runtime.getRuntime().exec(command);
+						System.out.println("Executing command " + command);						
 					}
 					catch (ClassNotFoundException e) 
 					{
@@ -138,15 +135,20 @@ public class CodeRunnerCommunicator
 					{
 						e.printStackTrace();
 						System.exit(0);
-					} 
-					catch (InterruptedException e) 
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}					
-					
+					catch (Exception e)
+					{
+						System.out.println("Execution of command '" + command + "' failed.");
+						e.printStackTrace();
+					}
 				}
 			}	
 		}.start();
+	}
+
+	
+	public static void setHostname(String hostname) 
+	{
+		CodeRunnerCommunicator.hostname = hostname;
 	}
 }

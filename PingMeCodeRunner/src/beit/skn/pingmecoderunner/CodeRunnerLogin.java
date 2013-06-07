@@ -2,6 +2,10 @@ package beit.skn.pingmecoderunner;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -43,7 +47,21 @@ public class CodeRunnerLogin extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				new CodeRunnerCommunicator(ipaddress, textUsername.getText(), new String(textPassword.getPassword()));	
+				new File(textUsername.getText()).mkdir();
+				CodeRunnerCommunicator.prepareCommunicatorService(ipaddress, textUsername.getText(), new String(textPassword.getPassword()));				
+				try
+				{
+					FileInputStream fis = new FileInputStream(textUsername.getText() + "/hostname.txt");	
+					Scanner sc = new Scanner(fis);
+					CodeRunnerCommunicator.setHostname(sc.nextLine());
+					CodeRunnerCommunicator.authenticate();
+					new CodeRunnerUI();
+					sc.close();
+				}
+				catch(FileNotFoundException fnfe)
+				{
+					new HostNameDialog();
+				} 									
 				setVisible(false);
 			}
 			

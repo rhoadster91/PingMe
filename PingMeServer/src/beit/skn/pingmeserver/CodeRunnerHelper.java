@@ -13,6 +13,7 @@ public class CodeRunnerHelper extends Thread
 {
 	protected Socket socket = null;
 	private String userID = null;
+	private String hostname = null;
 	private String userPassword = null;	
 	private ObjectOutputStream objOut = null;
 	private ObjectInputStream objIn = null;
@@ -47,12 +48,15 @@ public class CodeRunnerHelper extends Thread
 			m = (PushableMessage)objIn.readObject();
 			System.out.println("New user connected. Waiting for ID.");
 			ctrl = m.getControl();
-			if(ctrl.contentEquals(PushableMessage.CONTROL_HELLO))			
-				userID = m.getSender();				
+			if(ctrl.contentEquals(PushableMessage.CONTROL_HELLO))
+			{
+				userID = m.getSender().split("@")[1];
+				hostname = m.getSender().split("@")[0];
+			}
 			String pair = (String)m.getMessageContent(); 
 			userPublicKey = Integer.parseInt(pair.split(",")[0]);
 			userModulus = Integer.parseInt(pair.split(",")[1]);
-			System.out.println("User " + userID + " attempting to authenticate, public key pair (" + userPublicKey + ", " + userModulus + ")");
+			System.out.println("Host " + hostname + " of user " + userID + " attempting to authenticate, public key pair (" + userPublicKey + ", " + userModulus + ")");
 			m = new PushableMessage("server", PushableMessage.CONTROL_HELLO);
 			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
 			pushMessage(m);			
@@ -74,18 +78,9 @@ public class CodeRunnerHelper extends Thread
 					System.out.println("Received packet");
 					if(m.getControl().contentEquals(PushableMessage.CONTROL_PUSH))
 					{
-						//ServerMain.pushMessageToClient(m, m.getDestination(), "agent");
 						System.out.println("Call for " + ((String)m.getMessageContent()).split("&&&")[0] + " from lat " + ((String)m.getMessageContent()).split("&&&")[1] + " long " + ((String)m.getMessageContent()).split("&&&")[2]);
 						ServerMain.multicastToAgents(m, ((String)m.getMessageContent()).split("&&&")[0]);
-					}
-					else if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_TEXT))
-						ServerMain.pushMessageToClient(m, m.getDestination(), "user");
-					else if(m.getControl().contentEquals(PushableMessage.CONTROL_LOGOUT))
-					{
-						System.out.println("User " + userID + " requested log out. Deleting entry.");
-						ServerMain.deleteEntry(userID, "user");	
-						return;
-					}
+					}					
 				}
 			}
 			else
@@ -99,7 +94,8 @@ public class CodeRunnerHelper extends Thread
 		} 
 		catch(SocketException se)
 		{
-			System.out.println("User " + userID + " disconnected from server. Deleting entry.");			
+			System.out.println("User " + userID + " disconnected from server. Deleting entry.");	
+			ServerMain.deleteEntry(hostname + "@" + userID, "coderunner");
 		}
 		catch(EOFException e)
 		{
@@ -118,8 +114,10 @@ public class CodeRunnerHelper extends Thread
 
 	public synchronized void pushMessage(PushableMessage m)
 	{
-		try 
+		try		
 		{
+			if(m.getControl().contentEquals(PushableMessage.CONTROL_PING_CODE))
+				m.setMessageContent(RSAEncryptorClass.encryptText((String)m.getMessageContent(), userModulus, userPublicKey));
 			if(objOut==null)
 				objOut = new ObjectOutputStream(socket.getOutputStream());
 			objOut.writeObject(m);
@@ -129,5 +127,10 @@ public class CodeRunnerHelper extends Thread
 		{
 			e.printStackTrace();
 		}		
+	}
+	
+	public String getHostname() 
+	{
+		return hostname;
 	}
 }
