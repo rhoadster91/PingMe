@@ -57,6 +57,14 @@ public class UserHelper extends Thread
 			m.setMessageContent(new String(RSAEncryptorClass.getPublicKey() + "," + RSAEncryptorClass.getModulus()));
 			pushMessage(m);			
 			m = (PushableMessage)objIn.readObject();
+			if(m.getSender().contentEquals("NEW USER"))
+			{
+				String signupinfo = RSAEncryptorClass.decryptText((int [])m.getMessageContent()).trim();
+				DBConnect.createNewUser(signupinfo);
+				ServerMain.deleteEntry("NEW USER", "user");
+				socket.close();
+				return;
+			}
 			userPassword = RSAEncryptorClass.decryptText((int [])m.getMessageContent()).trim();
 			if(m.isEncrypted())
 				userPassword = EncryptionStub.decrypt(userPassword);			

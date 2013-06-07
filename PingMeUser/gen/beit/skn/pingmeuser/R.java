@@ -47,7 +47,9 @@ public final class R {
     }
     public static final class id {
         public static final int bAddDevice=0x7f060017;
+        public static final int bClear=0x7f06002e;
         public static final int bLAN=0x7f06001c;
+        public static final int bSignUp=0x7f060024;
         public static final int bWAN=0x7f06001b;
         public static final int buttonICE=0x7f060007;
         public static final int buttonLogOut=0x7f060011;
@@ -72,21 +74,27 @@ public final class R {
         public static final int linearLayout2=0x7f060000;
         public static final int listView1=0x7f060018;
         public static final int mythreepanelpager=0x7f060003;
-        public static final int pushToClient=0x7f060026;
-        public static final int splashContent=0x7f06002a;
-        public static final int splashSender=0x7f060029;
+        public static final int pushToClient=0x7f060027;
+        public static final int splashContent=0x7f060032;
+        public static final int splashSender=0x7f060031;
         public static final int tBarDash=0x7f060002;
         public static final int tBarLogin=0x7f06001f;
-        public static final int tBarSplash=0x7f060028;
+        public static final int tBarSplash=0x7f060030;
         public static final int tButtonLogin=0x7f060001;
-        public static final int tButtonSplash=0x7f060027;
+        public static final int tButtonSplash=0x7f06002f;
         public static final int tableRow1=0x7f060009;
         public static final int tableRow2=0x7f06000c;
         public static final int tableRow3=0x7f06000f;
+        public static final int textNewEmail=0x7f06002c;
+        public static final int textNewEmergency=0x7f06002d;
+        public static final int textNewFullName=0x7f06002b;
+        public static final int textNewPassword=0x7f060029;
+        public static final int textNewPasswordConfirm=0x7f06002a;
+        public static final int textNewUser=0x7f060028;
         public static final int textView1=0x7f060016;
         public static final int textView2=0x7f060021;
-        public static final int txtContent=0x7f060025;
-        public static final int txtDest=0x7f060024;
+        public static final int txtContent=0x7f060026;
+        public static final int txtDest=0x7f060025;
         public static final int txtPass=0x7f060022;
         public static final int txtUser=0x7f060020;
     }
@@ -101,8 +109,9 @@ public final class R {
         public static final int intro=0x7f030007;
         public static final int main=0x7f030008;
         public static final int pingtext=0x7f030009;
-        public static final int splash=0x7f03000a;
-        public static final int splashrow=0x7f03000b;
+        public static final int signup=0x7f03000a;
+        public static final int splash=0x7f03000b;
+        public static final int splashrow=0x7f03000c;
     }
     public static final class string {
         public static final int app_name=0x7f040001;

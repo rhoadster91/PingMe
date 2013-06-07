@@ -18,6 +18,7 @@ public class UserAuthenticationActivity extends Activity
 {
 	
 	private Button login = null;
+	private Button signup = null;	
 	private EditText txt1 = null;
 	private EditText txt2 = null;	
 	private String uname, upass;
@@ -49,7 +50,8 @@ public class UserAuthenticationActivity extends Activity
         Button buttonTitle = (Button)findViewById(R.id.tBarLogin);
         buttonTitle.setTypeface(cfont);
     	login = (Button)findViewById(R.id.bAddDevice);
-		txt1 = (EditText)findViewById(R.id.txtUser);
+    	signup = (Button)findViewById(R.id.bSignUp);		
+		txt1 = (EditText)findViewById(R.id.txtUser);		
 		txt2 = (EditText)findViewById(R.id.txtPass);
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		uname = sharedPref.getString("uname", "");
@@ -66,6 +68,15 @@ public class UserAuthenticationActivity extends Activity
 			startActivity(doneAuthentication);
 			finish();
 		}
+		signup.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v) 
+			{
+				Intent startSignUpActivity = new Intent(getApplicationContext(), UserSignUpActivity.class);
+				startActivity(startSignUpActivity);				
+			}			
+		});
+		
 		login.setOnClickListener
 		(
 			new OnClickListener()

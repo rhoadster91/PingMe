@@ -35,20 +35,6 @@ public class DBConnect
 		
 	}
 	
-	public static void performInsert()
-	{
-		try 
-		{
-			Statement st = con.createStatement();
-			st.execute("insert into users values('girish', 'fireworks')");
-		} 
-		catch (SQLException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
 	
 	public static boolean isAuthentic(String name, String password, String table)
 	{
@@ -103,5 +89,29 @@ public class DBConnect
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static void createNewUser(String signupinfo)
+	{
+		System.out.println("Signing up new user...");
+		String uname = signupinfo.split("&&&")[0];
+		String password = signupinfo.split("&&&")[1];
+		String fullname = signupinfo.split("&&&")[2];
+		String email = signupinfo.split("&&&")[3];
+		String emergencyNumber = signupinfo.split("&&&")[4];
+		Statement st;
+		try 
+		{
+			st = con.createStatement();
+			String query = new String("insert into users(uname, password, fullname, email, ice, blacklisted) values('" + uname + "', '" + password + "', '" + fullname + "', '" + email + "', '" + emergencyNumber + "', 0)");
+			System.out.println(query);
+			st.execute(query);
+		}
+		catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }

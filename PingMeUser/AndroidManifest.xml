@@ -45,6 +45,11 @@
                   android:label="@string/app_name">
             
         </activity>
+        <activity android:name=".UserSignUpActivity"
+                  android:label="@string/app_name">
+            
+        </activity>
+		
 		<service android:name=".UserCommunicatorService">
 		</service>
 		<service android:name=".UserLocationManagerService">
