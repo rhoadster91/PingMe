@@ -82,6 +82,11 @@ public class AgentHelper extends Thread
 							m.setMessageContent(new String("Your rickshaw in on its way to your location"));
 							ServerMain.pushMessageToClient(m, m.getDestination(), "user");
 						}
+						else
+						{
+							PushableMessage msg = new PushableMessage("server", PushableMessage.CONTROL_ABORT);
+							pushMessage(msg);							
+						}
 						
 					}
 					else if(m.getControl().contentEquals(PushableMessage.CONTROL_ABORT))
