@@ -110,6 +110,9 @@ public class AgentApplication extends Application
     }
 
 
+	static boolean isBusy = false;
+
+
 	
 
 }

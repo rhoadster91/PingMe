@@ -90,7 +90,17 @@ public class AgentHelper extends Thread
 						
 					}
 					else if(m.getControl().contentEquals(PushableMessage.CONTROL_ABORT))
+					{
 						isBusy = false;
+						PushableMessage msg = new PushableMessage("online", PushableMessage.CONTROL_OK);
+						pushMessage(msg);
+					}
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_OK))
+					{
+						isBusy = true;
+						PushableMessage msg = new PushableMessage("busy", PushableMessage.CONTROL_OK);
+						pushMessage(msg);
+					}					
 					else if(m.getControl().contentEquals(PushableMessage.CONTROL_UPDATE_LOCATION))
 					{
 						latitude = Double.parseDouble(((String)m.getMessageContent()).split("&&&")[0]);

@@ -219,6 +219,13 @@ public class AgentCommunicatorService extends Service
 					{
 						AgentApplication.pendingAbortMessage = m;						
 					}
+					else if(m.getControl().contentEquals(PushableMessage.CONTROL_OK))
+					{
+						if(m.getSender().contentEquals("busy"))
+							AgentApplication.isBusy = true;
+						else if(m.getSender().contentEquals("online"))
+							AgentApplication.isBusy = false;
+					}
 					Intent iReadRequested = new Intent();
 					iReadRequested.setAction(AgentApplication.INTENT_TO_ACTIVITY);
 					iReadRequested.putExtra("pushablemessage", m);

@@ -23,7 +23,6 @@ public class DashboardActivity extends Activity
 	private static IntentFilter ifIncomingMessage = null;
 	private static boolean isDisplayingRequest = false;
 	private static boolean isDisplayingAbort = false;
-	private static boolean isBusy = false;
 	Button bLogout = null;
 	Button bBusyToggle = null;
 	TextView agentStatus = null;	
@@ -39,8 +38,22 @@ public class DashboardActivity extends Activity
 		{
 			public void onClick(View arg0)
 			{
-				isBusy = !isBusy;
-				updateBusyStatus();				
+				if(AgentApplication.isBusy)
+				{
+					Intent sendMessageToService = new Intent();
+					sendMessageToService.setAction(AgentApplication.INTENT_TO_SERVICE);
+					PushableMessage m = new PushableMessage(AgentApplication.uname, PushableMessage.CONTROL_ABORT);
+					sendMessageToService.putExtra("pushablemessage", m);
+					sendBroadcast(sendMessageToService);
+				}
+				else
+				{
+					Intent sendMessageToService = new Intent();
+					sendMessageToService.setAction(AgentApplication.INTENT_TO_SERVICE);
+					PushableMessage m = new PushableMessage(AgentApplication.uname, PushableMessage.CONTROL_OK);
+					sendMessageToService.putExtra("pushablemessage", m);
+					sendBroadcast(sendMessageToService);
+				}
 			}			
 		});
 		bLogout = (Button)findViewById(R.id.buttonLogout);
@@ -73,7 +86,8 @@ public class DashboardActivity extends Activity
 			public void onReceive(Context context, Intent intent) 
 			{
 				PushableMessage m = (PushableMessage)intent.getSerializableExtra("pushablemessage");
-				Toast.makeText(getApplicationContext(), (String)m.getMessageContent(), Toast.LENGTH_LONG).show();
+				if(m.getControl().contentEquals(PushableMessage.CONTROL_OK))
+					updateBusyStatus();
 				setResultCode(Activity.RESULT_OK);
 			}						
 		};
@@ -112,7 +126,7 @@ public class DashboardActivity extends Activity
 	{
 		bBusyToggle = (Button)findViewById(R.id.buttonToggleBusy);
 		agentStatus = (TextView)findViewById(R.id.agentStatus);
-		if(isBusy)
+		if(AgentApplication.isBusy)
 		{
 			bBusyToggle.setBackgroundResource(R.drawable.busy);
 			agentStatus.setText(R.string.busy_now);
@@ -166,6 +180,8 @@ public class DashboardActivity extends Activity
 					sendBroadcast(sendMessageToService);
 		        	AgentApplication.pendingMessage = null;
 		        	isDisplayingRequest = false;
+		        	AgentApplication.isBusy = true;
+		        	updateBusyStatus();
 		        }
 		     })
 		    .setNegativeButton("No", new DialogInterface.OnClickListener() 
