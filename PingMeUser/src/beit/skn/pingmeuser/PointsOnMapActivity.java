@@ -29,6 +29,7 @@ import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -122,7 +123,7 @@ public class PointsOnMapActivity extends FragmentActivity
 				        					UserApplication.writePointListToFile(getApplicationContext());
 				        					clickCount = 0;
 				        					lastClickedMarker = null;
-				        					refreshPoints();
+				        					animateMarkerFlyUp(curMarker);
 				        					return;
 				        				}
 				        				i++;
@@ -173,8 +174,7 @@ public class PointsOnMapActivity extends FragmentActivity
         					UserApplication.writePointListToFile(getApplicationContext());
         					clickCount = 0;
         					lastClickedMarker = null;
-        					//refreshPoints();
-        					animateMarker(arg0);
+        					animateMarkerBounce(arg0);
         					return;
         				}
         				i++;
@@ -271,12 +271,12 @@ public class PointsOnMapActivity extends FragmentActivity
 			}
 			marker = markerList.get(markerList.size() - 1);
 			if(newPointAdded && marker!=null)
-				animateMarker(marker);				
+				animateMarkerBounce(marker);				
 			
 		}
 	}
 	
-	private void animateMarker(final Marker marker)
+	private void animateMarkerBounce(final Marker marker)
 	{
 		final LatLng target = marker.getPosition();
 		final long duration = 800;
@@ -288,6 +288,42 @@ public class PointsOnMapActivity extends FragmentActivity
 		startPoint.offset(0, -50);	
 		final LatLng startLatLng = proj.fromScreenLocation(startPoint);
 		final Interpolator interpolator = new BounceInterpolator();
+		handler.post(new Runnable() 
+		{
+		    public void run() 
+		    {
+		        long elapsed = SystemClock.uptimeMillis() - start;
+		        float t = interpolator.getInterpolation((float) elapsed / duration);
+		        double lng = t * target.longitude + (1 - t) * startLatLng.longitude;
+		        double lat = t * target.latitude + (1 - t) * startLatLng.latitude;
+		        marker.setPosition(new LatLng(lat, lng));
+		        if (t < 1.0)
+		        {
+		            // Post again 10ms later.
+		            handler.postDelayed(this, 5);
+		        }
+		        else 
+		        {
+		        	if(newPointAdded)
+		        		newPointAdded = false;
+		        	else
+		        		refreshPoints();
+		        }
+		    }
+		});
+	}
+	
+	private void animateMarkerFlyUp(final Marker marker)
+	{
+		final LatLng startLatLng = marker.getPosition();
+		final long duration = 400;
+		final Handler handler = new Handler();
+		final long start = SystemClock.uptimeMillis();		
+		Projection proj = map.getProjection();
+		Point endPoint = proj.toScreenLocation(marker.getPosition());
+		endPoint.y = 0;	
+		final LatLng target = proj.fromScreenLocation(endPoint);
+		final Interpolator interpolator = new LinearInterpolator();
 		handler.post(new Runnable() 
 		{
 		    public void run() 
