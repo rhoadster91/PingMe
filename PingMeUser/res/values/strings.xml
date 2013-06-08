@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, PingMeUserActivity!</string>
-    <string name="app_name">PingMeUser</string>
+    <string name="app_name">PingMe Summon!</string>
     <string name="enter_username">Enter your username:</string>
     <string name="enter_password">Enter your password:</string>
     <string name="login_button">Log in</string>
