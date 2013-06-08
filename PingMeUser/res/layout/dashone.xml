@@ -28,5 +28,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sign out of this device" />
+    
+    <Button
+        android:id="@+id/buttonShowPoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show location-based triggers" />
 
 </LinearLayout>

@@ -11,11 +11,24 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
     <uses-permission android:name="android.permission.SEND_SMS"/>
-	
+    
+	<permission
+        android:name="beit.skn.pingmeuser.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+	<uses-permission android:name="beit.skn.pingmeuser.permission.MAPS_RECEIVE"/>
+	<uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".UserApplication">
+         <uses-library
+        android:name="com.google.android.maps" />
         <activity android:name=".IntroActivity"
                   android:label="@string/app_name"
                   android:theme="@android:style/Theme.NoTitleBar">
+                 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -50,7 +63,10 @@
                   android:label="@string/app_name">
             
         </activity>
-		
+		<activity android:name=".PointsOnMapActivity"
+                  android:label="@string/app_name">
+            
+        </activity>
 		<service android:name=".UserCommunicatorService">
 		</service>
 		<service android:name=".UserLocationManagerService">
@@ -66,6 +82,10 @@
        <meta-data
           android:name="android.appwidget.provider"
           android:resource="@xml/widget_info" />
-</receiver> 
+       
+</receiver>
+<meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyCiIY6XvTvrNk_-tg85Tvr7dQrnqw_hdlY" /> 
     </application>
 </manifest>

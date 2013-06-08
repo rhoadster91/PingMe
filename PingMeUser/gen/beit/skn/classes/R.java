@@ -8,13 +8,13 @@ package beit.skn.classes;
 
 public final class R {
 	public static final class string {
-		public static final int hello = 0x7f050000;
-		public static final int app_name = 0x7f050001;
+		public static final int hello = 0x7f070015;
+		public static final int app_name = 0x7f070016;
 	}
 	public static final class layout {
 		public static final int main = 0x7f030008;
 	}
 	public static final class drawable {
-		public static final int icon = 0x7f020004;
+		public static final int icon = 0x7f02001c;
 	}
 }

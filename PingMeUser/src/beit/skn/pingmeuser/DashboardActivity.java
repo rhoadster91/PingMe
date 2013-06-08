@@ -48,6 +48,7 @@ public class DashboardActivity extends Activity
 	Button bPingImage = null;
 	Button bChangeICE = null;
 	Button bSignOut = null;
+	Button bShowPoints = null;
 	CheckBox checkPersistent = null;
 	CheckBox checkDND = null;
 	
@@ -162,6 +163,15 @@ public class DashboardActivity extends Activity
 							}			
 						});
 						
+						bShowPoints = (Button)findViewById(R.id.buttonShowPoints);
+						bShowPoints.setOnClickListener(new OnClickListener()
+						{
+							public void onClick(View arg0)
+							{
+								Intent iShowPoints = new Intent(getApplicationContext(), PointsOnMapActivity.class);
+								startActivity(iShowPoints);
+							}
+						});
 						checkPersistent = (CheckBox)findViewById(R.id.checkPersistent);
 						checkPersistent.setChecked(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("persistent notification", true));
 						checkPersistent.setOnCheckedChangeListener(new OnCheckedChangeListener()

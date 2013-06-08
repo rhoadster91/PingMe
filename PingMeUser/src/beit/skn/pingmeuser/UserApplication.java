@@ -33,12 +33,14 @@ public class UserApplication extends Application
 	
 	private static final String LOCAL_FILE_FOR_SPLASH_BOX = "splashbox_";
 	private static final String LOCAL_FILE_FOR_DEVICES = "devices_";
+	private static final String LOCAL_FILE_FOR_POINTS = "points_";
 	
 	protected static String uname = "";
 	protected static String upass = "";
 	protected static String IP_ADDRESS;
 	protected static ArrayList<PushableMessage> splashBox = new ArrayList<PushableMessage>();
 	protected static ArrayList<String> deviceList = new ArrayList<String>();
+	protected static ArrayList<LocationPoint> pointList = new ArrayList<LocationPoint>();
 	
 	protected static void writeSplashBoxToFile(Context context) 
 	{
@@ -190,6 +192,83 @@ public class UserApplication extends Application
         	deviceList = (ArrayList<String>) object;
         else
         	deviceList = new ArrayList<String>();
+        
+    }
+    
+    protected static void writePointListToFile(Context context) 
+	{
+        ObjectOutputStream objectOut = null;
+        try {
+
+            FileOutputStream fileOut = context.openFileOutput(LOCAL_FILE_FOR_POINTS + uname, Context.MODE_PRIVATE);
+            objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(pointList);
+            fileOut.getFD().sync();
+
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        } 
+        finally 
+        {
+            if (objectOut != null) 
+            {                
+            	try 
+            	{
+                    objectOut.close();
+                } 
+            	catch (IOException e)
+                {
+                    
+                }
+            }
+        }
+    }
+
+   
+    @SuppressWarnings("unchecked")
+	public static void readPointListFromFile(Context context) 
+    {
+        ObjectInputStream objectIn = null;
+        Object object = null;
+        try 
+        {
+            FileInputStream fileIn = context.getApplicationContext().openFileInput(LOCAL_FILE_FOR_POINTS + uname);
+            objectIn = new ObjectInputStream(fileIn);
+            object = objectIn.readObject();
+
+        } 
+        catch (FileNotFoundException e)
+        {
+            
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        } 
+        finally
+        {
+            if (objectIn != null)
+            {
+                try 
+                {
+                    objectIn.close();
+                } 
+                catch (IOException e)
+                {
+                    
+                }
+            }
+        }
+        if(object!=null)
+        	pointList = (ArrayList<LocationPoint>) object;
+        else
+        	pointList = new ArrayList<LocationPoint>();
         
     }
 }
