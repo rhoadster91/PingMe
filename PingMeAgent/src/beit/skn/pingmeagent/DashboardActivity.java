@@ -88,6 +88,11 @@ public class DashboardActivity extends Activity
 				PushableMessage m = (PushableMessage)intent.getSerializableExtra("pushablemessage");
 				if(m.getControl().contentEquals(PushableMessage.CONTROL_OK))
 					updateBusyStatus();
+				else
+				{
+					displayAbortMessage();
+					displayPendingMessage();
+				}
 				setResultCode(Activity.RESULT_OK);
 			}						
 		};
