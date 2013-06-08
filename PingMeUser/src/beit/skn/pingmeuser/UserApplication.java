@@ -20,6 +20,8 @@ public class UserApplication extends Application
 	protected static boolean isAuthentic = false;	
 	protected static final String INTENT_TO_SERVICE = "PingMeUserIntentToService";
 	protected static final String INTENT_TO_ACTIVITY = "PingMeUserIntentToActivity";
+	protected static final String INTENT_FROM_WIDGET = "PingMeUserIntentFromWidget";	
+	protected static final int VOICE_SEARCH = 34;
 	protected static final String LOCATION_UPDATE = "PingMeUserLocationUpdated";
 	protected static final String NOTIFICATION_CALL = "PingMeUserNotificationCall";
 	protected static final String TERMINATE_LOCATION_SERVICE = "PingMeAgentTerminateLocationService";	

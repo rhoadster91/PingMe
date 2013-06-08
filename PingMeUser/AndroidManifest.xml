@@ -42,10 +42,11 @@
             
         </activity>
 		<activity android:name=".DeviceListActivity"
-                  android:label="@string/app_name">
+                  android:label="@string/app_name"     
+                  >
             
         </activity>
-        <activity android:name=".UserSignUpActivity"
+         <activity android:name=".UserSignUpActivity"
                   android:label="@string/app_name">
             
         </activity>
@@ -54,5 +55,17 @@
 		</service>
 		<service android:name=".UserLocationManagerService">
 		</service>
+		<receiver
+       android:icon="@drawable/pingwinmic"
+       android:label="PingMe Voice Shortcut"
+       android:name="PingMeWidgetProvider" >
+       <intent-filter >
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+       </intent-filter>
+
+       <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/widget_info" />
+</receiver> 
     </application>
 </manifest>

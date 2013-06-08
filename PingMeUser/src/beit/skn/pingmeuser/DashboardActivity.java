@@ -1,6 +1,7 @@
 package beit.skn.pingmeuser;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 import beit.skn.classes.PushableMessage;
 import android.app.Activity;
@@ -8,6 +9,7 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +20,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.speech.RecognizerIntent;
 import android.support.v4.view.ViewPager;
 import android.telephony.SmsManager;
 import android.text.InputType;
@@ -57,7 +60,7 @@ public class DashboardActivity extends Activity
 	static IntentFilter ifLocationUpdate; 
 	static BroadcastReceiver brLocationUpdate;
 	static Bitmap bitmap = null;
-	String myLoc = null;
+	static String myLoc = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{		
@@ -438,6 +441,25 @@ public class DashboardActivity extends Activity
 		myPager.setCurrentItem(1);
 		loading = ProgressDialog.show(this, "", "Loading...");
 		new InitializePagerTask().execute();
+		if(getIntent().getAction()!=null)			
+		{
+			if(getIntent().getAction().contentEquals(UserApplication.INTENT_FROM_WIDGET))
+			{
+				Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+ 
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+ 
+                try 
+                {
+                    startActivityForResult(intent, UserApplication.VOICE_SEARCH);                    
+                }
+                catch (ActivityNotFoundException a) 
+                {
+                    
+                }
+			}
+				
+		}
 	}
 	
 	private class SendEmergencySMS extends AsyncTask<Void, Void, Void>
@@ -550,6 +572,116 @@ public class DashboardActivity extends Activity
 	        	builder.show();
 	        	
 	            
+	        }
+	        if(resultCode == RESULT_CANCELED)
+	        {
+	        	// do nothing
+	        }
+	    }
+	    else if (requestCode == 34) 
+	    {
+	        if (resultCode == RESULT_OK) 
+	        {
+	        	ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+	        	String command = text.get(0);
+	        	
+	            if(command.contains("call"))
+	            {
+	            	if(command.contains("taxi") || command.contains("cab"))
+	            	{
+	            		Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+						startService(startLocMgr);
+						
+						if(myLoc!=null)
+						{
+							Intent sendMessageToService = new Intent();
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+							m.setMessageContent(new String("CAB&&&" + myLoc));
+							sendMessageToService.putExtra("pushablemessage", m);
+							sendBroadcast(sendMessageToService);
+							Toast.makeText(getApplicationContext(), "Pinged for a cab.", Toast.LENGTH_LONG).show();
+						}
+						else
+							Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
+	            	}
+	            	else if(command.contains("cops") || command.contains("police"))
+	            	{
+	            		Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+						startService(startLocMgr);
+						
+						if(myLoc!=null)
+						{
+						
+							Intent sendMessageToService = new Intent();
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+							m.setMessageContent(new String("COP&&&" + myLoc));
+							sendMessageToService.putExtra("pushablemessage", m);
+							sendBroadcast(sendMessageToService);
+							Toast.makeText(getApplicationContext(), "Pinged for the police.", Toast.LENGTH_LONG).show();
+						}
+						else
+							Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
+	            	}
+	            	else if(command.contains("ambulance"))
+	            	{
+	            		Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+						startService(startLocMgr);
+						
+						if(myLoc!=null)
+						{
+							Intent sendMessageToService = new Intent();
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+							m.setMessageContent(new String("AMBULANCE&&&" + myLoc));
+							sendMessageToService.putExtra("pushablemessage", m);
+							sendBroadcast(sendMessageToService);
+							Toast.makeText(getApplicationContext(), "Pinged for an ambulance.", Toast.LENGTH_LONG).show();
+							sendSMSCanceled = false;									 
+							sendingSMS = new ProgressDialog(DashboardActivity.this);
+							sendingSMS.setMessage("Sending SMS to emergency contact...");
+							sendingSMS.setCancelable(false);
+							sendingSMS.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() 
+							{
+								public void onClick(DialogInterface dialog,	int which) 
+								{
+									 sendSMSCanceled = true;
+									 sendingSMS.dismiss();
+								}
+							    
+							});
+							sendingSMS.show();								
+							new SendEmergencySMS().execute();
+						}
+						else
+							Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();
+	            	}
+	            	else if(command.contains("auto") || command.contains("rickshaw"))
+	            	{
+            		
+						Intent startLocMgr = new Intent(getApplicationContext(), UserLocationManagerService.class);
+						startService(startLocMgr);
+					
+						if(myLoc!=null)
+						{
+							Intent sendMessageToService = new Intent();
+						
+							sendMessageToService.setAction(UserApplication.INTENT_TO_SERVICE);
+							PushableMessage m = new PushableMessage(UserApplication.uname, PushableMessage.CONTROL_PUSH);
+							m.setMessageContent(new String("RICKSHAW&&&" + myLoc));
+							sendMessageToService.putExtra("pushablemessage", m);
+							sendBroadcast(sendMessageToService);
+							Toast.makeText(getApplicationContext(), "Pinged for a rickshaw.", Toast.LENGTH_LONG).show();
+						}
+						else
+							Toast.makeText(getApplicationContext(), "Waiting to get location update.", Toast.LENGTH_LONG).show();						
+	            	}
+	            	else
+	            		Toast.makeText(getApplicationContext(), "Sorry I didn't get you. I heard '" + command + "'", Toast.LENGTH_LONG).show();
+	            	
+	            		
+	            }
 	        }
 	        if(resultCode == RESULT_CANCELED)
 	        {
