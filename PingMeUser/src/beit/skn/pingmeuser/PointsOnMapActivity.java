@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
@@ -189,10 +189,10 @@ public class PointsOnMapActivity extends FragmentActivity
 				}
 				
 			});
-			map.setOnMapClickListener(new OnMapClickListener()
+			map.setOnMapLongClickListener(new OnMapLongClickListener()
 		    {
 
-				public void onMapClick(LatLng arg0) 
+				public void onMapLongClick(LatLng arg0) 
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(PointsOnMapActivity.this);
 		        	builder.setTitle("Place new trigger here?");
