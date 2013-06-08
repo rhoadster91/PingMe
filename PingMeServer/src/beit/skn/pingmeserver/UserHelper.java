@@ -62,6 +62,8 @@ public class UserHelper extends Thread
 				String signupinfo = RSAEncryptorClass.decryptText((int [])m.getMessageContent()).trim();
 				DBConnect.createNewUser(signupinfo);
 				ServerMain.deleteEntry("NEW USER", "user");
+				m = new PushableMessage("server", PushableMessage.CONTROL_OK);				
+				pushMessage(m);				
 				socket.close();
 				return;
 			}
