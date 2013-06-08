@@ -1,16 +1,21 @@
 package beit.skn.pingmeuser;
 
+import java.util.ArrayList;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -18,10 +23,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class PointsOnMapActivity extends FragmentActivity 
 {
 	private GoogleMap map;
+	static Marker lastClickedMarker;
+	static int clickCount = 0;
+	static ArrayList<Marker> markerList;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -29,6 +38,8 @@ public class PointsOnMapActivity extends FragmentActivity
 		super.onCreate(savedInstanceState);
 	    setContentView(R.layout.map);
 	    map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mymapfragment)).getMap();
+	    Intent startLocationManager = new Intent(this, UserLocationManagerService.class);
+	    startService(startLocationManager);
 	    new InitializeMapTask().execute();
 	    
 	}
@@ -62,7 +73,7 @@ public class PointsOnMapActivity extends FragmentActivity
 		@Override
 		protected void onPostExecute(Void result) 
 		{
-			map.setMyLocationEnabled(true);
+			map.setMyLocationEnabled(true);	
 			map.setOnMyLocationChangeListener(new OnMyLocationChangeListener()
 			{
 
@@ -135,18 +146,78 @@ public class PointsOnMapActivity extends FragmentActivity
 	
 	private void refreshPoints()
 	{
-		 UserApplication.readPointListFromFile(getApplicationContext());		   
+		markerList = new ArrayList<Marker>();	    
+		UserApplication.readPointListFromFile(getApplicationContext());		   
 		if(map!=null)
 		{
+			map.clear();
 			for(LocationPoint curLocPoint:UserApplication.pointList)
 			{
-				map.addMarker(new MarkerOptions().position(new LatLng(curLocPoint.latitude, curLocPoint.longitude)).title(curLocPoint.label));
+				Marker marker = map.addMarker(new MarkerOptions().position(new LatLng(curLocPoint.latitude, curLocPoint.longitude)).title(curLocPoint.label));
 				map.addCircle(new CircleOptions()
 				.center(new LatLng(curLocPoint.latitude, curLocPoint.longitude))
 		        .radius(curLocPoint.radius)
 		        .strokeColor(Color.BLUE)
 		    	.strokeWidth(2)
 		        .fillColor(0x330000ff));
+				markerList.add(marker);
+				map.setOnMarkerClickListener(new OnMarkerClickListener()
+				{
+
+					public boolean onMarkerClick(Marker arg0) 
+					{
+						if(arg0.equals(lastClickedMarker))
+						{
+							clickCount++;
+							if(clickCount==4)
+							{
+								AlertDialog.Builder builder = new AlertDialog.Builder(PointsOnMapActivity.this);
+					        	builder.setTitle("Confirm");
+					        	final TextView text = new TextView(getApplicationContext());
+					        	text.setText("Do you want to delete this trigger?");
+					        	builder.setView(text);
+					        	builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
+					        	{ 
+					        	    public void onClick(DialogInterface dialog, int which) 
+					        	    {
+					        	    	int i = 0;
+					        	    	for(Marker curMarker:markerList)
+					        			{					        	    		
+					        				if(curMarker.equals(lastClickedMarker))
+					        				{
+					        					
+					        					UserApplication.pointList.remove(i);
+					        					UserApplication.writePointListToFile(getApplicationContext());
+					        					clickCount = 0;
+					        					lastClickedMarker = null;
+					        					refreshPoints();
+					        					return;
+					        				}
+					        				i++;
+					        			}
+					        	    	
+					        	    }
+					        	});
+					        	builder.setNegativeButton("No", new DialogInterface.OnClickListener() 
+					        	{
+					        	    public void onClick(DialogInterface dialog, int which) 
+					        	    {
+					        	    	
+					        	    }
+					        	});
+
+					        	builder.show();
+							}
+						}
+						else
+						{
+							clickCount = 1;
+							lastClickedMarker = arg0;
+						}
+						return false;
+					}
+					
+				});
 			}
 		}
 	}

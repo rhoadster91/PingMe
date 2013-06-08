@@ -19,6 +19,7 @@ public class UserApplication extends Application
 	protected static String errorMessage = "";
 	protected static boolean isAuthentic = false;	
 	protected static final String INTENT_TO_SERVICE = "PingMeUserIntentToService";
+	protected static final String ENTERED_POINT = "PingMeUserEnteredPoint";
 	protected static final String INTENT_TO_ACTIVITY = "PingMeUserIntentToActivity";
 	protected static final String INTENT_FROM_WIDGET = "PingMeUserIntentFromWidget";	
 	protected static final int VOICE_SEARCH = 34;
