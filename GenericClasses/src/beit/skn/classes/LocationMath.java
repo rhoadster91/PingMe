@@ -1,4 +1,4 @@
-package beit.skn.pingmeserver;
+package beit.skn.classes;
 
 public class LocationMath 
 {
