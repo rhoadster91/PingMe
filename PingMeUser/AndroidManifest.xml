@@ -86,6 +86,6 @@
 </receiver>
 <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCiIY6XvTvrNk_-tg85Tvr7dQrnqw_hdlY" /> 
+            android:value="AIzaSyARg2qSLWs_RDfZHxWEjIPW8a-ZKMVEZvw" /> 
     </application>
 </manifest>
