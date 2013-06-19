@@ -269,9 +269,12 @@ public class PointsOnMapActivity extends FragmentActivity
 				markerList.add(marker);				
 				
 			}
-			marker = markerList.get(markerList.size() - 1);
-			if(newPointAdded && marker!=null)
-				animateMarkerBounce(marker);				
+			if(markerList.size() > 0)
+			{
+				marker = markerList.get(markerList.size() - 1);
+				if(newPointAdded && marker!=null)
+					animateMarkerBounce(marker);
+			}
 			
 		}
 	}
